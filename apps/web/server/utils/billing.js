@@ -101,6 +101,8 @@ return;
 }
 const{plan,interval}=planFromSubscription(sub);
 const live=LIVE.has(sub.status);
+if(!live&&doc.stripeSubscriptionId&&doc.stripeSubscriptionId!==sub.id&&LIVE.has(doc.status))return;
+const wasLive=LIVE.has(doc.status);
 const periodEnd=sub.items?.data?.[0]?.current_period_end||sub.current_period_end||null;
 doc.stripeSubscriptionId=sub.id;
 doc.plan=live&&plan?plan:"free";
@@ -117,7 +119,7 @@ doc.updatedAt=new Date();
 await doc.save();
 forget(doc.discordId);
 if(['active','trialing'].includes(sub.status))await notify(doc.discordId,`subscription:${sub.id}:${plan}`,'subscription_purchased',`${plan==='pro'?'Pro':'Plus'} membership active`,'Your membership benefits are ready.','/subscribe');
-if(['canceled','unpaid','incomplete_expired'].includes(sub.status))await notify(doc.discordId,`subscription-ended:${sub.id}`,'subscription_expired','Membership ended','Your account is now on Free. Your profile and stats are still saved.','/subscribe');
+if(wasLive&&['canceled','unpaid','incomplete_expired'].includes(sub.status))await notify(doc.discordId,`subscription-ended:${sub.id}`,'subscription_expired','Membership ended','Your account is now on Free. Your profile and stats are still saved.','/subscribe');
 if(sub.status==='past_due')await notify(doc.discordId,`payment-due:${sub.id}:${periodEnd}`,'payment_failed','Subscription payment needs attention','Check your payment method to keep your membership active.','/settings#membership');
 await syncPlanRole(doc.discordId,doc.plan).catch(e=>console.error("roles:",e.message));
 }

@@ -34,12 +34,14 @@ const resumed=await stripe().subscriptions.retrieve(pending.id,{expand:['latest_
 await applySubscription(resumed);
 return{subscriptionId:resumed.id,status:resumed.status,clientSecret:resumed.latest_invoice?.confirmation_secret?.client_secret||null};
 }
+if(['incomplete','unpaid','paused'].includes(pending.status)){await stripe().subscriptions.cancel(pending.id);continue;}
 throw createError({statusCode:409,statusMessage:'An existing subscription needs attention before you can start another. Check your membership settings.'});
 }
 if(attempt?.subscriptionId){
 const previous=await stripe().subscriptions.retrieve(attempt.subscriptionId);
 if(['canceled','incomplete_expired'].includes(previous.status))attempt=null;
 }
+if(attempt&&!attempt.subscriptionId&&attempt.fingerprint!==fingerprint&&Date.now()-new Date(attempt.createdAt).getTime()>600000)attempt=null;
 if(attempt&&attempt.fingerprint!==fingerprint)throw createError({statusCode:409,statusMessage:'Retry your previous checkout choices before starting a different subscription.'});
 const referral=await referralDiscount(body.referralCode,user.id,customerId,interval);
 const method=await stripe().paymentMethods.retrieve(paymentMethodId);
