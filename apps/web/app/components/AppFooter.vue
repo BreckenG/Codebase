@@ -1,5 +1,5 @@
 <script setup>
-const INVITE = "https://discord.gg/b4nxZCbdR4";
+const INVITE = "https://discord.gg/gorillatagcomp";
 </script>
 <template>
 <footer class="sitefoot"><div class="wrap sitefoot__grid"><div><NuxtLink class="brand" to="/"><img class="brand-mark" src="/img/planet.png" alt="" width="26" height="26" /> Ranked World

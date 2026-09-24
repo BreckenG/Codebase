@@ -1,5 +1,5 @@
 <script setup>
-const INVITE = "https://discord.gg/b4nxZCbdR4";
+const INVITE = "https://discord.gg/gorillatagcomp";
 const { data, refresh, error: billingError } = await useApiFetch("/api/billing/config", { key: "billing-config-settings", default: () => null });
 const { data: mine, refresh: refreshMine } = await useApiFetch("/api/me/player", { key: "settings-player", default: () => ({ player: null }) });
 const { me, load } = useMe();

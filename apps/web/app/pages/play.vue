@@ -1,6 +1,6 @@
 <script setup>
 const { enabled: desktop } = useDesktop();
-const INVITE = "https://discord.gg/b4nxZCbdR4";
+const INVITE = "https://discord.gg/gorillatagcomp";
 const RULES_URL = "https://docs.google.com/document/d/1eXH8xxJhVOlcAHepLoUWq2g3vYdt-j_2bUlf3GuZk-0/edit?usp=sharing";
 const route = useRoute();
 const activeMode = computed(() => playMode(route.query.mode));

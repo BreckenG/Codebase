@@ -1,4 +1,4 @@
-const DISCORD = "https://discord.gg/b4nxZCbdR4";
+const DISCORD = "https://discord.gg/gorillatagcomp";
 
 export function useSiteSeo() {
 const route = useRoute();
