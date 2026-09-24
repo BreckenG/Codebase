@@ -1,0 +1,2 @@
+export async function apiGet(path, options) { return await apiFetch(path, { ...options, headers: { Accept: "application/json" } }); }
+export async function apiPost(path, body) { try { return await apiFetch(path, { method: "POST", body: body || {} }); } catch (e) { const data = e?.data || {}; throw Object.assign(new Error(data.statusMessage || data.message || data.error || e.message || "Request failed"), { data, statusCode: e?.statusCode }); } }

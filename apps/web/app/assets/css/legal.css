@@ -1,0 +1,14 @@
+.legal{max-width:800px}
+.legal__body{display:flex;flex-direction:column;gap:var(--gap-24)}
+.legal__body h2{font-size:var(--text-20);margin-bottom:var(--gap-8);letter-spacing:-0.015em}
+.legal__body p,
+.legal__body li{color:var(--color-text-secondary);line-height:1.7}
+.legal__body p + p{margin-top:var(--gap-8)}
+.legal__body ul{margin:var(--gap-8) 0 0 var(--gap-16);display:flex;flex-direction:column;gap:var(--gap-6)}
+.legal__body a{color:var(--color-brand);text-decoration:underline}
+.legal__body{overflow-wrap:anywhere}
+.legal .subtabs__in{flex-wrap:wrap}
+.legal-consent-form{display:grid;gap:24px;margin:28px 0}
+.business-details{display:grid;gap:20px}
+.business-details dt{color:var(--color-text-secondary);font-size:13px}
+.business-details dd{margin:4px 0 0}

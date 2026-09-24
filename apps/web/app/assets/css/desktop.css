@@ -1,0 +1,86 @@
+.world-app.launcher-app{--color-bg:#101215;--color-raised-bg:#191c21;background:#101215}
+.world-app.launcher-app .world-content{margin-left:184px}
+.world-app.launcher-app .wrap{max-width:1400px;padding-left:28px;padding-right:28px}
+.world-app.launcher-app .section{padding-top:28px;padding-bottom:32px}
+.launcher-nav{position:fixed;inset:0 auto 0 0;width:184px;padding:24px 12px 16px;background:#15171b;border-right:1px solid #ffffff0a;display:flex;flex-direction:column;z-index:50;overflow-y:auto}
+.launcher-brand{display:flex;align-items:center;gap:9px;color:#f0f0ec;font-size:14px;font-weight:600;padding:0 5px 36px}
+.launcher-brand img{width:30px;height:25px;object-fit:contain}
+.launcher-brand small{display:block;color:#9da4aa;font-size:10px;font-weight:400;margin-top:3px}
+.launcher-nav nav{display:grid;gap:6px}
+.launcher-nav nav a{display:flex;align-items:center;gap:11px;min-height:44px;padding:10px 12px;border-radius:7px;color:#a9afb8;font-size:12px}
+.launcher-nav nav a:hover{background:#ffffff06;color:#f0f0ec}
+.launcher-nav nav a.selected{background:#efab6814;color:#efab68}
+.launcher-nav .icon{width:17px;height:17px;flex:none}
+.launcher-account{margin-top:auto;padding:24px 5px 0}
+.launcher-profile{display:flex;align-items:center;gap:9px;color:#f0f0ec;font-size:12px}
+.launcher-profile>span{min-width:0;overflow-wrap:anywhere}
+.launcher-profile small{display:block;font-size:10px;color:#9da4aa;margin-top:3px}
+.launcher-signout{display:flex;align-items:center;gap:8px;background:none;border:0;color:#a9afb8;font:inherit;font-size:11px;min-height:44px;padding:10px 0}
+.launcher-privacy{display:block;color:#9da4aa;font-size:10px;margin-top:12px;padding:6px 0}
+.launcher-app .desktop-bar{position:sticky;top:0;z-index:30;background:#15171b;padding:14px 28px;border-color:#ffffff0b}
+.launcher-app .desktop-bar__game img{display:none}
+.launcher-app .desktop-bar__game span{font-size:11px}
+.launcher-app .desktop-bar__actions>.btn--ghost{font-size:0;min-width:38px;padding:8px}
+.launcher-app .desktop-bar__actions>.btn--ghost .icon{width:17px;height:17px}
+.launcher-title{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px}
+.world-app .launcher-title h1{font-size:28px}
+.launcher-title p{margin-top:5px}
+.launcher-tabs{display:flex;gap:3px;padding:4px;border:1px solid #30353d;background:#171a1f;border-radius:8px}
+.launcher-tabs button{font:inherit;font-size:12px;background:none;border:0;border-radius:5px;color:#a9afb8;padding:8px 14px;min-height:36px}
+.launcher-tabs button[aria-pressed=true]{background:#30353d;color:#f0f0ec}
+.launcher-grid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:20px;align-items:start}
+.launcher-main{display:grid;gap:20px;min-width:0}
+.launcher-panel{background:#191c21;border:1px solid #2b3038;border-radius:10px;overflow:hidden}
+.launcher-rating{padding:24px 24px 0}
+.launcher-rank{display:flex;align-items:center;gap:24px}
+.world-app .launcher-rank h2{font-size:19px}
+.launcher-elo{margin:6px 0;display:flex;align-items:baseline;gap:10px;font-size:48px;letter-spacing:-.06em;line-height:1.4;color:#f0f0ec;font-variant-numeric:tabular-nums}
+.launcher-rank .meta{margin:0}
+.launcher-elo>span{font-size:13px;letter-spacing:0;color:#a9afb8}
+.launcher-progress{margin:20px 0;color:#a9afb8;font-size:11px}
+.launcher-progress>div{height:4px;background:#30353d;border-radius:9px;overflow:hidden;margin-bottom:9px}
+.launcher-progress>div>span{display:block;height:100%;background:#efab68;border-radius:inherit}
+.launcher-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;border-top:1px solid #30353d;margin:0;padding:18px 0}
+.launcher-metrics dt{color:#a9afb8;font-size:11px}
+.launcher-metrics dd{margin:5px 0 0;color:#f0f0ec;font-size:22px;font-variant-numeric:tabular-nums}
+.launcher-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px}
+.world-app .launcher-panel-head h2{font-size:16px;letter-spacing:-.02em}
+.launcher-panel-head>a{display:flex;align-items:center;gap:6px;color:#a9afb8;font-size:11px}
+.launcher-panel-head .icon{width:13px;height:13px}
+.launcher-room{padding:18px 20px;border-top:1px solid #2b3038}
+.launcher-room strong{display:block;color:#f0f0ec;font-size:19px;letter-spacing:.035em}
+.launcher-room small{display:block;color:#a9afb8;font-size:11px;margin-top:5px}
+.launcher-room .world-room-join{width:100%;margin-top:14px}
+.world-app .launcher-all-codes{display:flex;margin:4px 20px 20px;justify-content:space-between;background:none;border-color:#383e48}
+.launcher-empty{display:grid;justify-items:start;gap:12px;padding:24px 20px;color:#a9afb8}
+.launcher-empty>.icon{width:26px;height:26px;color:#efab68}
+.launcher-empty h3{font-size:15px}
+.launcher-note{padding:0 20px 24px;font-size:12px;color:#a9afb8}
+.launcher-rounds>div{display:flex;align-items:center;gap:12px;border-top:1px solid #2b3038;padding:13px 20px;font-size:12px}
+.launcher-place{display:grid;place-items:center;width:34px;height:34px;background:#252a31;border-radius:6px;color:#c2c7cd}
+.launcher-rounds strong{font-size:12px;color:#f0f0ec;font-weight:500}
+.launcher-rounds small{display:block;color:#9da4aa;font-size:10px;margin-top:3px}
+.launcher-delta{margin-left:auto;text-align:right;font-size:15px;font-variant-numeric:tabular-nums}
+.launcher-manage{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:20px}
+.launcher-manage>a{display:flex;align-items:center;gap:12px;border:1px solid #2b3038;border-radius:9px;background:#191c21;padding:18px 16px;color:#f0f0ec;font-size:13px}
+.launcher-manage>a:hover{border-color:#6c5640;background:#1e2024}
+.launcher-manage>a>.icon{width:19px;height:19px;color:#efab68;flex:none}
+.launcher-manage>a>.icon:last-child{margin-left:auto;width:14px;color:#9da4aa}
+.launcher-manage small{display:block;color:#a9afb8;font-size:10px;margin-top:5px}
+.launcher-welcome{padding:28px;display:grid;justify-items:start;gap:14px;min-height:270px}
+.launcher-welcome>img{height:48px;width:65px;object-fit:contain}
+.launcher-welcome h2{font-size:22px}
+@media(max-width:1100px){.launcher-grid{grid-template-columns:minmax(0,1fr) 250px}.launcher-rating{padding:20px 18px 0}.launcher-rank{gap:12px}.launcher-rank .rankbadge{--rb-size:88px!important}.launcher-elo{font-size:38px}.launcher-manage{gap:10px}.launcher-manage>a{padding:15px 12px}.launcher-manage>a>.icon:last-child{display:none}}
+@media(max-width:760px){.launcher-nav{width:68px;padding:22px 8px}.launcher-brand{padding:0 10px 28px}.launcher-brand>span,.launcher-nav nav a{font-size:0}.launcher-nav nav a{justify-content:center;padding:12px}.launcher-profile>span,.launcher-signout,.launcher-privacy{display:none}.launcher-account{padding:12px 5px}.launcher-account>.btn{font-size:0;min-width:40px;padding:8px}.world-app.launcher-app .world-content{margin-left:68px}.world-app.launcher-app .wrap{padding:20px 16px}.launcher-grid,.launcher-manage{grid-template-columns:1fr}.launcher-title{flex-wrap:wrap}.launcher-app .desktop-bar{padding:12px 16px}.launcher-app .desktop-bar__game{display:none}.launcher-rating{padding:20px 18px 0}}
+
+.desktop-update-badge{color:#efab68;border-color:#efab6855;background:#efab6812;font-size:12px;white-space:nowrap}
+.desktop-prompt{width:min(440px,calc(100vw - 32px));margin:auto;padding:32px;background:#191c21;color:#f0f0ec;border:1px solid #383e48;border-radius:14px;box-shadow:0 24px 100px #0008;font-family:inherit}
+.desktop-prompt::backdrop{background:#080a0dcc;backdrop-filter:blur(6px)}
+.desktop-prompt__logo{display:block;width:80px;height:60px;object-fit:contain;margin:0 auto 24px}
+.desktop-prompt h2{font-size:22px;line-height:1.3;margin:0 0 14px;letter-spacing:-.02em}
+.desktop-prompt p{font-size:14px;line-height:1.6;margin:12px 0;color:#b4bbc4}
+.desktop-prompt p.bad{color:#ff9c9c}
+.desktop-prompt__actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+.desktop-prompt__progress{display:grid;gap:10px;margin-top:24px;font-size:12px;color:#b4bbc4}
+.desktop-prompt progress{width:100%;height:8px;accent-color:#efab68}
+.desktop-room-action>small{display:block;color:#a9afb8;font-size:11px;margin-top:8px}

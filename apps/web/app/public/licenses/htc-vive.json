@@ -1,0 +1,17 @@
+{
+  "models": [
+    {
+      "author": "Eternal Realm (https://sketchfab.com/EternalRealm)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/htc-vive-4cee0970fe60444ead77d41fbb052a33",
+      "title": "HTC Vive"
+    },
+    {
+      "author": "iShoNz (https://sketchfab.com/Jonabafor)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/htc-vive-controller-9f03e4a80c5a4b31a24bb122f17cb229",
+      "title": "HTC Vive Controller"
+    }
+  ],
+  "modifications": "Reduced geometry and textures, baked headset materials, scaled and aligned for replay poses."
+}

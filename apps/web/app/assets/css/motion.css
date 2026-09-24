@@ -1,0 +1,57 @@
+:root{--ease-ios:cubic-bezier(0.32, 0.72, 0, 1);--ease-emph:cubic-bezier(0.05, 0.7, 0.1, 1);--dur-reveal:620ms;--dur-modal:300ms;--dur-draw:560ms;--stagger:70ms}
+.reveal-on [data-reveal]{opacity:0;translate:0 16px;transition:opacity var(--dur-reveal) var(--ease-emph),
+    translate var(--dur-reveal) var(--ease-ios);transition-delay:calc(var(--i, 0) * var(--stagger))}
+.reveal-on [data-reveal="scale"]{translate:0 22px;scale:0.97;transition-property:opacity, translate, scale}
+.reveal-on [data-reveal="rail"]{opacity:1;translate:none;scale:0 1;transform-origin:left center;transition:scale 1000ms var(--ease-ios) 140ms}
+[data-reveal][data-in]{opacity:1;translate:none;scale:none}
+@media (prefers-reduced-motion: reduce){.reveal-on [data-reveal]{opacity:1;translate:none;scale:none}}
+.rise > *{animation:rise 700ms var(--ease-ios) both;animation-delay:calc(60ms + var(--i, 0) * 80ms)}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.rise > *{animation:none}}
+.pop-in > *{animation:rise 420ms var(--ease-ios) both;animation-delay:calc(var(--i, 0) * 26ms)}
+@media (prefers-reduced-motion: reduce){.pop-in > *{animation:none}}
+.tick{width:72px;height:72px;display:grid;place-items:center;margin:var(--gap-8) auto var(--gap-4);animation:tick-pop 620ms var(--ease-overshoot) both}
+.tick svg{width:100%;height:100%;fill:none;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.tick__halo{fill:var(--accent, var(--color-brand));opacity:0;transform-box:view-box;transform-origin:26px 26px;animation:tick-halo 900ms var(--ease-out) 300ms both}
+.tick__ring{stroke:var(--accent, var(--color-brand));stroke-width:2;stroke-dasharray:145;stroke-dashoffset:145;animation:draw var(--dur-draw) var(--ease-emph) forwards}
+.tick__mark{stroke:var(--accent, var(--color-brand));stroke-width:3.4;stroke-dasharray:34;stroke-dashoffset:34;animation:draw 340ms var(--ease-out) 360ms forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes tick-pop{from{opacity:0;scale:0.88}to{opacity:1;scale:1}}
+@keyframes tick-halo{0%{opacity:0.28;scale:0.75}100%{opacity:0;scale:1.35}}
+@media (prefers-reduced-motion: reduce){.tick,
+  .tick__ring,
+  .tick__mark,
+  .tick__halo{animation:none}.tick__ring,
+  .tick__mark{stroke-dashoffset:0}.tick__halo{opacity:0}}
+.spin{width:16px;height:16px;flex:none;border-radius:var(--radius-max);border:2px solid currentColor;border-top-color:transparent;animation:spin 640ms linear infinite}
+.stage{transition:height var(--dur-modal) var(--ease-ios);overflow:hidden;overflow:clip;overflow-clip-margin:16px}
+.stage__pane{display:flex;flex-direction:column;gap:var(--gap-12)}
+.fwd-enter-active,
+.back-enter-active{transition:opacity 200ms var(--ease-out) 40ms,
+    translate 340ms var(--ease-ios)}
+.fwd-leave-active,
+.back-leave-active{transition:opacity 120ms var(--ease-out),
+    translate 200ms var(--ease-out)}
+.fwd-enter-from{opacity:0;translate:26px 0}
+.fwd-leave-to{opacity:0;translate:-18px 0}
+.back-enter-from{opacity:0;translate:-26px 0}
+.back-leave-to{opacity:0;translate:18px 0}
+.swap-enter-active{transition:opacity var(--dur-fast) var(--ease-out), translate var(--dur-base) var(--ease-ios)}
+.swap-leave-active{transition:opacity 90ms var(--ease-out), translate var(--dur-fast) var(--ease-out)}
+.swap-enter-from{opacity:0;translate:0 8px}
+.swap-leave-to{opacity:0;translate:0 -8px}
+.act{position:relative}
+.act--wide{width:100%}
+.act__face{display:inline-grid;place-items:center}
+.act__slot{grid-area:1 / 1;display:inline-flex;align-items:center;gap:var(--gap-6);white-space:nowrap;opacity:0;scale:0.72;filter:blur(3px);pointer-events:none;transition:opacity var(--dur-fast) var(--ease-out),
+    scale var(--dur-slow) var(--ease-spring),
+    filter var(--dur-base) var(--ease-out)}
+.act__slot[data-on]{opacity:1;scale:1;filter:none}
+.act__tick{width:17px;height:17px;flex:none;stroke-dasharray:34;stroke-dashoffset:34;animation:draw 300ms var(--ease-out) 70ms forwards}
+.act[data-state="done"]::before{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 0 color-mix(in srgb, currentColor 42%, transparent);animation:act-ring 720ms var(--ease-out) forwards;pointer-events:none}
+@keyframes act-ring{to{box-shadow:0 0 0 11px transparent}}
+.act[data-state="fail"]{animation:nope 440ms var(--ease-standard)}
+@keyframes nope{10%, 90%{translate:-2px 0}30%, 70%{translate:3px 0}50%{translate:-4px 0}}
+.act[data-state="busy"]:disabled{opacity:1}
+.act[data-state="busy"]{cursor:progress}
+@media (prefers-reduced-motion: reduce){.act__slot{filter:none;scale:1}.act[data-state="fail"]{animation:none}.act[data-state="done"]::before{animation:none}.act__tick{animation:none;stroke-dashoffset:0}}

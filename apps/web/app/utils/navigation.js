@@ -1,0 +1,2 @@
+export function playMode(value) { return ['ranked', 'scrims', 'practice', 'trainer', 'mirror'].includes(value) ? value : 'ranked'; }
+export function primaryDestination(path) { if (path === '/') return 'home'; if (path === '/play') return 'play'; if (path === '/leaderboard') return 'leaderboard'; if (path === '/history') return 'history'; if (path === '/me' || path === '/settings' || path.startsWith('/player/')) return 'you'; return null; }

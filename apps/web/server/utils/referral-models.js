@@ -1,0 +1,6 @@
+import mongoose from'mongoose';
+const model=(name,fields,collection)=>mongoose.models[name]||mongoose.model(name,new mongoose.Schema(fields),collection);
+export const BillingLease=model('BillingLease',{_id:String,token:String,expiresAt:Date},'billing_leases');
+export const BillingAttempt=model('BillingAttempt',{_id:String,key:String,fingerprint:String,subscriptionId:String,createdAt:Date},'billing_attempts');
+export const Referral=model('Referral',{code:{type:String,unique:true,required:true},partner:String,ownerId:String,connectAccountId:String,discountPercent:{type:Number,default:15},commissionPercent:{type:Number,default:15},active:{type:Boolean,default:true},createdAt:{type:Date,default:Date.now}},'referrals');
+export const ReferralCredit=model('ReferralCredit',{invoiceId:{type:String,unique:true,required:true},customerId:{type:String,index:true},subscriptionId:String,code:String,partner:String,ownerId:String,currency:String,paidCents:Number,commissionCents:Number,transferRequestedCents:Number,transferId:String,transferredCents:Number,reversedCents:Number,reversalPending:Boolean,transferredAt:Date,percent:Number,status:{type:String,default:'pending'},availableAt:Date,createdAt:{type:Date,default:Date.now},updatedAt:Date},'referral_credits');

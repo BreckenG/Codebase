@@ -1,0 +1,10 @@
+import { execFileSync } from 'node:child_process';
+import { copyFileSync, mkdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+const project = fileURLToPath(new URL('../join-helper/JoinHelper.csproj', import.meta.url));
+const args = ['build', project, '-c', 'Release', '-p:DeployToGame=false', '--nologo'];
+if (process.env.GORILLA_TAG_DIR) args.push('-p:GtRoot=' + process.env.GORILLA_TAG_DIR);
+execFileSync('dotnet', args, { stdio: 'inherit' });
+const destination = new URL('../src-tauri/resources/', import.meta.url);
+mkdirSync(destination, { recursive: true });
+copyFileSync(new URL('../join-helper/bin/Release/JoinHelper.dll', import.meta.url), new URL('JoinHelper.dll', destination));

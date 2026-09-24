@@ -1,0 +1,1 @@
+{"$schema":"https://turbo.build/schema.json","tasks":{"build":{"dependsOn":["^build"],"outputs":[".output/**",".nuxt/**"]},"dev":{"cache":false,"persistent":true},"lint":{}}}

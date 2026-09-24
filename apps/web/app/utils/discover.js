@@ -1,0 +1,1 @@
+export const DISCOVER = [{ key: "players", label: "Players", href: "/leaderboard", icon: "trophy" }, { key: "panel", label: "Panel", href: "/play", icon: "layers" }, { key: "ranked", label: "Ranked", href: "/ranked", icon: "book" }];

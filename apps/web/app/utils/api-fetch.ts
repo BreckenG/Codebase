@@ -1,0 +1,4 @@
+import { invoke, isTauri } from '@tauri-apps/api/core';
+import { createFetch } from 'ofetch';
+const nativeFetch = createFetch({ fetch: async (input, init) => { const path = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url; if (path === '/auth/logout') { await invoke('sign_out'); return new Response('{}', { headers: { 'Content-Type': 'application/json' } }); } const reply = await invoke<{ status: number; body: string; }>('api_request', { path, method: init?.method || 'GET', body: typeof init?.body === 'string' ? init.body : null }); return new Response([204, 205, 304].includes(reply.status) ? null : reply.body, { status: reply.status, headers: { 'Content-Type': 'application/json' } }); } });
+export const apiFetch: typeof $fetch = ((request: any, options: any) => { if (import.meta.client && isTauri()) return nativeFetch(request, options); return $fetch(request, options); }) as typeof $fetch;
