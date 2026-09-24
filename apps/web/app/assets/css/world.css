@@ -48,6 +48,9 @@
 .world-app .world-account__actions svg{width:13px}
 .world-app .world-footer{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:auto 44px 0;padding:23px 0;border-top:1px solid #ffffff0c;color:#90979d;font-size:11px}
 .world-app .world-footer nav{display:flex;flex-wrap:wrap;gap:20px}
+.world-app .world-footer__gh{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border:1px solid #ffffff14;border-radius:8px;color:#c4c9cd;transition:color .15s,background .15s,border-color .15s}
+.world-app .world-footer__gh:hover{color:#fff;background:#ffffff0a;border-color:#ffffff26}
+.world-app .world-footer__gh .icon{width:14px;height:14px}
 .world-app .world-mobile-nav,.world-app .world-mobile-head{display:none}
 .world-app .world-eyebrow{font-size:10px;letter-spacing:.15em;font-weight:550;color:#a5abb0;margin:0 0 14px}
 .world-app .world-page-title{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:32px}
