@@ -3,6 +3,7 @@ module.exports = function profileSchema(mongoose) {
   const skill = new Schema({ mu: Number, sigma: Number }, { _id: false });
   const track = new Schema({
     skill: { type: skill, default: null },
+    mmr: { type: skill, default: null },
     elo: { type: Number, default: 0 }, rank: { type: String, default: "Bronze 1" },
     category: { type: String, default: "LOW" }, roundsPlayed: { type: Number, default: 0 },
     wins: { type: Number, default: 0 }, tags: { type: Number, default: 0 },

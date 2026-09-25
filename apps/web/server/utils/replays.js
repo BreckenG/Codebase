@@ -49,6 +49,22 @@ export async function replayService(context, replayId) {
   }
   return { store, profiles }
 }
+export function replayStore() {
+  const root = process.env.REPLAY_DIR
+  if (!root || !path.isAbsolute(root)) throw createError({ statusCode: 503, statusMessage: 'Replay storage is not configured' })
+  if (!store || store.root !== path.resolve(root)) store = new ReplayStore(root)
+  return store
+}
+export async function adminReplayTarget(event) {
+  setHeader(event, 'Cache-Control', 'private, no-store')
+  const value = String(getQuery(event).player || '').trim()
+  if (!value || value.length > 64) throw createError({ statusCode: 400, statusMessage: 'Choose a player.' })
+  await connectDb()
+  const found = await Player.find({ $or: [{ discordId: value }, { photonId: value }] }, 'discordId photonId name username').limit(2).lean()
+  const profile = found.find(p => p.discordId === value) || found[0]
+  if (!profile && !/^\d{17,20}$/.test(value)) throw createError({ statusCode: 404, statusMessage: 'Player not found.' })
+  return { discordId: profile ? profile.discordId || null : value, photonId: profile?.photonId || null, name: profile?.name || profile?.username || null }
+}
 export async function basicReplayStats(userId) {
   const rows = await MatchLedger.find({ discordId: userId }).sort({ createdAt: -1 }).limit(25).select('tags survivalSeconds isWinner').lean()
   return { rounds: rows.length, tags: rows.reduce((n, r) => n + (Number(r.tags) || 0), 0), untaggedSeconds: Math.round(rows.reduce((n, r) => n + (Number(r.survivalSeconds) || 0), 0)), wins: rows.filter(r => r.isWinner).length, scope: 'Your most recent 25 scored rounds' }

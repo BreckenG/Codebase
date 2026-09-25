@@ -2,7 +2,7 @@ import{publicProfile}from"./public-profile.js";
 import{cardProfile}from"./player-card.js";
 import{entitlementFor}from"./entitlements";
 import{clampCard}from"../../app/utils/profile-card.js";
-import{DIVISIONS,tierForElo}from"@ranked-world/ranks";
+import{DIVISIONS,CATEGORY_RANGES,tierForElo}from"@ranked-world/ranks";
 import{Player,MatchLedger,CodeSession,RankedBan,Social,WebUser,connectDb}from"./db";
 const PAGE_SIZES=[20,50,100];
 const MAX_PAGE=500;
@@ -146,7 +146,8 @@ here.push({name:label});
 }
 out.push({code:s.code,purpose:s.purpose,category:s.category||null,active:s.active,openedAt:s.openedAt,closedAt:s.closedAt,count:here.length,players:here,left});
 }
-return out;
+const cat=c=>{const n=CATEGORY_RANGES.findIndex(r=>r.category===c);return n<0?CATEGORY_RANGES.length:n;};
+return out.sort((a,b)=>(b.active?1:0)-(a.active?1:0)||(all?cat(a.category)-cat(b.category)||b.count-a.count:b.count-a.count||cat(a.category)-cat(b.category))||a.code.localeCompare(b.code));
 }
 export async function stats(){
 await connectDb();

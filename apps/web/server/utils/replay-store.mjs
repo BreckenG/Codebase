@@ -103,4 +103,20 @@ export class ReplayStore {
     if (!self) return null
     return scrubReplay(raw, current, self, Math.min(60, Number(entitlement.replayMinutes) || 0) * 60000)
   }
+  async ownedBy(discordId, photonId) {
+    const key = await this.init()
+    const identity = photonId ? hash(key, photonId) : null
+    const rows = (await this.index()).filter(row => row.frames > 0 && row.participants.some(id => row.owners[id] ? row.owners[id] === discordId : id === identity)).sort((a, b) => b.startedAt - a.startedAt || a.id.localeCompare(b.id))
+    return { rows, identity }
+  }
+  async adminPlayback(discordId, photonId, id, maximumDurationMs) {
+    if (!validReplayId(id)) return null
+    const { rows, identity } = await this.ownedBy(discordId, photonId)
+    const row = rows.find(r => r.id === id)
+    if (!row) return null
+    const raw = await this.read(id)
+    const summary = summarizeReplay(raw)
+    const self = summary.participants.find(p => row.owners[p] ? row.owners[p] === discordId : p === identity)
+    return scrubReplay(raw, new Set(summary.participants), self, maximumDurationMs)
+  }
 }

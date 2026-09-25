@@ -1,7 +1,7 @@
 <script setup>
 import { createReplayRenderer, frameAt, rotatedForward } from '~/utils/replay-renderer'
 import { initialCamera, selectCameraPlayer, changeCameraMode } from '~/utils/replay-camera.mjs'
-const props = defineProps({ replay: { type: Object, required: true } })
+const props = defineProps({ replay: { type: Object, required: true }, selfLabel: { type: String, default: ' (you)' } })
 const initial = initialCamera(props.replay.players)
 let cameraState = initial
 const loadingModels = ref(true), mouseLocked = ref(false), mouseError = ref('')
@@ -135,7 +135,7 @@ onBeforeUnmount(() => { disposed = true; releaseMouse(); document.removeEventLis
     </div>
     <aside class="replay-roster" aria-label="Replay players">
       <h2>Players <span>{{ players.length }}</span></h2><p class="replay-roster-hint">Select a player to follow</p>
-      <button v-for="(player, index) in players" :key="player.id" class="replay-player" :aria-keyshortcuts="index < 10 ? String(index) : undefined" :title="index < 10 ? `Select player (${index})` : undefined" :class="{ 'is-selected': selected === player.id }" :aria-pressed="selected === player.id" @click="selectPlayer(player.id)"><span class="replay-player__dot" :style="{ background: `rgb(${player.renderColor.map(n => Math.round(n * 255)).join(',')})` }" /><span><b>{{ player.name }}{{ player.self ? ' (you)' : '' }}</b><small>{{ player.bot ? 'Bot · ' : '' }}{{ !currentPoses[player.id] ? 'No fresh pose' : currentPoses[player.id].tag === 1 ? 'Tagged' : currentPoses[player.id].tag === 0 ? 'Untagged' : 'Tag state unavailable' }}</small><small v-if="selected === player.id" class="replay-selected-label">{{ mode === 'first' ? 'First person' : 'Following' }}</small><small v-if="currentPoses[player.id]?.tag !== 1">{{ colorCode(player) }}</small></span><kbd v-if="index < 10" class="replay-player-key">{{ index }}</kbd></button>
+      <button v-for="(player, index) in players" :key="player.id" class="replay-player" :aria-keyshortcuts="index < 10 ? String(index) : undefined" :title="index < 10 ? `Select player (${index})` : undefined" :class="{ 'is-selected': selected === player.id }" :aria-pressed="selected === player.id" @click="selectPlayer(player.id)"><span class="replay-player__dot" :style="{ background: `rgb(${player.renderColor.map(n => Math.round(n * 255)).join(',')})` }" /><span><b>{{ player.name }}{{ player.self ? selfLabel : '' }}</b><small>{{ player.bot ? 'Bot · ' : '' }}{{ !currentPoses[player.id] ? 'No fresh pose' : currentPoses[player.id].tag === 1 ? 'Tagged' : currentPoses[player.id].tag === 0 ? 'Untagged' : 'Tag state unavailable' }}</small><small v-if="selected === player.id" class="replay-selected-label">{{ mode === 'first' ? 'First person' : 'Following' }}</small><small v-if="currentPoses[player.id]?.tag !== 1">{{ colorCode(player) }}</small></span><kbd v-if="index < 10" class="replay-player-key">{{ index }}</kbd></button>
 <p v-if="!players.length" class="meta">No players are available in this recording.</p>
     </aside>
     <section v-if="stats" class="replay-analytics">
