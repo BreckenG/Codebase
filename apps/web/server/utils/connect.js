@@ -29,7 +29,7 @@ return Boolean(await RankedBan.exists({active:true,$or:or}));
 async function shape(row){
 if(!row)return{code:null,live:false,expiresAt:null};
 const session=await CodeSession.exists({code:row.code,active:true});
-return{code:row.code,live:Boolean(session),expiresAt:row.expiresAt};
+return{code:row.code,live:Boolean(session),expiresAt:row.expiresAt,error:row.error||null};
 }
 export async function connectState(discordId){
 await connectDb();
