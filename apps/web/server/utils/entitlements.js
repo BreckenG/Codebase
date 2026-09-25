@@ -11,7 +11,7 @@ if(!discordId)return build("free");
 const hit=cache.get(discordId);
 if(hit&&hit.at>Date.now()-TTL_MS)return hit.value;
 await connectDb();
-const doc=await Subscription.findOne({discordId},{plan:1,status:1,currentPeriodEnd:1}).lean();
+const doc=await Subscription.findOne({discordId},{plan:1,status:1,currentPeriodEnd:1,discordPlan:1,discordPlanEnds:1}).lean();
 let value=build(membershipConfig.activePlan(doc));
 if(DEV_IDS.has(discordId))value={...build("pro"),practicePerDay:9999};
 cache.set(discordId,{at:Date.now(),value});

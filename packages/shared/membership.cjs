@@ -23,10 +23,19 @@ function membership(value) {
     unlimitedTrainer: rank === 2,
   };
 }
-function activePlan(doc, now = Date.now()) {
+function stripePlan(doc, now = Date.now()) {
   if (!doc || !["active", "trialing", "past_due"].includes(doc.status)) return "free";
   const expires = new Date(doc.currentPeriodEnd).getTime();
   if (!doc.currentPeriodEnd || !Number.isFinite(expires) || expires <= now) return "free";
   return membership(doc.plan).plan;
 }
-module.exports = { membership, activePlan };
+function discordPlan(doc, now = Date.now()) {
+  if (!doc?.discordPlan) return "free";
+  if (doc.discordPlanEnds && !(new Date(doc.discordPlanEnds).getTime() > now)) return "free";
+  return membership(doc.discordPlan).plan;
+}
+function activePlan(doc, now = Date.now()) {
+  const web = stripePlan(doc, now), app = discordPlan(doc, now);
+  return levels[app] > levels[web] ? app : web;
+}
+module.exports = { membership, activePlan, stripePlan, discordPlan };

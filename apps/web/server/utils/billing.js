@@ -4,6 +4,7 @@ import{Subscription,connectDb}from"./db";
 import{syncPlanRole}from"./roles";
 import{forget,entitlementFor}from"./entitlements";
 import{notify}from'./notifications';
+import membershipConfig from'../../../../packages/shared/membership.cjs';
 let client=null;
 export function stripe(){
 const key=useRuntimeConfig().stripeSecretKey;
@@ -85,10 +86,13 @@ return{subtotal,tax:0,total:subtotal-Math.round(subtotal*(referral?.percent||0)/
 }
 }
 function planFromSubscription(sub){
-const key=sub.items?.data?.[0]?.price?.lookup_key||"";
-const match=/^rw_([a-z]+)_([a-z]+)$/.exec(key);
-if(!match)return{plan:null,interval:null};
-return{plan:match[1],interval:match[2]};
+const price=sub.items?.data?.[0]?.price;
+const match=/^rw_([a-z]+)_([a-z]+)$/.exec(price?.lookup_key||"");
+if(match)return{plan:match[1],interval:match[2]};
+const product=typeof price?.product==="string"?price.product:price?.product?.id;
+const tier=/^rw_([a-z]+)$/.exec(product||"")?.[1]||sub.metadata?.tier||null;
+const interval=plans.INTERVALS.find(i=>i.recurring.interval===price?.recurring?.interval&&i.recurring.interval_count===price?.recurring?.interval_count)?.key||sub.metadata?.interval||null;
+return tier&&interval?{plan:tier,interval}:{plan:null,interval:null};
 }
 const LIVE=new Set(["active","trialing","past_due"]);
 export async function applySubscription(sub){
@@ -121,7 +125,7 @@ forget(doc.discordId);
 if(['active','trialing'].includes(sub.status))await notify(doc.discordId,`subscription:${sub.id}:${plan}`,'subscription_purchased',`${plan==='pro'?'Pro':'Plus'} membership active`,'Your membership benefits are ready.','/subscribe');
 if(wasLive&&['canceled','unpaid','incomplete_expired'].includes(sub.status))await notify(doc.discordId,`subscription-ended:${sub.id}`,'subscription_expired','Membership ended','Your account is now on Free. Your profile and stats are still saved.','/subscribe');
 if(sub.status==='past_due')await notify(doc.discordId,`payment-due:${sub.id}:${periodEnd}`,'payment_failed','Subscription payment needs attention','Check your payment method to keep your membership active.','/settings#membership');
-await syncPlanRole(doc.discordId,doc.plan).catch(e=>console.error("roles:",e.message));
+await syncPlanRole(doc.discordId,membershipConfig.activePlan(doc)).catch(e=>console.error("roles:",e.message));
 }
 const TIER_RANK={free:0,plus:1,pro:2};
 export async function activeSubscription(customerId){
@@ -185,6 +189,7 @@ const entitlement=await entitlementFor(discordId);
 await connectDb();
 const doc=await Subscription.findOne({discordId});
 if(!doc)return{plan:entitlement.plan,status:null,interval:null,currentPeriodEnd:null,cancelAtPeriodEnd:false};
+if(membershipConfig.stripePlan(doc)==="free"&&membershipConfig.discordPlan(doc)!=="free")return{plan:entitlement.plan,source:"discord",status:"active",interval:"monthly",currentPeriodEnd:doc.discordPlanEnds||null,cancelAtPeriodEnd:false};
 return{plan:entitlement.plan,status:doc.status,interval:doc.interval,currentPeriodEnd:doc.currentPeriodEnd,cancelAtPeriodEnd:doc.cancelAtPeriodEnd,pendingPlan:doc.pendingPlan,pendingInterval:doc.pendingInterval};
 }
 export function assertPlan(tier,interval){

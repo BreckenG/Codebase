@@ -29,6 +29,7 @@ module.exports = function profileSchema(mongoose) {
     stripeCustomerId: String, stripeSubscriptionId: String, plan: { type: String, default: "free" },
     interval: String, status: String, currentPeriodEnd: Date, cancelAtPeriodEnd: Boolean,
     pendingPlan: String, pendingInterval: String, stripeScheduleId: String,
+    discordPlan: String, discordPlanEnds: Date, discordEntitlementId: String,
     updatedAt: { type: Date, default: Date.now },
   });
   for (const field of ["photonId", "discordId", "connectCode.code"])
