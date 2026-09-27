@@ -6,8 +6,6 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const pagesDir = join(here, "..", "app", "pages");
 
-// every static page route has to be in one of these two lists or the build stops,
-// so a new page can never sneak into the sitemap and can never be silently dropped
 const INDEXABLE = {
   "/": "landing page",
   "/ranked": "how the ranked system works, no player data",
@@ -22,15 +20,11 @@ const INDEXABLE = {
   "/leaderboard": "owner asked for it in google; renders player names and discord ids"
 };
 
-// blocked in robots.txt as well as noindexed: these are the ones we do not want
-// fetched at all, not just kept out of the index
 const BLOCKED = {
   "/admin": "admin only",
   "/launcher/connect": "device code approval step"
 };
 
-// crawlable but noindexed, so Google can actually read the noindex and drop the url.
-// none of these render another player's data to a signed-out request
 const NOINDEX = {
   "/me": "your own profile, needs a session",
   "/history": "your match history, needs a session",
@@ -72,7 +66,7 @@ export function collectRoutes() {
   const unknown = [];
   for (const file of files) {
     const path = routeOf(file);
-    if (path.includes("[")) continue; // dynamic, /player/:id is the only one and it names a player
+    if (path.includes("[")) continue;
     if (BLOCKED[path] || NOINDEX[path]) continue;
     if (!INDEXABLE[path]) { unknown.push(path); continue; }
     indexable.push(path);

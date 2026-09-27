@@ -22,7 +22,7 @@ module.exports = function profileSchema(mongoose) {
     ranked: { type: track, default: () => ({}) }, scrim: { type: track, default: () => ({}) },
     friends: { type: [String], default: [] },
     profileCard: { background: String, pattern: String, font: String, accent: String, layout: String },
-    acceptance: { account: acceptance, linking: acceptance, billing: acceptance, replays: acceptance },
+    acceptance: { account: acceptance, linking: acceptance, billing: acceptance, replays: acceptance, voice: acceptance },
     connectCode: { code: String, createdAt: Date, expiresAt: Date },
     connectUsage: { day: String, n: Number },
     practiceUsage: { type: Map, of: Number, default: () => ({}) },

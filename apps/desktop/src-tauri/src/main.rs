@@ -237,7 +237,6 @@ async fn sign_out(window: WebviewWindow, state: State<'_, Desktop>) -> Result<()
         let mut account = state.account.lock().map_err(|_| "Sign-in is busy.")?; account.invalidate(); let token = api::token()?; api::clear_token()?; state.presence.clear();
         token
     };
-    // a signed out launcher can never send a spooled recording anywhere, so it does not keep one
     if let Ok(root) = configured_game(&state) { capture::wipe(&capture::spool_dir(&root)); }
     if let Some(token) = token { let _ = state.api.request("/api/desktop/logout", "POST", Some("{}".into()), Some(token)).await; }
     Ok(())
@@ -249,11 +248,6 @@ fn main() {
             let mut settings: Settings = fs::read(&cfg_path).ok().and_then(|b| serde_json::from_slice(&b).ok()).unwrap_or_default();
             if settings.game_path.is_none() { settings.game_path = game::discover_game(); }
             app.manage(Desktop { api: Api::new()?, presence: presence::Presence::new(Some("1526780247545221312"), Some("https://rankedworld.com/img/discord-presence.png"))?, settings: Mutex::new(settings), cfg_path, account: Mutex::new(Account::default()), pending_room: Mutex::new(None) });
-            // The spool tender. The sweep half runs for everyone, signed in or not, switched on or
-            // not, because the consent notice says the player's own copy does not sit there forever
-            // and nothing else on the PC would delete it. The upload half does nothing at all until
-            // the server has capture switched on: with it off the endpoint answers 204 and the pass
-            // stops without touching a file.
             let handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 loop {

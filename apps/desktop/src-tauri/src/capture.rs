@@ -1,11 +1,3 @@
-// Training capture for TOP codes. Only `recording` is wired into main.rs, so the launcher can show
-// an honest marker the moment the game plugin ever records. The grant courier below is compiled but
-// dead: nothing fetches a grant, so this launcher asks the website for nothing and writes no
-// permission anywhere. Turning capture on is a separate decision and a spawned refresh task.
-//
-// Everything here is a courier. The server decides whether a grant exists at all, and the game side
-// refuses anything that is not a current signature for this account, so a broken or stale file here
-// can only ever stop a recording, never start one.
 #![allow(dead_code)]
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -14,25 +6,17 @@ use std::time::{Duration, SystemTime};
 pub const GRANT_PATH: &str = "capture-grant.cfg";
 pub const STATUS_PATH: &str = "capture-status.cfg";
 pub const REFRESH: Duration = Duration::from_secs(30);
-/// The plugin rewrites the status file every second while it records, so anything older than this
-/// is a crashed game or a stale file and the marker comes down.
 pub const STALE: Duration = Duration::from_secs(5);
 const MAX_GRANT: usize = 4096;
 
-/// Assets/capture.cjs is the one source for these, and Manager/test/captureIngest.test.js reads
-/// this file and fails if a number here stops matching it. Rust cannot require() a .cjs.
 pub const LOCAL_DAYS: u64 = 7;
 pub const MAX_CHUNK: usize = 2097152;
-/// how many chunks one drain pass will send before yielding, so a week of backlog does not pin the
-/// launcher or trip the rate limit
 pub const DRAIN_BATCH: usize = 200;
 pub const SPOOL: &str = "BepInEx/RankedWorld/capture-spool";
 pub const DRAIN_EVERY: Duration = Duration::from_secs(60);
 
 fn grant_file(ticket_dir: &Path) -> PathBuf { ticket_dir.join(GRANT_PATH) }
 
-/// Every line has to be one of the nine keys the plugin parses, on one line, printable ASCII.
-/// The launcher never edits a grant, it only refuses to write one it does not recognise.
 pub fn looks_like_grant(body: &str) -> bool {
     if body.len() > MAX_GRANT || body.is_empty() { return false; }
     let keys = ["v", "consent", "scope", "at", "exp", "since", "nonce", "idcheck", "sig"];
@@ -60,8 +44,6 @@ pub fn write_grant(ticket_dir: &Path, body: &str) -> Result<(), String> {
     Ok(())
 }
 
-/// Called on 204, on any error, on sign-out, on withdrawal and on launcher exit. The plugin also
-/// stops on its own once the grant expires, so the worst case after a crash is two minutes.
 pub fn clear_grant(ticket_dir: &Path) -> Result<(), String> {
     match fs::remove_file(grant_file(ticket_dir)) {
         Ok(()) => Ok(()),
@@ -70,21 +52,16 @@ pub fn clear_grant(ticket_dir: &Path) -> Result<(), String> {
     }
 }
 
-/// What the plugin says it is actually doing, so the launcher shows a marker for real recording
-/// rather than for permission to record. Anything unreadable or stale counts as not recording.
 pub fn recording(ticket_dir: &Path) -> bool { recording_at(ticket_dir, SystemTime::now()) }
 
 fn recording_at(ticket_dir: &Path, now: SystemTime) -> bool {
     let path = ticket_dir.join(STATUS_PATH);
     let Ok(meta) = fs::metadata(&path) else { return false; };
     if meta.len() > 64 { return false; }
-    // a file stamped in the future is a clock, not a stale marker, so it still counts
     if !meta.modified().map(|at| now.duration_since(at).map(|age| age <= STALE).unwrap_or(true)).unwrap_or(false) { return false; }
     fs::read_to_string(path).map(|s| s.trim() == "recording=1").unwrap_or(false)
 }
 
-/// One refresh. `fetch` is the desktop-bearer GET of /api/me/capture-grant: Some(body) on 200,
-/// None on 204 or 403. An Err leaves the previous grant to expire rather than extending it.
 pub async fn refresh_once<F, Fut>(ticket_dir: &Path, fetch: F) -> Result<bool, String>
 where
     F: FnOnce() -> Fut,
@@ -97,20 +74,9 @@ where
     }
 }
 
-// ---- the spool ----
-//
-// The plugin writes finished chunks to <game>/BepInEx/RankedWorld/capture-spool as
-// <session>.<seq>.gtrc, and only ever renames a chunk into place once it is complete. The launcher
-// is the only thing that sends one anywhere, because it is the only half that holds an account: the
-// plugin never touches the network and never learns who the player is.
-//
-// Two jobs here, and the sweep runs whether or not anything is signed in or switched on, because
-// the consent copy promises the player's own copy does not live forever.
 
 pub fn spool_dir(game: &Path) -> PathBuf { game.join(SPOOL) }
 
-/// `<32 hex>.<seq>.gtrc` and nothing else. Anything we cannot name is left alone by the uploader
-/// and swept on age like any other file in the folder.
 pub fn chunk_name(name: &str) -> Option<(String, u32)> {
     let rest = name.strip_suffix(".gtrc")?;
     let (session, seq) = rest.split_once('.')?;
@@ -129,7 +95,6 @@ pub struct Ready {
 
 fn ms(at: SystemTime) -> u64 { at.duration_since(SystemTime::UNIX_EPOCH).map(|d| d.as_millis() as u64).unwrap_or(0) }
 
-/// Finished chunks, oldest first, so a session goes up roughly in the order it was played.
 pub fn ready(spool: &Path) -> Vec<Ready> {
     let Ok(entries) = fs::read_dir(spool) else { return Vec::new(); };
     let mut out = Vec::new();
@@ -144,9 +109,6 @@ pub fn ready(spool: &Path) -> Vec<Ready> {
     out
 }
 
-/// Deletes everything in the spool older than LOCAL_DAYS, uploaded or not, and returns how many
-/// went. This is the whole of "your own copy does not sit there forever": it runs on a timer in the
-/// launcher and the plugin does the same sweep when the game starts.
 pub fn sweep(spool: &Path, now: SystemTime) -> usize {
     let Ok(entries) = fs::read_dir(spool) else { return 0; };
     let cutoff = Duration::from_secs(LOCAL_DAYS * 86400);
@@ -161,7 +123,6 @@ pub fn sweep(spool: &Path, now: SystemTime) -> usize {
     gone
 }
 
-/// Everything the player's PC holds, gone. Called on a withdrawal and on sign-out.
 pub fn wipe(spool: &Path) -> usize {
     let Ok(entries) = fs::read_dir(spool) else { return 0; };
     let mut gone = 0;
@@ -176,18 +137,11 @@ pub fn wipe(spool: &Path) -> usize {
 #[derive(Debug, PartialEq)]
 pub enum Sent { Stored, Dropped, Stop, Withdrawn }
 
-/// What a status code means for the file we just sent. The server is the only thing that decides
-/// whether a recording is wanted; the launcher only decides what to do with the copy on disk.
 pub fn verdict(status: u16) -> Sent {
     match status {
         200 | 201 => Sent::Stored,
-        // withdrawn, unlinked, or a session belonging to someone else. None of it is ever going to
-        // be accepted and a withdrawal has to take the local copy with it.
         403 => Sent::Withdrawn,
-        // this chunk will never be accepted: wrong shape, too big, older than the local window, or a
-        // session whose index row never landed. Dropping it is the only way the queue ever moves.
         400 | 409 | 410 | 413 | 422 => Sent::Dropped,
-        // 204 is capture switched off, 401 is signed out, 429 is the rate limit, 5xx is a bad day
         _ => Sent::Stop,
     }
 }
@@ -195,9 +149,6 @@ pub fn verdict(status: u16) -> Sent {
 #[derive(Debug, Default, PartialEq)]
 pub struct Drained { pub sent: u32, pub dropped: u32, pub stopped: bool, pub withdrawn: bool }
 
-/// One pass. `send` is the PUT; returning Err stops the pass and leaves the file where it is, so a
-/// dropped connection costs nothing but a retry. Nothing is ever deleted before the server says it
-/// has it or says it will never take it.
 pub async fn drain<F, Fut>(spool: &Path, limit: usize, send: F) -> Drained
 where
     F: Fn(Ready, Vec<u8>) -> Fut,
@@ -221,8 +172,6 @@ where
     report
 }
 
-/// The PUT itself. One finished chunk, the desktop bearer, and the file's own timestamp so the
-/// server can date the deletion from the recording rather than from receipt when that is older.
 pub async fn put(api: &crate::api::Api, token: &str, item: &Ready, body: Vec<u8>) -> Result<u16, String> {
     let url = crate::api::api_url(&format!("/api/me/capture/{}/{}", item.session, item.seq))?;
     let response = api.client.put(url)
@@ -253,7 +202,6 @@ mod tests {
 
     #[test]
     fn refuses_a_missing_key() {
-        // this borrowed a temporary and never built, because nothing compiled this file until now
         let full = body();
         let mut lines: Vec<&str> = full.lines().collect();
         lines.pop();
