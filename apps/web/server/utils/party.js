@@ -2,9 +2,10 @@ import{requireReplayConsent}from"./replay-consent";
 import{searchDiscordMembers}from"./roles";
 import{Party,PartyCommand,ScrimMatch,Player,WebUser,connectDb}from"./db";
 import{tierForElo}from"@ranked-world/ranks";
-export const SIZES=["4v4"];
-export const MAX_PARTY=4;
-const ACTIONS=["invite","accept","decline","leave","kick","ready","size","play","cancel"];
+export const SIZES=["2v2","3v3","4v4","5v5"];
+export const RULESETS={gtc:{label:"GTC",sizes:SIZES,about:"Both teams tag at once. A point for wiping the other team, most points in 30 minutes wins."},cgt:{label:"CGT",sizes:["4v4"],about:"Teams take turns running. Longest run wins the round, first to 5. Runners get a 10 second head start, 3 minute cap."}};
+export const MAX_PARTY=5;
+const ACTIONS=["invite","accept","decline","leave","kick","ready","size","ruleset","play","cancel","stop"];
 const SNOWFLAKE=/^\d{17,20}$/;
 export async function partyState(discordId){
 await connectDb();
@@ -33,15 +34,15 @@ const members=[];
 for(const id of party.members||[]){
 members.push({...shape(id),leader:id===party.leaderId,you:id===discordId,ready:(party.ready||[]).includes(id)});
 }
-mine={leaderId:party.leaderId,youLead:party.leaderId===discordId,size:party.size||"4v4",queuedAt:party.queuedAt?new Date(party.queuedAt).getTime():0,members};
+mine={leaderId:party.leaderId,youLead:party.leaderId===discordId,size:party.size||"4v4",ruleset:party.ruleset||"gtc",queuedAt:party.queuedAt?new Date(party.queuedAt).getTime():0,members};
 }else{
-mine={leaderId:discordId,youLead:true,size:"4v4",queuedAt:0,members:[{...shape(discordId),leader:true,you:true,ready:false}]};
+mine={leaderId:discordId,youLead:true,size:"4v4",ruleset:"gtc",queuedAt:0,members:[{...shape(discordId),leader:true,you:true,ready:false}]};
 }
 const invites=[];
 for(const p of invitedBy)invites.push(shape(p.leaderId));
 let live=null;
-if(match)live={matchId:match.matchId,code:match.code,size:match.size,state:match.state};
-return{sizes:SIZES,maxParty:MAX_PARTY,party:mine,invites,match:live,pending,error:failed?.error||null};
+if(match)live={matchId:match.matchId,code:match.code,size:match.size,ruleset:match.ruleset||"gtc",state:match.state,canStop:match.mode==="rated"&&!match.playedRound};
+return{sizes:SIZES,rulesets:RULESETS,maxParty:MAX_PARTY,party:mine,invites,match:live,pending,error:failed?.error||null};
 }
 export async function sendCommand(discordId,action,arg){
 await connectDb();
@@ -49,6 +50,7 @@ if(["accept","ready","play"].includes(action))await requireReplayConsent(discord
 if(!ACTIONS.includes(action))throw createError({statusCode:400,statusMessage:"Unknown action"});
 if(["invite","accept","decline","kick"].includes(action)&&!SNOWFLAKE.test(String(arg||"")))throw createError({statusCode:400,statusMessage:"That is not a Discord id"});
 if(action==="size"&&!SIZES.includes(arg))throw createError({statusCode:400,statusMessage:"Unknown size"});
+if(action==="ruleset"&&!Object.hasOwn(RULESETS,arg))throw createError({statusCode:400,statusMessage:"Unknown mode"});
 await PartyCommand.deleteMany({userId:discordId,state:{$ne:"pending"}});
 const already=await PartyCommand.countDocuments({userId:discordId,state:"pending"});
 if(already>=3)throw createError({statusCode:429,statusMessage:"Still applying the last one"});
