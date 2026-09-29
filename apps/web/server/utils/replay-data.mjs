@@ -15,7 +15,7 @@ export function summarizeReplay(raw) {
     }
     if (r.type === 'players' && Array.isArray(r.players)) for (const p of r.players) if (p.bot === true) bots.add(p.id)
   }
-  return { id: raw.id, startedAt: raw.startedAt, durationMs, frames, map: text(raw.map), kind: text(raw.kind), participants: [...participants], bots: [...bots] }
+  return { id: raw.id, startedAt: raw.startedAt, durationMs, frames, map: text(raw.map), kind: text(raw.kind), code: typeof raw.code === 'string' ? raw.code.slice(0, 12) : '', participants: [...participants], bots: [...bots] }
 }
 
 export function accessibleReplays(rows, identities, entitlement, now = Date.now()) {
