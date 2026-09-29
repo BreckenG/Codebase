@@ -34,7 +34,9 @@ const members=[];
 for(const id of party.members||[]){
 members.push({...shape(id),leader:id===party.leaderId,you:id===discordId,ready:(party.ready||[]).includes(id)});
 }
-mine={leaderId:party.leaderId,youLead:party.leaderId===discordId,size:party.size||"4v4",ruleset:party.ruleset||"gtc",queuedAt:party.queuedAt?new Date(party.queuedAt).getTime():0,members};
+let searching=0;
+if(party.queuedAt){const rs=party.ruleset||"gtc";const queued=await Party.find({queuedAt:{$ne:null},size:party.size},{members:1,ruleset:1}).lean();searching=queued.filter(q=>(q.ruleset||"gtc")===rs).reduce((n,q)=>n+(q.members||[]).length,0);}
+mine={leaderId:party.leaderId,youLead:party.leaderId===discordId,size:party.size||"4v4",ruleset:party.ruleset||"gtc",searching,need:Number(String(party.size||"4v4").split("v")[0])*2,queuedAt:party.queuedAt?new Date(party.queuedAt).getTime():0,members};
 }else{
 mine={leaderId:discordId,youLead:true,size:"4v4",ruleset:"gtc",queuedAt:0,members:[{...shape(discordId),leader:true,you:true,ready:false}]};
 }
