@@ -13,10 +13,10 @@ if(salesConfigured()){
 await connectDb();
 const account=user?await Player.findOne({discordId:user.id},'stripeSubscriptionId').lean():null;
 const firstSubscription=!account?.stripeSubscriptionId;
-if(user&&firstSubscription&&await Referral.exists({code:'GTC',active:true}))await notify(user.id,`offer:GTC:first-month:${user.id}`,'subscription_offer','15% off your first month','Use GTC on your first monthly subscription. Your next months renew at the regular price.','/subscribe?ref=GTC');
+if(user&&firstSubscription&&await Referral.exists({code:'GTC',active:true}))await notify(user.id,`offer:GTC:first-month:${user.id}`,'subscription_offer','15% off your first payment','Use GTC on your first subscription, any plan. Renewals are at the regular price.','/subscribe?ref=GTC');
 if(asked){
 const doc=await Referral.findOne({code:asked,active:true},'code discountPercent ownerId').lean();
-if(doc&&!doc.ownerId)referral={code:doc.code,percent:doc.discountPercent,interval:'monthly',eligible:!user||firstSubscription};
+if(doc&&!doc.ownerId)referral={code:doc.code,percent:doc.discountPercent,interval:null,eligible:!user||firstSubscription};
 }
 }
 return{configured:salesConfigured(),publishableKey:config.public.stripePublishableKey||null,catalog:catalog(),signedIn:Boolean(user),plan:user?await planFor(user.id):null,referral};

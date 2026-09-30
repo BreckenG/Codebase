@@ -14,15 +14,14 @@ if(!value)return null;
 await ensureGtc();
 const code=referralCode(value),ref=code?await Referral.findOne({code,active:true}).lean():null;
 if(!ref||ref.ownerId)throw createError({statusCode:400,statusMessage:'That referral code is not available.'});
-if(interval!=='monthly')throw createError({statusCode:400,statusMessage:'Referral discounts apply to the first month of monthly billing.'});
 if(ref.ownerId===userId)throw createError({statusCode:400,statusMessage:'You cannot use your own referral code.'});
 const paid=await stripe().invoices.list({customer:customerId,status:'paid',limit:1});
 if(paid.data.length)throw createError({statusCode:400,statusMessage:'Referral discounts are for your first paid subscription only.'});
-const couponId=`rw_referral_month_${ref.discountPercent}`;
+const couponId=`rw_referral_first_${ref.discountPercent}`;
 let coupon;
 try{coupon=await stripe().coupons.retrieve(couponId);}catch(error){
 if(error.code!=='resource_missing')throw error;
-coupon=await stripe().coupons.create({id:couponId,duration:'once',percent_off:ref.discountPercent,name:`${ref.discountPercent}% off your first month`},{idempotencyKey:couponId});
+coupon=await stripe().coupons.create({id:couponId,duration:'once',percent_off:ref.discountPercent,name:`${ref.discountPercent}% off your first payment`},{idempotencyKey:couponId});
 }
 if(!coupon.valid||coupon.duration!=='once'||coupon.percent_off!==ref.discountPercent)throw createError({statusCode:409,statusMessage:'This discount is temporarily unavailable.'});
 return{code,partner:ref.partner,ownerId:ref.ownerId,percent:ref.discountPercent,commissionPercent:ref.commissionPercent,couponId};
@@ -38,11 +37,12 @@ const subscriptionId=objectId(invoice.parent?.subscription_details?.subscription
 if(!subscriptionId)return;
 const sub=await api.subscriptions.retrieve(subscriptionId);
 const code=referralCode(sub.metadata?.referralCode);
-if(!code||sub.metadata?.interval!=='monthly')return;
+if(!code)return;
+const months={monthly:1,quarterly:3,biannual:6,yearly:12}[sub.metadata?.interval]||1;
 await connectDb();
 const ref=await Referral.findOne({code}).lean();
 if(!ref)return;
-if(await ReferralCredit.countDocuments({subscriptionId:sub.id,invoiceId:{$ne:invoiceId}})>=REFERRAL_MONTHS)return;
+if(await ReferralCredit.countDocuments({subscriptionId:sub.id,invoiceId:{$ne:invoiceId}})>=Math.ceil(REFERRAL_MONTHS/months))return;
 const customerId=objectId(invoice.customer);
 const tax=(invoice.total_taxes||invoice.total_tax_amounts||[]).reduce((sum,t)=>sum+(t.amount||0),0);
 let refunded=0,disputed=false,paidByCharge=0;
