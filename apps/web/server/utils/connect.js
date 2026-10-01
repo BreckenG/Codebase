@@ -42,7 +42,7 @@ await connectDb();
 if(held.has(discordId))throw createError({statusCode:429,statusMessage:"Your connect code is already starting."});
 if(await banned(discordId))throw createError({statusCode:403,statusMessage:"You cannot connect while rank banned"});
 const cheat=await cheatGuilds.cheatGuilds(discordId);
-if(cheat.guilds.length)throw createError({statusCode:403,statusMessage:"Leave these cheating Discord servers first, then try again in a few minutes: "+cheat.guilds.slice(0,15).join(", ")});
+if(cheat.guilds.length)throw createError({statusCode:403,statusMessage:"Leave these cheating Discord servers first, then try again: "+cheat.guilds.slice(0,15).join(", ")});
 const now=Date.now();
 const day=dayKey(now);
 const me=await Player.findOne({discordId},"connectCode connectUsage").lean();
