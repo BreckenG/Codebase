@@ -2,6 +2,7 @@ import{currentUser}from"../utils/auth";
 import{codes,findPlayer,rankBanned}from"../utils/players";
 import{tierForElo}from"@ranked-world/ranks";
 import voice from"../../../../packages/shared/voice.cjs";
+import cheatGuilds from"../../../../packages/shared/cheatGuilds.cjs";
 export default defineEventHandler(async event=>{
 const user=currentUser(event);
 if(!user)return{codes:[],bracket:null,reason:"signed-out"};
@@ -10,6 +11,8 @@ if(!doc||!doc.linked)return{codes:[],bracket:null,reason:"unlinked"};
 if(await rankBanned(doc))return{codes:[],bracket:null,reason:"banned"};
 if(!doc.modMode&&!voice.voiceAccepted(doc))return{codes:[],bracket:null,reason:"voice-consent",version:voice.VOICE_VERSION};
 if(doc.modMode)return{codes:await codes(null,true),bracket:"All (moderation mode)",reason:null};
+const cheat=await cheatGuilds.cheatGuilds(user.id);
+if(cheat.guilds.length)return{codes:[],bracket:null,reason:"cheat-servers",servers:cheat.guilds.slice(0,15)};
 const elo=doc.ranked?.elo||0;
 const bracket=tierForElo(elo).category;
 const order=["LOW","MID","HIGH","TOP"],lines=[600,900,1200],i=order.indexOf(bracket);

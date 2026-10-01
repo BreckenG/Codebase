@@ -1,6 +1,7 @@
 import crypto from"node:crypto";
 import{CodeSession,RankedBan,Player,connectDb}from"./db";
 import caps from"../../../../packages/shared/capacity.cjs";
+import cheatGuilds from"../../../../packages/shared/cheatGuilds.cjs";
 const TTL_MS=caps.CONNECT_TTL_MS;
 const ALPHABET="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -40,6 +41,8 @@ export async function startConnect(discordId){
 await connectDb();
 if(held.has(discordId))throw createError({statusCode:429,statusMessage:"Your connect code is already starting."});
 if(await banned(discordId))throw createError({statusCode:403,statusMessage:"You cannot connect while rank banned"});
+const cheat=await cheatGuilds.cheatGuilds(discordId);
+if(cheat.guilds.length)throw createError({statusCode:403,statusMessage:"Leave these cheating Discord servers first, then try again in a few minutes: "+cheat.guilds.slice(0,15).join(", ")});
 const now=Date.now();
 const day=dayKey(now);
 const me=await Player.findOne({discordId},"connectCode connectUsage").lean();
