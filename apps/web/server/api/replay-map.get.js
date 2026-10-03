@@ -3,7 +3,8 @@ import zlib from 'node:zlib'
 import { currentUser } from '../utils/auth'
 
 let cache = null
-async function build(file) {
+let stamp = 0
+async function build(file, m) {
   const b = await fs.readFile(file)
   if (b.length < 20 || b.readUInt32LE(0) !== 0x334d5447) throw new Error('bad map')
   const n = b.readInt32LE(4), tiles = b.readInt32LE(8), h0 = 20 + tiles * 12
@@ -16,16 +17,27 @@ async function build(file) {
   const tint = h0 + n * 62, light = h0 + n * 65, col = h0 + n * 44
   for (let i = 0; i < n; i++) for (let k = 0; k < 3; k++) for (let c = 0; c < 3; c++)
     out[col + (i * 3 + k) * 3 + c] = Math.min(255, Math.round(b[tint + i * 3 + c] / 255 * b[light + (i * 3 + k) * 3 + c]))
-  return { raw: out, gz: zlib.gzipSync(out, { level: 6 }) }
+  return { raw: out, gz: zlib.gzipSync(out, { level: 6 }), tag: `"m${m}"` }
 }
 export default defineEventHandler(async event => {
   if (!currentUser(event)) throw createError({ statusCode: 401, statusMessage: 'Sign in to view replays' })
   const file = process.env.REPLAY_MAP_FILE
   if (!file) throw createError({ statusCode: 404, statusMessage: 'No colored map' })
-  try { cache ||= await build(file) } catch { throw createError({ statusCode: 404, statusMessage: 'No colored map' }) }
-  setHeader(event, 'Content-Type', 'application/octet-stream')
-  setHeader(event, 'Cache-Control', 'private, max-age=86400')
+  try {
+    const m = Math.round((await fs.stat(file)).mtimeMs)
+    if (!cache || m !== stamp) {
+      cache = await build(file, m)
+      stamp = m
+    }
+  } catch { throw createError({ statusCode: 404, statusMessage: 'No colored map' }) }
+  setHeader(event, 'ETag', cache.tag)
+  setHeader(event, 'Cache-Control', 'private, no-cache')
   setHeader(event, 'Vary', 'Cookie, Accept-Encoding')
+  if (getRequestHeader(event, 'if-none-match') === cache.tag) {
+    setResponseStatus(event, 304)
+    return null
+  }
+  setHeader(event, 'Content-Type', 'application/octet-stream')
   if (/\bgzip\b/.test(getRequestHeader(event, 'accept-encoding') || '')) {
     setHeader(event, 'Content-Encoding', 'gzip')
     return cache.gz
