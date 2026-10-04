@@ -24,12 +24,5 @@
 .receipt__total{display:flex;justify-content:space-between;border-top:1px solid var(--color-divider);padding-top:var(--gap-8);margin-top:var(--gap-4)}
 .receipt__total b{color:var(--color-text-primary)}
 .stripe-box{padding:var(--gap-16);background:var(--surface-2);border:1px solid var(--color-divider);border-radius:var(--radius-md)}
-.field-label{font-weight:var(--weight-bold);font-size:var(--text-14);margin:0 0 var(--gap-8)}
-.method-select{display:flex;align-items:center;gap:var(--gap-8);height:var(--control-lg);padding:0 var(--gap-12);background:var(--surface-2);border:1px solid var(--color-divider);border-radius:var(--radius-md);color:var(--color-text-primary);font-weight:var(--weight-bold);font-size:var(--text-14);width:100%}
-.method-select svg{width:18px;height:18px;color:var(--color-icon)}
-.method-select select{flex:1;min-width:0;background:transparent;border:none;color:inherit;font:inherit;cursor:pointer}
-.method-select select:focus{outline:none}
 .alert{display:flex;gap:var(--gap-8);padding:var(--gap-12);border-radius:var(--radius-md);background:color-mix(in srgb, var(--color-red) 14%, transparent);color:var(--color-red);font-size:var(--text-14)}
 .alert svg{width:17px;height:17px;flex:none}
-.alert--info{background:var(--accent-highlight);color:var(--accent)}
-.sk-line{height:44px;border-radius:var(--radius-md);background:var(--surface-2)}

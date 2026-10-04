@@ -19,14 +19,8 @@
 .nav .anchor > .nav-item.is-selected:hover{background:var(--color-brand-highlight);color:var(--color-brand)}
 .nav .anchor > .nav-item svg:last-child{width:14px;height:14px;opacity:0.7}
 .subtabs{margin-bottom:0}
-.discover-strip{padding-top:var(--gap-24)}
-.discover-strip + main.section{padding-top:var(--gap-16)}
 .subtabs__in{position:relative;display:inline-flex;align-items:center;gap:2px;width:auto;max-width:none;margin:0;padding:3px;border-radius:var(--radius-lg);background:var(--surface-2);border:1px solid var(--color-divider);overflow-x:auto;scrollbar-width:none}
 .subtabs__in::-webkit-scrollbar{display:none}
-.subtabs__marker{position:absolute;top:3px;left:0;height:var(--control-sm);border-radius:var(--radius-md);background:var(--color-brand-highlight);box-shadow:inset 0 0 0 1px var(--color-brand-strong);opacity:0;pointer-events:none;transition:translate var(--dur-slow) var(--ease-out-expo),
-    width var(--dur-slow) var(--ease-out-expo),
-    opacity var(--dur-base) var(--ease-out)}
-.subtabs__marker[data-ready]{opacity:1}
 .subtabs .tab{position:relative;height:var(--control-sm);flex:none;padding:0 var(--gap-12);background:transparent;color:var(--color-text-secondary)}
 .subtabs .tab:hover{color:var(--color-text-primary);background:transparent}
 .subtabs .tab.is-selected,

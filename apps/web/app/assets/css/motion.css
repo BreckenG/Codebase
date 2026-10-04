@@ -5,11 +5,7 @@
 .reveal-on [data-reveal="rail"]{opacity:1;translate:none;scale:0 1;transform-origin:left center;transition:scale 1000ms var(--ease-ios) 140ms}
 [data-reveal][data-in]{opacity:1;translate:none;scale:none}
 @media (prefers-reduced-motion: reduce){.reveal-on [data-reveal]{opacity:1;translate:none;scale:none}}
-.rise > *{animation:rise 700ms var(--ease-ios) both;animation-delay:calc(60ms + var(--i, 0) * 80ms)}
 @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion: reduce){.rise > *{animation:none}}
-.pop-in > *{animation:rise 420ms var(--ease-ios) both;animation-delay:calc(var(--i, 0) * 26ms)}
-@media (prefers-reduced-motion: reduce){.pop-in > *{animation:none}}
 .tick{width:72px;height:72px;display:grid;place-items:center;margin:var(--gap-8) auto var(--gap-4);animation:tick-pop 620ms var(--ease-overshoot) both}
 .tick svg{width:100%;height:100%;fill:none;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
 .tick__halo{fill:var(--accent, var(--color-brand));opacity:0;transform-box:view-box;transform-origin:26px 26px;animation:tick-halo 900ms var(--ease-out) 300ms both}
