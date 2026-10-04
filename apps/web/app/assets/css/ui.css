@@ -26,16 +26,16 @@
 .btn--ghost:hover:not(:disabled){background:var(--color-button-bg)}
 .icon-btn{width:var(--control-md);padding:0;background:transparent}
 .btn--brand{background:var(--color-brand);color:var(--color-brand-inverted)}
-.btn--brand:hover:not(:disabled){background:color-mix(in srgb, var(--color-brand) 88%, #fff);color:var(--color-brand-inverted)}
-.btn--brand:active:not(:disabled){background:color-mix(in srgb, var(--color-brand) 88%, #000)}
+.btn--brand:hover:not(:disabled){background:color-mix(in srgb, var(--color-brand) 88%, #f4f2ee);color:var(--color-brand-inverted)}
+.btn--brand:active:not(:disabled){background:color-mix(in srgb, var(--color-brand) 88%, #0b0a09)}
 .btn--outline{background:transparent;border:1px solid var(--surface-5);color:var(--color-text-primary)}
 .btn--upgrade{position:relative;overflow:hidden;height:var(--control-lg);padding:0 var(--gap-16);background:var(--color-brand);color:var(--color-brand-inverted);font-weight:var(--weight-extrabold)}
-.btn--upgrade:hover:not(:disabled){background:color-mix(in srgb, var(--color-brand) 86%, #fff);color:var(--color-brand-inverted)}
+.btn--upgrade:hover:not(:disabled){background:color-mix(in srgb, var(--color-brand) 86%, #f4f2ee);color:var(--color-brand-inverted)}
 .btn--upgrade svg{color:currentColor}
 .btn--upgrade::after{content:"";position:absolute;inset:0;translate:-120% 0;background:linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, 0.42), transparent 65%);animation:upgrade-sheen 3.2s var(--ease-standard) infinite}
 @keyframes upgrade-sheen{0%, 62%{translate:-120% 0}100%{translate:120% 0}}
 @media (prefers-reduced-motion: reduce){.btn--upgrade::after{display:none}}
-.btn--danger{background:var(--color-red);color:#fff}
+.btn--danger{background:var(--color-red);color:#f4f2ee}
 .is-selected,
 .tab.is-selected,
 .nav-item.is-selected{background:var(--color-brand-highlight);color:var(--color-brand);box-shadow:inset 0 0 0 1px var(--color-brand-strong)}
@@ -112,7 +112,7 @@
 @keyframes bar-grow{from{scale:0 1}to{scale:1 1}}
 @media (prefers-reduced-motion: reduce){.bar--grow > i, .bar--grow > span{animation:none}}
 .empty{display:grid;justify-items:center;gap:var(--gap-8);padding:var(--gap-32) var(--gap-16);text-align:center}
-.empty__tile{display:grid;place-items:center;width:56px;height:56px;border-radius:var(--radius-xl);background:var(--surface-3);color:var(--color-text-secondary);box-shadow:inset 0 0 0 1px color-mix(in srgb, #ffffff 7%, transparent);animation:float 5.5s var(--ease-standard) infinite}
+.empty__tile{display:grid;place-items:center;width:56px;height:56px;border-radius:var(--radius-xl);background:var(--surface-3);color:var(--color-text-secondary);box-shadow:inset 0 0 0 1px color-mix(in srgb, #f4f2ee 7%, transparent);animation:float 5.5s var(--ease-standard) infinite}
 .empty__tile svg{width:24px;height:24px}
 @keyframes float{0%, 100%{transform:translateY(-4px)}50%{transform:translateY(4px)}}
 @media (prefers-reduced-motion: reduce){.empty__tile{animation:none}}
@@ -123,5 +123,5 @@
 .pager--inline{margin:0}
 .save{padding:0 var(--gap-6);height:20px;display:inline-flex;align-items:center;border-radius:var(--radius-sm);background:var(--accent, var(--color-brand));color:var(--accent-inverted, var(--color-brand-inverted));font-size:var(--text-12);font-weight:var(--weight-bold);white-space:nowrap}
 .pill-brand{display:inline-flex;align-items:center;padding:3px 12px;border-radius:var(--radius-max);background:var(--color-brand-highlight);color:var(--color-brand);font-weight:var(--weight-bold);font-size:var(--text-14);line-height:1.5;white-space:nowrap}
-.glass{background:color-mix(in srgb, var(--surface-3) 55%, transparent);border:1px solid color-mix(in srgb, #ffffff 11%, transparent);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 50px rgba(0, 0, 0, 0.35)}
-.light-mode .glass{background:color-mix(in srgb, #ffffff 62%, transparent);border-color:rgba(0, 0, 0, 0.08);box-shadow:inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 18px 50px rgba(60, 60, 90, 0.14)}
+.glass{background:color-mix(in srgb, var(--surface-3) 55%, transparent);border:1px solid color-mix(in srgb, #f4f2ee 11%, transparent);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 50px rgba(0, 0, 0, 0.35)}
+.light-mode .glass{background:color-mix(in srgb, #f4f2ee 62%, transparent);border-color:rgba(0, 0, 0, 0.08);box-shadow:inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 18px 50px rgba(60, 60, 90, 0.14)}

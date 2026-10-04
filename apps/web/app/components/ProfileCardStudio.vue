@@ -61,7 +61,7 @@ onMounted(load);
           <span class="card-studio__option-name">{{ option.label }}<small v-if="option.level>level">{{ option.level===2?'Pro':'Plus' }}</small></span>
         </button>
       </div></fieldset>
-      <div class="card-studio__footer"><div><p v-if="locked" class="meta">Unlock this style with {{ required===2?'Pro':'Plus' }}.</p><p v-else class="meta" role="status" aria-live="polite">{{ notice || (changed?'Unsaved style':'Your card appears on your public profile.') }}</p></div><div class="card-studio__actions"><NuxtLink v-if="locked" to="/subscribe" class="btn btn--brand">View membership</NuxtLink><button v-else class="btn btn--brand" :disabled="!!busy || !changed" @click="save">{{ busy==='save'?'Saving...':'Save style' }}</button><button class="btn" :disabled="!!busy || locked" @click="download">{{ busy==='download'?'Exporting...':'Download PNG' }}</button></div></div>
+      <div class="card-studio__footer"><div><p v-if="locked" class="meta">This style comes with {{ required===2?'Pro':'Plus' }}.</p><p v-else class="meta" role="status" aria-live="polite">{{ notice || (changed?'Unsaved style':'Your card appears on your public profile.') }}</p></div><div class="card-studio__actions"><NuxtLink v-if="locked" to="/subscribe" class="btn btn--brand">View membership</NuxtLink><button v-else class="btn btn--brand" :disabled="!!busy || !changed" @click="save">{{ busy==='save'?'Saving...':'Save style' }}</button><button class="btn" :disabled="!!busy || locked" @click="download">{{ busy==='download'?'Exporting...':'Download PNG' }}</button></div></div>
     </div>
   </template>
 </section>

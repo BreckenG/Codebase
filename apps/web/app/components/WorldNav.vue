@@ -16,5 +16,5 @@ async function signOut() { signingOut.value = true; try { await apiFetch('/auth/
 </template>
 
 <style scoped>
-.notification-count{margin-left:auto;padding:2px 5px;border-radius:5px;background:var(--color-brand);color:var(--color-brand-inverted);font-size:11px;line-height:1.2}.mobile-notifications{margin-left:auto;position:relative}.notification-dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--color-brand)}
+.notification-count{margin-left:auto;padding:2px 5px;border-radius:var(--radius-sm);background:var(--color-brand);color:var(--color-brand-inverted);font-size:11px;line-height:1.2}.mobile-notifications{margin-left:auto;position:relative}.notification-dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--color-brand)}
 </style>

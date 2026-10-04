@@ -10,7 +10,7 @@
 .rotator > span > span{display:block;height:1.12em;line-height:1.12;background-image:linear-gradient(100deg, #ffe2c2 0%, #ffb46a 42%, var(--color-brand) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 @supports not ((background-clip: text) or (-webkit-background-clip: text)){.rotator > span > span{color:var(--color-brand);-webkit-text-fill-color:currentColor}}
 @keyframes rotate-words{0%, 22%{transform:translateY(0);animation-timing-function:var(--ease-out-expo)}25%, 47%{transform:translateY(-1.12em);animation-timing-function:var(--ease-out-expo)}50%, 72%{transform:translateY(-2.24em);animation-timing-function:var(--ease-out-expo)}75%, 97%{transform:translateY(-3.36em);animation-timing-function:var(--ease-out-expo)}100%{transform:translateY(-4.48em)}}
-.marquees{position:relative;z-index:1;display:grid;gap:var(--gap-16);padding:var(--gap-32) 0 var(--gap-24);mask-image:linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);-webkit-mask-image:linear-gradient(to right, transparent, #000 8%, #000 92%, transparent)}
+.marquees{position:relative;z-index:1;display:grid;gap:var(--gap-16);padding:var(--gap-32) 0 var(--gap-24);mask-image:linear-gradient(to right, transparent, #0b0a09 8%, #0b0a09 92%, transparent);-webkit-mask-image:linear-gradient(to right, transparent, #0b0a09 8%, #0b0a09 92%, transparent)}
 .marquee{overflow:hidden}
 .marquee__track{display:flex;width:max-content;will-change:transform;animation:marquee 70s linear infinite}
 .marquee__group{display:flex;gap:var(--gap-16);padding-right:var(--gap-16)}
@@ -18,7 +18,7 @@
 .marquee:hover .marquee__track{animation-play-state:paused}
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @keyframes marquee-reverse{from{transform:translateX(-50%)}to{transform:translateX(0)}}
-.pcard{display:flex;align-items:center;gap:var(--gap-16);flex:none;background:color-mix(in srgb, var(--surface-3) 82%, transparent);border:1px solid color-mix(in srgb, #ffffff 11%, transparent);box-shadow:inset 0 1px 0 rgba(255, 255, 255, 0.06);padding:var(--gap-12) var(--gap-24) var(--gap-12) var(--gap-12);border-radius:var(--radius-lg);min-width:232px;cursor:pointer;transition-property:background-color, border-color, box-shadow, filter, transform;transition-duration:var(--dur-base);transition-timing-function:var(--ease-standard)}
+.pcard{display:flex;align-items:center;gap:var(--gap-16);flex:none;background:color-mix(in srgb, var(--surface-3) 82%, transparent);border:1px solid color-mix(in srgb, #f4f2ee 11%, transparent);box-shadow:inset 0 1px 0 rgba(255, 255, 255, 0.06);padding:var(--gap-12) var(--gap-24) var(--gap-12) var(--gap-12);border-radius:var(--radius-lg);min-width:232px;cursor:pointer;transition-property:background-color, border-color, box-shadow, filter, transform;transition-duration:var(--dur-base);transition-timing-function:var(--ease-standard)}
 .pcard:hover,
 .pcard:focus-visible{border-color:color-mix(in srgb, var(--color-brand) 60%, transparent);background:color-mix(in srgb, var(--surface-3) 78%, transparent);box-shadow:inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 0 0 1px color-mix(in srgb, var(--color-brand) 26%, transparent)}
@@ -48,13 +48,13 @@ img.pcard__seed{object-fit:cover}
 .split h2{font-size:clamp(2.2rem, 4.4vw, 3.4rem);font-weight:var(--weight-extrabold);line-height:1.06;letter-spacing:-0.025em}
 .split p{margin-top:var(--gap-16);font-size:var(--text-18);max-width:30ch}
 .mock{position:relative;border-radius:var(--radius-xl);padding:var(--gap-16);background-image:radial-gradient(120% 90% at 0% 100%, color-mix(in srgb, var(--color-brand) 22%, transparent), transparent 62%),
-    radial-gradient(90% 70% at 100% 0%, color-mix(in srgb, #ffffff 8%, transparent), transparent 55%)}
-.mock::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(210deg, color-mix(in srgb, #ffffff 16%, transparent), transparent 42%, color-mix(in srgb, var(--color-brand) 45%, transparent));-webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);mask-composite:exclude;pointer-events:none}
+    radial-gradient(90% 70% at 100% 0%, color-mix(in srgb, #f4f2ee 8%, transparent), transparent 55%)}
+.mock::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(210deg, color-mix(in srgb, #f4f2ee 16%, transparent), transparent 42%, color-mix(in srgb, var(--color-brand) 45%, transparent));-webkit-mask:linear-gradient(#0b0a09 0 0) content-box, linear-gradient(#0b0a09 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#0b0a09 0 0) content-box, linear-gradient(#0b0a09 0 0);mask-composite:exclude;pointer-events:none}
 .light-mode .mock{background-image:radial-gradient(120% 90% at 0% 100%, color-mix(in srgb, var(--color-brand) 14%, transparent), transparent 62%),
     radial-gradient(90% 70% at 100% 0%, rgba(255, 255, 255, 0.7), transparent 55%)}
 .mock > *{position:relative}
-.mock__row{display:flex;align-items:center;gap:var(--gap-12);padding:var(--gap-12);border-radius:var(--radius-md);background:color-mix(in srgb, var(--surface-2) 70%, transparent);border:1px solid color-mix(in srgb, #ffffff 7%, transparent)}
-.light-mode .mock__row{background:color-mix(in srgb, #ffffff 70%, transparent);border-color:rgba(0, 0, 0, 0.06)}
+.mock__row{display:flex;align-items:center;gap:var(--gap-12);padding:var(--gap-12);border-radius:var(--radius-md);background:color-mix(in srgb, var(--surface-2) 70%, transparent);border:1px solid color-mix(in srgb, #f4f2ee 7%, transparent)}
+.light-mode .mock__row{background:color-mix(in srgb, #f4f2ee 70%, transparent);border-color:rgba(0, 0, 0, 0.06)}
 .mock__row + .mock__row{margin-top:var(--gap-8)}
 .mock__bar{display:flex;align-items:center;gap:var(--gap-8);padding:var(--gap-8) var(--gap-12);border-radius:var(--radius-md);background:var(--surface-3);border:1px solid var(--surface-4)}
 .mock__bar input{flex:1;width:0;min-width:0;border:0;background:none;color:var(--color-text-primary);font:var(--weight-normal) var(--text-16) / 1.5 var(--font-sans)}

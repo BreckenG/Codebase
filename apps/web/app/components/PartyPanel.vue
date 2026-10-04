@@ -73,7 +73,7 @@ onBeforeUnmount(() => { searchVersion++; clearTimeout(debounce); clearInterval(p
 <style scoped>
 .party__selection{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:7px 10px;border:1px solid var(--color-divider);border-radius:var(--radius-md);background:var(--surface-2)}
 .party__selection:focus-within{border-color:var(--color-brand)}
-.party__selected{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 4px 3px 5px;border-radius:6px;background:var(--surface-4);font-size:13px}
+.party__selected{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 4px 3px 5px;border-radius:var(--radius-sm);background:var(--surface-4);font-size:13px}
 .party__selected>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.party__selected .icon-btn{width:26px;height:26px;flex:none}
 .party__input{display:flex;align-items:center;gap:8px;flex:1;min-width:130px}.party__input>svg{flex:none;width:16px;height:16px}.party__input input{width:100%;min-width:0;border:0;background:transparent;color:inherit;outline:0;padding:6px 0;font:inherit}.party__selection-count{margin-top:6px}
 @media(max-width:600px){.party__invite{flex-direction:column;align-items:stretch}.party__invite>.btn{width:100%}.party__selection{width:100%}}

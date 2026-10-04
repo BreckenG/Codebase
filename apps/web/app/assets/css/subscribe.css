@@ -80,6 +80,6 @@
 .plan__price b{display:inline-block}
 .plan__billing{font-size:var(--text-14);color:var(--color-text-secondary);margin:0}
 
-.world-referral-note{margin:0 0 14px;padding:10px 14px;border:1px solid var(--brand,#e8a13c);border-radius:10px;background:color-mix(in srgb,var(--brand,#e8a13c) 12%,transparent);font-size:.95rem}
+.world-referral-note{margin:0 0 14px;padding:10px 14px;border:1px solid var(--brand,#e8a13c);border-radius:var(--radius-lg);background:color-mix(in srgb,var(--brand,#e8a13c) 12%,transparent);font-size:.95rem}
 .world-referral-note--muted{border-color:var(--line,#2a2e35);background:transparent;color:var(--dim,#9aa3ad)}
 .world-plan-was{margin-right:8px;opacity:.55;font-weight:500}
