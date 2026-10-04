@@ -10,18 +10,14 @@ const HOUSE = [
   { key: 'launcher', tone: 'brand', kicker: 'Free for Windows', title: 'Press Play. Land in your ranked room.', perks: ['Joins your code for you', 'Round results inside VR', 'See which friends are on'], label: 'Download the launcher', icon: 'download', to: '/launcher', art: '/img/ads/launcher.jpg', shot: true, web: true },
 ];
 const SLOT = { top: 0, left: 1, right: 2 };
-const shuffle = () => HOUSE.map((_, n) => n).sort(() => Math.random() - 0.5);
-const deck = useState('ad-deck', shuffle);
-const nuxt = useNuxtApp();
-if (import.meta.client && !nuxt._adDeck) {
-  nuxt._adDeck = true;
-  useRouter().afterEach((to, from) => { if (to.path !== from.path) deck.value = shuffle(); });
-}
+const SPOT = { top: 'top', right: 'side', bottom: 'bottom' };
+const { deck, spot } = useAds(HOUSE.length);
+const shown = computed(() => config.desktop ? SPOT[props.place] === spot.value : props.place !== 'bottom');
 const pool = computed(() => deck.value.map(n => HOUSE[n]).filter(a => !(a.web && config.desktop) && !(a.hide || []).includes(plan.value)));
 const ad = computed(() => pool.value.length ? pool.value[(SLOT[props.place] ?? 3) % pool.value.length] : null);
 </script>
 <template>
-<aside v-if="me.loaded && plan !== 'pro' && ad" class="adslot" :class="['adslot--' + ad.tone, 'adslot--' + shape]" aria-label="Advertisement">
+<aside v-if="me.loaded && plan !== 'pro' && ad && shown" class="adslot" :class="['adslot--' + ad.tone, 'adslot--' + shape]" aria-label="Advertisement">
   <component :is="ad.to ? resolveComponent('NuxtLink') : 'a'" class="adslot__link" v-bind="ad.to ? { to: ad.to } : { href: ad.href, target: '_blank', rel: 'noopener sponsored' }">
     <div class="adslot__art" :class="{ 'adslot__art--shot': ad.shot }" aria-hidden="true"><img :src="ad.art" alt="" loading="lazy" /><img v-if="ad.mark" class="adslot__mark" :src="ad.mark" alt="" /></div>
     <div class="adslot__copy">

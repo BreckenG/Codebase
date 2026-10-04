@@ -124,3 +124,6 @@
 .world-app .ad-top+.section,.world-app .world-content>.ad-top+.section{padding-top:28px}
 .ad-rail{display:none}
 @media(min-width:1640px){.ad-rail{display:block;position:fixed;top:96px;z-index:5}.ad-rail--left{left:calc(50% - 620px - 184px)}.ad-rail--right{right:calc(50% - 620px - 184px)}}
+@media(min-width:1100px){.launcher-app .ad-rail--right{display:block;position:fixed;top:16px;right:16px;left:auto;z-index:5}.launcher-app.has-side-ad .world-content{padding-right:192px}}
+.launcher-app .ad-top{padding-top:16px}
+.launcher-app .ad-bottom .adslot{margin-top:0}
