@@ -42,9 +42,6 @@ return user&&typeof user.id==="string"&&/^\d{17,20}$/.test(user.id)?user:null;
 export function currentUser(event){
 return event.context?.desktopUser||cookieUser(event);
 }
-export function launcherReturnPath(value){
-return typeof value==='string'&&/^\/launcher\/connect\?code=[A-HJ-NP-Z2-9]{8}$/.test(value)?value:null;
-}
 export function cookieOptions(){
 return{path:"/",httpOnly:true,sameSite:"lax",secure:new URL(useRuntimeConfig().public.baseUrl).protocol==="https:"};
 }

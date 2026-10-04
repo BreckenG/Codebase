@@ -1,10 +1,8 @@
 import{Subscription,connectDb}from"./db";
-import{PRACTICE_PER_DAY,trainerCategoriesFor}from"./plans";
+import{trainerCategoriesFor}from"./plans";
 import membershipConfig from'../../../../packages/shared/membership.cjs';
-export const FREE_HISTORY_LIMIT=25;
 const TTL_MS=60000;
 const cache=new Map();
-const RANK={free:0,plus:1,pro:2};
 const DEV_IDS=new Set(["1075160686000349286"]);
 export async function entitlementFor(discordId){
 if(!discordId)return build("free");
@@ -21,6 +19,5 @@ export function forget(discordId){
 cache.delete(discordId);
 }
 function build(plan){
-const rank=RANK[plan]??0;
 return{...membershipConfig.membership(plan),trainerCategories:trainerCategoriesFor(plan).map(c=>c.key)};
 }

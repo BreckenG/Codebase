@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps({ invite: { type: String, default: "" } });
+defineProps({ invite: { type: String, default: "" } });
 const { data, refresh, error } = await useApiFetch("/api/me/party", { key: "party", default: () => null });
 const busy = ref("");
 const failure = ref("");

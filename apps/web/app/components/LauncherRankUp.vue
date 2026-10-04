@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps({ tier: { type: Object, required: true }, gain: { type: Number, default: 0 } });
+defineProps({ tier: { type: Object, required: true }, gain: { type: Number, default: 0 } });
 const emit = defineEmits(['close']);
 const colors = ['#f0a15a', '#ffd48a', '#e87d1a', '#fff3dc', '#4ade80', '#7cc4ff'];
 const bits = Array.from({ length: 28 }, (_, i) => ({ '--x': ((i * 37) % 100) + '%', '--d': (i % 7) * 0.09 + 's', '--r': ((i * 53) % 360) + 'deg', '--c': colors[i % colors.length], '--s': 0.7 + ((i * 13) % 5) / 10 }));

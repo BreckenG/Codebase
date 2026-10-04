@@ -15,12 +15,7 @@ const search = ref(String(route.query.q || ""));
 const category = ref(String(route.query.category || ""));
 const sort = ref(String(route.query.sort || "relevance"));
 const metric = ref(String(route.query.metric || "elo"));
-const sortOpen = ref(false);
-const perOpen = ref(false);
-const shelf = reactive({ track: true, bracket: true, metric: true });
-const allMetrics = ref(false);
 const grid = ref(false);
-const filtersOpen = ref(false);
 const query = computed(() => ({ track: track.value, page: String(page.value), per: String(per.value), q: search.value || undefined, category: category.value || undefined, sort: sort.value, metric: metric.value }));
 const listReq = useApiFetch("/api/leaderboard", { key: "leaderboard", query, lazy: import.meta.client, default: () => null });
 await Promise.all([sortsReq, listReq]);
@@ -31,34 +26,24 @@ let timer;
 function clearSearch() { clearTimeout(timer); search.value = ""; page.value = 1; }
 function onSearch(e) { clearTimeout(timer); const value = e.target.value.trim(); timer = setTimeout(() => { search.value = value; page.value = 1; }, 300); }
 function pickMetric(key) { metric.value = key; page.value = 1; }
-function pick(key) { category.value = category.value === key ? "" : key; page.value = 1; }
 function setTrack(t) { track.value = t; page.value = 1; }
 function goTo(n) { page.value = Math.min(Math.max(1, n), pages.value); window.scrollTo({ top: 0, behavior: "smooth" }); }
-function setPer(n) { per.value = n; page.value = 1; perOpen.value = false; }
+function setPer(n) { per.value = n; page.value = 1; }
 function clearAll() { search.value = ""; category.value = ""; metric.value = "elo"; page.value = 1; }
 const rows = computed(() => data.value?.rows || []);
 const total = computed(() => data.value?.total || 0);
 const podium = computed(() => !grid.value && page.value === 1 && !search.value && sort.value === "relevance" && rows.value.length > 3 ? rows.value.slice(0, 3) : []);
 const rest = computed(() => rows.value.slice(podium.value.length));
-const listKey = computed(() => [track.value, category.value, sort.value, metric.value, search.value, page.value, per.value].join("|"));
-function setSort(key) { sort.value = key; page.value = 1; sortOpen.value = false; }
+function setSort(key) { sort.value = key; page.value = 1; }
 const pages = computed(() => data.value?.pages || 1);
-const sortLabel = computed(() => SORTS.value.find(s => s.key === sort.value)?.label || "Relevance");
 const friendsLocked = computed(() => Boolean(data.value?.friendsLocked));
-const isPlus = computed(() => me.value.plan?.plan === "plus" || me.value.plan?.plan === "pro");
 const activeFilters = computed(() => { let n = 0; if (category.value) n++; if (search.value) n++; if (metric.value !== "elo") n++; return n; });
 const metricLabel = computed(() => METRICS.value.find(m => m.key === metric.value)?.label || "MMR");
-const FOLD = 6;
-const canFold = computed(() => METRICS.value.length > FOLD);
-const folded = computed(() => canFold.value && !allMetrics.value);
-watchEffect(() => { const i = METRICS.value.findIndex(m => m.key === metric.value); if (i >= FOLD - 1) allMetrics.value = true; });
 function clock(sec) { const h = Math.floor((sec || 0) / 3600); const m = Math.round((sec || 0) % 3600 / 60); if (h) return h + "h " + m + "m"; return m + "m"; }
 function metricValue(p) { const t = p[track.value]; switch (metric.value) { case "peak": return num(t.peakElo); case "rounds": return num(t.rounds); case "wins": return num(t.wins); case "winrate": return t.winRate + "%"; case "tags": return num(t.tags); case "runtime": return clock(t.survivalSeconds); case "streak": return num(t.winStreak); default: return num(t.elo); } }
 const FACTS = [{ key: "winrate", icon: "activity", label: "Win rate", unit: "won", read: t => t.winRate + "%" }, { key: "peak", icon: "crown", label: "Peak MMR", unit: "peak", read: t => num(t.peakElo) }, { key: "streak", icon: "swords", label: "Win streak", unit: "win streak", read: t => num(t.winStreak) }, { key: "wins", icon: "trophy", label: "Wins", unit: "wins", read: t => num(t.wins) }];
 const facts = computed(() => { const out = []; for (const f of FACTS) { if (f.key === metric.value) continue; if (out.length >= 2) break; out.push(f); } return out; });
-function closeMenus() { sortOpen.value = false; perOpen.value = false; }
-onMounted(() => { document.addEventListener("click", closeMenus); });
-onBeforeUnmount(() => { clearTimeout(timer); document.removeEventListener("click", closeMenus); });
+onBeforeUnmount(() => clearTimeout(timer));
 useSeo({ title: "Gorilla Tag ranked leaderboard", description: "The Ranked World ladder. Sort competitive Gorilla Tag players by MMR, peak MMR, wins, tags, win streak or time survived, and filter by rank bracket." });
 </script>
 <template>
