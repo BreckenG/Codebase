@@ -15,6 +15,18 @@ internal sealed class TicketStore {
         }
         catch (Exception err) when (err is JsonException || err is ArgumentException) { return null; }
     }
+    internal (string Id, Note Note)? ReadNote(long now) {
+        try {
+            var json = ReadSmall(Path.Combine(directory, "notify.json")); if (json == null) return null; var value = JObject.Parse(json);
+            if ((long?)value["version"] != 1 || !Guid.TryParseExact((string?)value["id"], "D", out var id)) return null;
+            var expires = (long?)value["expiresAt"] ?? 0; if (expires <= now || expires - now > 60000) return null;
+            string Field(string name, int max) { var text = (string?)value[name] ?? ""; return text.Length > max ? text.Substring(0, max) : text; }
+            var kind = Field("kind", 8); if (kind != "up" && kind != "down" && kind != "rank") kind = "info";
+            var title = Field("title", 40); if (title.Length == 0) return null;
+            return (id.ToString("D"), new Note { Kind = kind, Title = title, Body = Field("body", 60), Detail = Field("detail", 60) });
+        }
+        catch (Exception err) when (err is JsonException || err is ArgumentException || err is InvalidCastException || err is FormatException) { return null; }
+    }
     internal void Publish(LaunchTicket ticket, string state, string message, long now) {
         Write("launch-status.json", new JObject {
             ["version"] = 1,
