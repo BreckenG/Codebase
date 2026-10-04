@@ -61,7 +61,7 @@ defineExpose({ png });
 </script>
 <template>
 <div class="player-card" :aria-busy="loading">
-  <img :src="preview" :alt="`${profile.discordName || 'Player'}: ${profile.rank || 'Unranked'}, ${profile.elo || 0} Elo`" width="900" height="450" />
+  <img :src="preview" :alt="`${profile.discordName || 'Player'}: ${profile.rank || 'Unranked'}, ${profile.elo || 0} MMR`" width="900" height="450" />
   <p v-if="failure" class="meta" role="status">{{ failure }} <button type="button" @click="pending = loadAssets()">Retry artwork</button></p>
 </div>
 </template>

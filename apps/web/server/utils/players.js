@@ -29,7 +29,7 @@ const key=String(id||"").trim();
 if(!SNOWFLAKE.test(key))return null;
 return Player.findOne({discordId:key}).lean();
 }
-export const LEADERBOARD_METRICS=[{key:"elo",label:"Elo",field:"elo"},{key:"peak",label:"Peak Elo",field:"peakElo"},{key:"rounds",label:"Rounds",field:"roundsPlayed"},{key:"wins",label:"Wins",field:"wins"},{key:"winrate",label:"Win rate",field:null},{key:"tags",label:"Tags",field:"tags"},{key:"runtime",label:"Runtime",field:"survivalSeconds"},{key:"streak",label:"Win streak",field:"winStreak"}];
+export const LEADERBOARD_METRICS=[{key:"elo",label:"MMR",field:"elo"},{key:"peak",label:"Peak MMR",field:"peakElo"},{key:"rounds",label:"Rounds",field:"roundsPlayed"},{key:"wins",label:"Wins",field:"wins"},{key:"winrate",label:"Win rate",field:null},{key:"tags",label:"Tags",field:"tags"},{key:"runtime",label:"Runtime",field:"survivalSeconds"},{key:"streak",label:"Win streak",field:"winStreak"}];
 export const LEADERBOARD_SORTS=[{key:"relevance",label:"Relevance"},{key:"desc",label:"Highest to lowest"},{key:"asc",label:"Lowest to highest"},{key:"friends",label:"Friends",requires:"plus"}];
 async function leaderboardFilter(){
 const bans=await RankedBan.find({active:true,$or:[{expiresAt:null},{expiresAt:{$gt:new Date()}}]},'discordId photonId').lean();

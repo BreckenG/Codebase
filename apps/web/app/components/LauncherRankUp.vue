@@ -15,7 +15,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', key));
     <div class="rankup__stage"><span class="rankup__rays" aria-hidden="true" /><RankBadge class="rankup__badge" :tier="tier" :size="150" :show-percent="false" /></div>
     <p class="rankup__kicker">Ranked up</p>
     <h2 id="rankup-title">{{ tier.name }}</h2>
-    <p v-if="gain > 0" class="rankup__gain">+<CountUp :value="gain" :duration="1400" /> Elo since last time</p>
+    <p v-if="gain > 0" class="rankup__gain">+<CountUp :value="gain" :duration="1400" /> MMR since last time</p>
     <button ref="button" class="btn btn--brand rankup__go" @click="emit('close')">Continue</button>
   </div>
 </div>

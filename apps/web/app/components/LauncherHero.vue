@@ -27,7 +27,7 @@ onBeforeUnmount(() => clearInterval(timer));
       <h1 class="lhero__name">{{ name }}</h1>
       <NuxtLink v-if="tier" to="/me" class="lhero__rank">
         <img v-if="player?.banned" src="/img/badges/rank_banned.png" alt="Rank banned" width="64" height="64" /><RankBadge v-else :tier="tier" :size="64" :show-percent="false" />
-        <span class="lhero__tier"><strong>{{ tier.name }}</strong><span><CountUp :value="ranked.elo || 0" /> Elo<template v-if="player.position"> <i>/</i> #{{ player.position }}</template></span></span>
+        <span class="lhero__tier"><strong>{{ tier.name }}</strong><span><CountUp :value="ranked.elo || 0" /> MMR<template v-if="player.position"> <i>/</i> #{{ player.position }}</template></span></span>
       </NuxtLink>
       <div v-if="tier" class="lhero__next"><span class="lhero__bar"><i :style="{ '--w': (tier.isTop ? 100 : tier.percent) + '%' }" /></span><small>{{ next ? tier.eloToNext + ' to ' + next : 'Top division' }}</small></div>
       <div class="lhero__actions">
