@@ -9,16 +9,16 @@ internal sealed class Note {
     internal string Kind = "info", Title = "", Body = "", Detail = "";
 }
 internal sealed class Overlay {
-    private struct Glyph { internal int X, Y, W, H, Ox, Oy, Adv; }
-    private sealed class Face { internal int Ascent, Line; internal readonly Dictionary<char, Glyph> Glyphs = new(); }
-    private const int Width = 640, Radius = 14;
-    private const float Hold = 4.6f, In = 0.22f, Out = 0.5f;
-    private static readonly Color32 Fill = new(23, 26, 31, 242), Edge = new(48, 53, 58, 255), Text = new(240, 240, 236, 255), Muted = new(157, 164, 170, 255);
-    private readonly Dictionary<string, Face> faces = new();
-    private readonly Queue<Note> pending = new();
-    private byte[] atlas = Array.Empty<byte>(); private int atlasWidth;
-    private GameObject? panel; private Material? material; private Texture2D? texture; private Transform? anchor;
-    private float shownAt = -1; private float aspect = 0.3f; private bool loaded, broken;
+    struct Glyph { internal int X, Y, W, H, Ox, Oy, Adv; }
+    sealed class Face { internal int Ascent, Line; internal readonly Dictionary<char, Glyph> Glyphs = new(); }
+    const int Width = 640, Radius = 14;
+    const float Hold = 4.6f, In = 0.22f, Out = 0.5f;
+    static readonly Color32 Fill = new(23, 26, 31, 242), Edge = new(48, 53, 58, 255), Text = new(240, 240, 236, 255), Muted = new(157, 164, 170, 255);
+    readonly Dictionary<string, Face> faces = new();
+    readonly Queue<Note> pending = new();
+    byte[] atlas = Array.Empty<byte>(); int atlasWidth;
+    GameObject? panel; Material? material; Texture2D? texture; Transform? anchor;
+    float shownAt = -1; bool loaded, broken;
     internal bool Showing => shownAt >= 0;
     internal bool Broken => broken;
     internal void Push(Note note) {
@@ -43,7 +43,7 @@ internal sealed class Overlay {
         }
         catch (Exception) { broken = true; Hide(); }
     }
-    private void Load() {
+    void Load() {
         var assembly = Assembly.GetExecutingAssembly();
         using (var stream = assembly.GetManifestResourceStream("RankedWorld.JoinHelper.Resources.font.bin")!) {
             var head = new byte[4]; stream.Read(head, 0, 4); atlasWidth = head[0] | head[1] << 8; var height = head[2] | head[3] << 8;
@@ -61,8 +61,8 @@ internal sealed class Overlay {
         }
         loaded = true;
     }
-    private static int Int(string value) => int.Parse(value, CultureInfo.InvariantCulture);
-    private void Show(Note note, Transform camera, float now) {
+    static int Int(string value) => int.Parse(value, CultureInfo.InvariantCulture);
+    void Show(Note note, Transform camera, float now) {
         var title = faces["title"]; var body = faces["body"]; var hasDetail = note.Detail.Length > 0; var hasBody = note.Body.Length > 0;
         var height = 28 + title.Line + (hasBody ? body.Line + 6 : 0) + (hasDetail ? body.Line + 2 : 0) + 24;
         var pixels = new Color32[Width * height];
@@ -77,7 +77,7 @@ internal sealed class Overlay {
             texture = new Texture2D(Width, height, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
         }
         texture.SetPixels32(pixels); texture.Apply(false);
-        aspect = height / (float)Width;
+        var aspect = height / (float)Width;
         if (panel == null) Build();
         if (panel == null) { broken = true; return; }
         material!.mainTexture = texture; material.color = new Color(1f, 1f, 1f, 0f);
@@ -85,11 +85,11 @@ internal sealed class Overlay {
         panel.transform.localRotation = Quaternion.identity; panel.transform.localScale = new Vector3(0.34f, 0.34f * aspect, 1f);
         panel.transform.localPosition = new Vector3(0f, -0.16f, 0.55f); panel.SetActive(true); shownAt = now;
     }
-    private void Hide() {
+    void Hide() {
         shownAt = -1;
         if (panel != null) panel.SetActive(false);
     }
-    private void Build() {
+    void Build() {
         Shader? shader = null;
         foreach (var name in new[] { "UI/Default", "Sprites/Default", "Unlit/Transparent" }) { shader = Shader.Find(name); if (shader != null) break; }
         if (shader == null) return;
@@ -106,7 +106,7 @@ internal sealed class Overlay {
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; renderer.receiveShadows = false;
         UnityEngine.Object.DontDestroyOnLoad(panel);
     }
-    private string Fit(Face face, string value) {
+    string Fit(Face face, string value) {
         var clean = new System.Text.StringBuilder(); var width = 0;
         foreach (var raw in value) {
             var ch = face.Glyphs.ContainsKey(raw) ? raw : '?';
@@ -115,7 +115,7 @@ internal sealed class Overlay {
         }
         return clean.ToString();
     }
-    private void Draw(Color32[] pixels, int height, Face face, string value, int x, int top, Color32 color) {
+    void Draw(Color32[] pixels, int height, Face face, string value, int x, int top, Color32 color) {
         foreach (var ch in value) {
             var glyph = face.Glyphs[ch];
             for (var gy = 0; gy < glyph.H; gy++) {
@@ -131,7 +131,7 @@ internal sealed class Overlay {
             x += glyph.Adv;
         }
     }
-    private static void Box(Color32[] pixels, int height) {
+    static void Box(Color32[] pixels, int height) {
         for (var y = 0; y < height; y++) {
             for (var x = 0; x < Width; x++) {
                 var dx = x < Radius ? Radius - x - 0.5f : x >= Width - Radius ? x - (Width - Radius) + 0.5f : 0f;

@@ -3,9 +3,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 
-pub const GRANT_PATH: &str = "capture-grant.cfg";
 pub const STATUS_PATH: &str = "capture-status.cfg";
-pub const REFRESH: Duration = Duration::from_secs(30);
 pub const STALE: Duration = Duration::from_secs(5);
 const MAX_GRANT: usize = 4096;
 
@@ -14,8 +12,6 @@ pub const MAX_CHUNK: usize = 2097152;
 pub const DRAIN_BATCH: usize = 200;
 pub const SPOOL: &str = "BepInEx/RankedWorld/capture-spool";
 pub const DRAIN_EVERY: Duration = Duration::from_secs(60);
-
-fn grant_file(ticket_dir: &Path) -> PathBuf { ticket_dir.join(GRANT_PATH) }
 
 pub fn looks_like_grant(body: &str) -> bool {
     if body.len() > MAX_GRANT || body.is_empty() { return false; }
@@ -31,27 +27,6 @@ pub fn looks_like_grant(body: &str) -> bool {
     seen == 0x1ff
 }
 
-pub fn write_grant(ticket_dir: &Path, body: &str) -> Result<(), String> {
-    if !looks_like_grant(body) { return clear_grant(ticket_dir); }
-    fs::create_dir_all(ticket_dir).map_err(|_| "Could not access the Gorilla Tag configuration folder.")?;
-    let destination = grant_file(ticket_dir);
-    let temporary = destination.with_extension(format!("{}.tmp", uuid::Uuid::new_v4()));
-    fs::write(&temporary, body).map_err(|_| "Could not write the recording permission.")?;
-    if fs::rename(&temporary, &destination).is_err() {
-        let _ = fs::remove_file(&temporary);
-        return Err("Could not write the recording permission.".into());
-    }
-    Ok(())
-}
-
-pub fn clear_grant(ticket_dir: &Path) -> Result<(), String> {
-    match fs::remove_file(grant_file(ticket_dir)) {
-        Ok(()) => Ok(()),
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
-        Err(_) => Err("Could not remove the recording permission.".into()),
-    }
-}
-
 pub fn recording(ticket_dir: &Path) -> bool { recording_at(ticket_dir, SystemTime::now()) }
 
 fn recording_at(ticket_dir: &Path, now: SystemTime) -> bool {
@@ -61,19 +36,6 @@ fn recording_at(ticket_dir: &Path, now: SystemTime) -> bool {
     if !meta.modified().map(|at| now.duration_since(at).map(|age| age <= STALE).unwrap_or(true)).unwrap_or(false) { return false; }
     fs::read_to_string(path).map(|s| s.trim() == "recording=1").unwrap_or(false)
 }
-
-pub async fn refresh_once<F, Fut>(ticket_dir: &Path, fetch: F) -> Result<bool, String>
-where
-    F: FnOnce() -> Fut,
-    Fut: std::future::Future<Output = Result<Option<String>, String>>,
-{
-    match fetch().await {
-        Ok(Some(body)) => { write_grant(ticket_dir, &body)?; Ok(true) }
-        Ok(None) => { clear_grant(ticket_dir)?; Ok(false) }
-        Err(error) => { let _ = clear_grant(ticket_dir); Err(error) }
-    }
-}
-
 
 pub fn spool_dir(game: &Path) -> PathBuf { game.join(SPOOL) }
 

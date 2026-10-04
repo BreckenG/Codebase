@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 namespace RankedWorld.JoinHelper;
 internal sealed class TicketStore {
-    private readonly string directory;
+    readonly string directory;
     internal TicketStore(string directory) { this.directory = directory; }
     internal string? ReadTicket() => ReadSmall(Path.Combine(directory, "launch.json"));
     internal string? PreviousRequest() {
@@ -40,7 +40,7 @@ internal sealed class TicketStore {
     internal void Heartbeat(int processId, long now) => Write("helper-live.json", new JObject {
         ["version"] = 1, ["processId"] = processId, ["updatedAt"] = now
     });
-    private void Write(string name, JObject value) {
+    void Write(string name, JObject value) {
         Directory.CreateDirectory(directory); var destination = Path.Combine(directory, name);
         var temporary = destination + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try {
@@ -49,7 +49,7 @@ internal sealed class TicketStore {
         }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }
     }
-    private static string? ReadSmall(string path) {
+    static string? ReadSmall(string path) {
         try {
             using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
             if (stream.Length < 1 || stream.Length > 4096) return null; var buf = new byte[4097]; var total = 0;

@@ -113,7 +113,7 @@ pub fn install_helper(game: &Path, source: &Path) -> Result<(), String> {
     fs::create_dir_all(destination.parent().unwrap()).map_err(|_| "Could not access the plugins folder.")?;
     let temporary = destination.with_extension(format!("{}.tmp", uuid::Uuid::new_v4()));
     fs::write(&temporary, &data).map_err(|_| "Could not write the Ranked helper. Check game folder permissions.")?;
-    if let Err(_) = fs::rename(&temporary, &destination) {
+    if fs::rename(&temporary, &destination).is_err() {
         let _ = fs::remove_file(&temporary); return Err("Could not install the Ranked helper. Close Gorilla Tag and try again.".into());
     }
     if !same_file(source, &destination) { return Err("The installed helper failed verification.".into()); }
@@ -149,7 +149,7 @@ pub fn write_json(path: &Path, value: &impl Serialize) -> Result<(), String> {
     let parent = path.parent().ok_or("Invalid settings location.")?; fs::create_dir_all(parent).map_err(|_| "Could not create the settings folder.")?;
     let temporary = path.with_extension(format!("{}.tmp", uuid::Uuid::new_v4())); let data = serde_json::to_vec(value).map_err(|_| "Could not encode settings.")?;
     fs::write(&temporary, data).map_err(|_| "Could not write settings. Check folder permissions.")?;
-    if let Err(_) = fs::rename(&temporary, path) { let _ = fs::remove_file(&temporary); return Err("Could not save settings. Check folder permissions.".into()); }
+    if fs::rename(&temporary, path).is_err() { let _ = fs::remove_file(&temporary); return Err("Could not save settings. Check folder permissions.".into()); }
     Ok(())
 }
 pub fn read_status(game: &Path) -> Option<JoinStatus> {

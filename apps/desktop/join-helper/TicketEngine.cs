@@ -32,9 +32,9 @@ internal static class TicketParser {
     }
 }
 internal sealed class TicketEngine {
-    private readonly Action<LaunchTicket, string, string, long> publish; private readonly Action<LaunchTicket> join;
-    private readonly System.Collections.Generic.Dictionary<string, long> consumed = new(); private readonly string? previous; private LaunchTicket? active;
-    private int attempts; private long nextTry;
+    readonly Action<LaunchTicket, string, string, long> publish; readonly Action<LaunchTicket> join;
+    readonly System.Collections.Generic.Dictionary<string, long> consumed = new(); readonly string? previous; LaunchTicket? active;
+    int attempts; long nextTry;
     internal TicketEngine(Action<LaunchTicket, string, string, long> publish, Action<LaunchTicket> join, string? consumed = null) {
         this.publish = publish; this.join = join; previous = consumed;
     }
@@ -62,7 +62,7 @@ internal sealed class TicketEngine {
         try { join(active); }
         catch { }
     }
-    private void Finish(string state, string message, long now) {
+    void Finish(string state, string message, long now) {
         publish(active!, state, message, now); active = null;
     }
 }

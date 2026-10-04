@@ -53,11 +53,13 @@ impl PendingJoin {
     }
 }
 fn join_active(pending: &Option<PendingJoin>) -> bool { pending.as_ref().is_some_and(PendingJoin::active) }
+fn local_url(url: &tauri::Url) -> bool {
+    url.scheme() == "tauri" || url.host_str() == Some("tauri.localhost")
+        || (cfg!(debug_assertions) && [Some("localhost"), Some("127.0.0.1")].contains(&url.host_str()) && url.port() == Some(1420))
+}
 fn local_window(window: &WebviewWindow) -> Result<(), String> {
     let url = window.url().map_err(|_| "Unavailable app window.")?;
-    let local = url.scheme() == "tauri" || url.host_str() == Some("tauri.localhost")
-        || (cfg!(debug_assertions) && [Some("localhost"), Some("127.0.0.1")].contains(&url.host_str()) && url.port() == Some(1420));
-    if window.label() != "main" || !local { return Err("Only the local launcher can perform this action.".into()); }
+    if window.label() != "main" || !local_url(&url) { return Err("Only the local launcher can perform this action.".into()); }
     Ok(())
 }
 fn configured_game(state: &Desktop) -> Result<PathBuf, String> {
@@ -286,7 +288,7 @@ fn main() {
             });
             tauri::WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
                 .title("Ranked World").inner_size(1280.0, 840.0).min_inner_size(960.0, 640.0)
-                .on_navigation(|url| url.scheme() == "tauri" || url.host_str() == Some("tauri.localhost") || (cfg!(debug_assertions) && [Some("localhost"), Some("127.0.0.1")].contains(&url.host_str()) && url.port() == Some(1420)))
+                .on_navigation(local_url)
                 .build()?;
             Ok(())
         })
