@@ -49,7 +49,7 @@ fn replay_request(url: &url::Url, method: &str, authenticated: bool) -> bool {
 }
 impl Api {
     pub fn new() -> Result<Self, String> {
-        let client = reqwest::Client::builder().timeout(Duration::from_secs(20)).redirect(reqwest::redirect::Policy::none()).user_agent("RankedWorldLauncher/0.1.0").build().map_err(|_| "Could not create the website connection.")?;
+        let client = reqwest::Client::builder().timeout(Duration::from_secs(20)).redirect(reqwest::redirect::Policy::none()).user_agent("RankedWorldLauncher").build().map_err(|_| "Could not create the website connection.")?;
         Ok(Self { client })
     }
     pub async fn request(&self, path: &str, method: &str, body: Option<String>, bearer: Option<String>) -> Result<Reply, String> {
