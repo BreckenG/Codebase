@@ -79,3 +79,19 @@
 .launcher-app .desktop-bar__you strong{display:block;color:#f0f0ec;font-size:14px;font-variant-numeric:tabular-nums}
 .launcher-app .desktop-bar__you img{width:36px;height:36px;object-fit:contain;image-rendering:pixelated}
 }
+.ladder-podium{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.ladder-podium__spot{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;gap:14px 14px;padding:20px 20px 18px;border-radius:var(--radius-lg);background:#191c1f;border-top:3px solid var(--tier,var(--color-brand));color:#b6babd;transition:background .15s ease,transform .15s ease}
+.ladder-podium__spot:hover{background:#1e2226;transform:translateY(-2px)}
+.ladder-podium__place{position:absolute;top:10px;right:16px;font-family:var(--font-display);font-size:44px;font-weight:800;line-height:1;color:#ffffff14}
+.ladder-podium__spot.is-1 .ladder-podium__place{color:var(--color-brand);opacity:.55}
+.ladder-podium__who{min-width:0;padding-right:36px}
+.ladder-podium__who strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f0f0ec;font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-.02em}
+.ladder-podium__spot.is-1 .ladder-podium__who strong{font-size:28px}
+.ladder-podium__who small{color:var(--tier,#9da4aa);font-weight:600}
+.ladder-podium__badge{grid-column:1;width:56px;height:56px;object-fit:contain;image-rendering:pixelated;justify-self:center}
+.ladder-podium__value{grid-column:2 / 4;display:flex;align-items:baseline;gap:8px}
+.ladder-podium__value strong{color:#f0f0ec;font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.world-app .world-division{display:flex;align-items:center;gap:10px;font-weight:600}
+.world-app .world-division img{width:34px;height:34px;flex:none;object-fit:contain;image-rendering:pixelated}
+.world-app .world-ladder--grid .world-division img{width:28px;height:28px}
+@media(max-width:900px){.ladder-podium{grid-template-columns:minmax(0,1fr)}}
