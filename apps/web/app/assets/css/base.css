@@ -72,6 +72,6 @@ body.modal-open{overflow:hidden}
 .page-leave-to{opacity:0;translate:0 -8px;scale:0.997}
 .stub .card{width:min(620px, 100%);margin:0 auto}
 .consent-check{display:flex;align-items:flex-start;gap:12px;color:var(--color-text-primary);font-size:14px;line-height:1.6;margin:20px 0}
-.consent-check input{width:20px;height:20px;flex:0 0 20px;margin-top:3px;accent-color:#efab68}
+.consent-check input{width:20px;height:20px;flex:0 0 20px;margin-top:3px;accent-color:#ee862a}
 .consent-check a{text-decoration:underline}
-:focus-visible{outline:2px solid #efab68;outline-offset:4px}
+:focus-visible{outline:2px solid #ee862a;outline-offset:4px}

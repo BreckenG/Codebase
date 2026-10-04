@@ -149,6 +149,21 @@ out.push({code:s.code,purpose:s.purpose,category:s.category||null,active:s.activ
 const cat=c=>{const n=CATEGORY_RANGES.findIndex(r=>r.category===c);return n<0?CATEGORY_RANGES.length:n;};
 return out.sort((a,b)=>(b.active?1:0)-(a.active?1:0)||(all?cat(a.category)-cat(b.category)||b.count-a.count:b.count-a.count||cat(a.category)-cat(b.category))||a.code.localeCompare(b.code));
 }
+export async function friendsFor(viewerId){
+await connectDb();
+const social=await Social.findOne({discordId:viewerId},{friends:1}).lean();
+const ids=(social?.friends||[]).slice(0,100);
+if(!ids.length)return[];
+const[docs,users]=await Promise.all([Player.find({discordId:{$in:ids},linked:true},{discordId:1,name:1,"ranked.elo":1,lastSeenAt:1}).lean(),WebUser.find({discordId:{$in:ids}},{discordId:1,avatar:1}).lean()]);
+const avatars=new Map(users.map(u=>[u.discordId,u.avatar||""]));
+const cutoff=Date.now()-180000;
+const rows=docs.map(d=>{
+const t=tierForElo(d.ranked?.elo||0);
+return{discordId:d.discordId,name:d.name||"Player",avatar:avatars.get(d.discordId)||"",rank:t.name,category:t.category,elo:d.ranked?.elo||0,online:Boolean(d.lastSeenAt&&new Date(d.lastSeenAt).getTime()>cutoff)};
+});
+rows.sort((x,y)=>Number(y.online)-Number(x.online)||y.elo-x.elo);
+return rows;
+}
 export async function stats(){
 await connectDb();
 const dayAgo=new Date(Date.now()-86400000);
