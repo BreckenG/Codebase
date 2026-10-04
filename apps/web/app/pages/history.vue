@@ -35,7 +35,7 @@ useHead({ title: "Match history | Ranked World" });
         A subscription shows match points, tags, untagged runtime and rating changes.
       </p><NuxtLink class="btn btn--brand" to="/subscribe">See the plans</NuxtLink></div><div v-if="capped" class="card upsell hist__up"><p class="meta">Showing your last {{ reach }} rounds of {{ total }}. A subscription lifts the cap.</p><NuxtLink class="btn btn--brand" to="/subscribe">See the plans</NuxtLink></div><div v-if="pages > 1" class="pager"><button class="btn btn--ghost" :disabled="page === 0" @click="page--"><AppIcon name="arrowLeft" />Newer
       </button><span class="meta num">Page {{ page + 1 }} of {{ pages }}</span><button class="btn btn--ghost" :disabled="page + 1 >= pages" @click="page++">
-        Older<AppIcon name="arrowRight" /></button></div><AdSlot place="history" /></main>
+        Older</button></div><AdSlot place="history" /></main>
 </template>
 <style scoped>
 .hist__sk{height:64px;margin-bottom:var(--gap-8)}
