@@ -16,5 +16,5 @@ useSeo({ title: 'Gorilla Tag ranking: MMR and divisions', description: 'How Rank
 <section><h2>Leaving a round</h2><p>With at least 30 total points, leaving after 30 seconds of the round or while you are the only infected player applies a leaving penalty. Below 30 total points, your MMR change stays at 0, including when you leave early.</p></section>
 <section><h2>Divisions and brackets</h2><p>Your current MMR, division and rank ring carry over without a reset. Every division spans 100 MMR, and your division determines which ranked codes you can join.</p><NuxtLink to="/play">View your codes<AppIcon name="arrowRight" /></NuxtLink></section>
 <section><h2>Scrims</h2><p>Scrims use a separate rating based on the team result. Scrim results do not change your ranked MMR.</p></section>
-</aside></div></main>
+</aside></div><AdSlot place="ranked" /></main>
 </template>

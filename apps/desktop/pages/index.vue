@@ -111,5 +111,5 @@ useHead({ title: 'Home | Ranked World' });
 </div>
 </div>
 <LauncherRankUp v-if="rankUp" :tier="rankUp.tier" :gain="rankUp.gain" @close="rankUp = null" />
-</main>
+<AdSlot place="launcher" /></main>
 </template>
