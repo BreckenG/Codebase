@@ -120,3 +120,7 @@
 .hist-place i.me{height:24px;background:var(--color-brand)}
 .hist-place+.rowitem__end{margin-left:24px}
 @media(max-width:620px){.hist-place{display:none}}
+.world-app .ad-top{padding-top:20px}
+.world-app .ad-top+.section,.world-app .world-content>.ad-top+.section{padding-top:28px}
+.ad-rail{display:none}
+@media(min-width:1640px){.ad-rail{display:block;position:fixed;top:96px;z-index:5}.ad-rail--left{left:calc(50% - 620px - 184px)}.ad-rail--right{right:calc(50% - 620px - 184px)}}
