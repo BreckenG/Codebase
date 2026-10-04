@@ -16,6 +16,8 @@ const total=await MatchLedger.countDocuments(filter);
 const reach=ent.historyLimit===null?total:Math.min(total,ent.historyLimit);
 if(skip>=reach)return{linked:true,rows:[],total,reach,capped:reach<total,limit:ent.historyLimit,breakdown:ent.eloBreakdown};
 const found=await MatchLedger.find(filter).sort({createdAt:-1}).skip(skip).limit(Math.min(PAGE,reach-skip)).lean();
+const shared=track==="scrim"?[]:await MatchLedger.aggregate([{$match:{roundId:{$in:found.map(m=>m.roundId).filter(Boolean)}}},{$group:{_id:{round:"$roundId",place:"$placement"},n:{$sum:1}}}]);
+const ties=new Map(shared.map(x=>[x._id.round+"|"+x._id.place,x.n]));
 const rows=[];
 for(const m of found){
 let detail=null;
@@ -23,7 +25,7 @@ if(ent.eloBreakdown){
 detail={ratingSystem:m.ratingSystem,teamScore:m.teamScore,score:m.score,place01:m.place01,perf01:m.perf01,tags:m.tags,survivalSeconds:m.survivalSeconds,wasInfected:Boolean(m.wasInfected),firstTagged:Boolean(m.firstTagged),leftEarly:Boolean(m.leftEarly),eventMultiplier:m.eventMultiplier||1};
 if(m.ratingSystem==='ranked-performance-v1')Object.assign(detail,{expectedPerformance:Number.isFinite(m.expectedPerformance)?m.expectedPerformance:null,actualPerformance:Number.isFinite(m.actualPerformance)?m.actualPerformance:null,streakMultiplier:Number.isFinite(m.streakMultiplier)?m.streakMultiplier:1,leavePenalty:Number.isFinite(m.leavePenalty)?m.leavePenalty:0,protected:m.protected===true,shortLobby:m.shortLobby===true});
 }
-rows.push({teamPlacement:track==="scrim"&&m.ratingSystem==="openskill",at:m.createdAt,code:m.code,category:m.category,placement:m.placement,lobbySize:m.lobbySize,delta:m.delta,beforeElo:m.beforeElo,afterElo:m.afterElo,won:Boolean(m.isWinner),provisional:Boolean(m.provisional),detail});
+rows.push({tied:(ties.get(m.roundId+"|"+m.placement)||1)>1,teamPlacement:track==="scrim"&&m.ratingSystem==="openskill",at:m.createdAt,code:m.code,category:m.category,placement:m.placement,lobbySize:m.lobbySize,delta:m.delta,beforeElo:m.beforeElo,afterElo:m.afterElo,won:Boolean(m.isWinner),provisional:Boolean(m.provisional),detail});
 }
 return{linked:true,total,reach,capped:reach<total,limit:ent.historyLimit,breakdown:ent.eloBreakdown,rows};
 });
