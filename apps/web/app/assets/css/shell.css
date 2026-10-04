@@ -127,3 +127,6 @@
 @media(min-width:1100px){.launcher-app .ad-rail--right{display:block;position:fixed;top:16px;right:16px;left:auto;z-index:5}.launcher-app.has-side-ad .world-content{padding-right:192px}}
 .launcher-app .ad-top{padding-top:16px}
 .launcher-app .ad-bottom .adslot{margin-top:0}
+@media(min-width:1640px){.world-app:not(.launcher-app) .ad-top--fallback{display:none}}
+@media(min-width:1100px){.launcher-app .ad-top--fallback{display:none}}
+.world-app:not(.launcher-app) .ad-bottom{padding-bottom:24px}

@@ -1,17 +1,16 @@
 const SPOTS = ['top', 'side', 'bottom'];
-const shuffle = n => Array.from({ length: n }, (_, i) => i).sort(() => Math.random() - 0.5);
-const pick = () => SPOTS[Math.floor(Math.random() * SPOTS.length)];
+const shuffle = list => [...list].sort(() => Math.random() - 0.5);
+const plan = count => ({
+  deck: shuffle(Array.from({ length: count }, (_, i) => i)),
+  spots: shuffle(SPOTS).slice(0, Math.random() < 0.3 ? 2 : 1),
+  rail: Math.random() < 0.5 ? 'left' : 'right',
+});
 export function useAds(count = 4) {
-  const deck = useState('ad-deck', () => shuffle(count));
-  const spot = useState('ad-spot', pick);
+  const ads = useState('ads', () => plan(count));
   const nuxt = useNuxtApp();
   if (import.meta.client && !nuxt._ads) {
     nuxt._ads = true;
-    useRouter().afterEach((to, from) => {
-      if (to.path === from.path) return;
-      deck.value = shuffle(count);
-      spot.value = pick();
-    });
+    useRouter().afterEach((to, from) => { if (to.path !== from.path) ads.value = plan(count); });
   }
-  return { deck, spot };
+  return ads;
 }
