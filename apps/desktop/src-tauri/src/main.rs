@@ -2,7 +2,7 @@
 mod api; mod game; mod updates; mod presence; mod cards; mod capture;
 use api::{Api, Grant, Reply, SignInInfo};
 use game::{JoinStatus, JoinTicket, Settings};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::{fs, path::PathBuf, sync::Mutex};
 use tauri::{Manager, State, WebviewUrl, WebviewWindow};
@@ -65,7 +65,7 @@ fn configured_game(state: &Desktop) -> Result<PathBuf, String> {
     game::validate_game(&path)
 }
 fn bundled_helper(app: &tauri::AppHandle) -> Result<PathBuf, String> {
-    app.path().resolve("resources/JoinHelper.dll", tauri::path::BaseDirectory::Resource).map_err(|_| "The join helper is missing from this launcher.".into())
+    app.path().resolve("resources/JoinHelper.dll", tauri::path::BaseDirectory::Resource).map_err(|_| "The Ranked helper is missing from this launcher.".into())
 }
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -121,9 +121,9 @@ fn detect_game(window: WebviewWindow, state: State<Desktop>) -> Result<(), Strin
 #[tauri::command]
 fn install_join_helper(window: WebviewWindow, app: tauri::AppHandle, state: State<Desktop>) -> Result<(), String> {
     local_window(&window)?;
-    if game::game_running() { return Err("Close Gorilla Tag before installing or updating the join helper.".into()); }
+    if game::game_running() { return Err("Close Gorilla Tag before installing or updating the Ranked helper.".into()); }
     let game = configured_game(&state)?;
-    if !game.join("BepInEx/core/BepInEx.dll").is_file() { return Err("Install BepInEx for Gorilla Tag before installing the join helper.".into()); }
+    if !game.join("BepInEx/core/BepInEx.dll").is_file() { return Err("Install BepInEx for Gorilla Tag before installing the Ranked helper.".into()); }
     game::install_helper(&game, &bundled_helper(&app)?)
 }
 #[tauri::command]
@@ -146,6 +146,20 @@ async fn launch_game(window: WebviewWindow, app: tauri::AppHandle, code: Option<
     let status = JoinStatus { version: 1, request_id, code: code.clone().unwrap_or_default(), state: if code.is_some() { "waiting" } else { "launched" }.into(), message: if code.is_some() { "Waiting for Gorilla Tag to join the room." } else { "Launch requested through Steam." }.into(), updated_at: started };
     *pending = Some(PendingJoin { status: status.clone(), deadline: started + 120_000 });
     Ok(status)
+}
+#[derive(Deserialize)]
+struct NotePayload { kind: String, title: String, body: Option<String>, detail: Option<String> }
+#[tauri::command]
+fn notify(window: WebviewWindow, payload: NotePayload, state: State<Desktop>) -> Result<(), String> {
+    local_window(&window)?;
+    if !game::game_running() { return Ok(()); }
+    let root = configured_game(&state)?;
+    let clip = |text: Option<String>, max: usize| text.unwrap_or_default().chars().filter(|c| c.is_ascii() && !c.is_ascii_control()).take(max).collect::<String>();
+    let kind = if ["up", "down", "rank"].contains(&payload.kind.as_str()) { payload.kind.clone() } else { "info".to_string() };
+    let title = clip(Some(payload.title), 40);
+    if title.is_empty() { return Ok(()); }
+    let now = game::now();
+    game::write_json(&game::ticket_dir(&root).join("notify.json"), &json!({ "version": 1, "id": uuid::Uuid::new_v4().to_string(), "kind": kind, "title": title, "body": clip(payload.body, 60), "detail": clip(payload.detail, 60), "createdAt": now, "expiresAt": now + 20_000 }))
 }
 #[tauri::command]
 fn cancel_join(window: WebviewWindow, state: State<Desktop>) -> Result<(), String> {
@@ -276,7 +290,7 @@ fn main() {
                 .build()?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![cards::save_profile_card, updates::check_update, updates::install_update, desktop_status, set_game_path, detect_game, install_join_helper, launch_game, cancel_join, api_request, open_external, begin_sign_in, poll_sign_in, cancel_sign_in, sign_out])
+        .invoke_handler(tauri::generate_handler![cards::save_profile_card, updates::check_update, updates::install_update, desktop_status, set_game_path, detect_game, install_join_helper, launch_game, cancel_join, notify, api_request, open_external, begin_sign_in, poll_sign_in, cancel_sign_in, sign_out])
         .build(tauri::generate_context!()).expect("Could not start Ranked World")
         .run(|app, event| { if matches!(event, tauri::RunEvent::Exit) { app.state::<Desktop>().presence.shutdown(); } });
 }

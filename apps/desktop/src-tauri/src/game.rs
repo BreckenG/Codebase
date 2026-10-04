@@ -95,7 +95,7 @@ pub fn install_helper(game: &Path, source: &Path) -> Result<(), String> {
     let root = game.canonicalize().map_err(|_| "The game folder is unavailable.")?;
     let destination = helper_path(&root);
     let legacy = [root.join("BepInEx/plugins/RankedWorld.Join.dll"), root.join("BepInEx/plugins/JoinHelper.dll"), root.join("BepInEx/plugins/RankedDeps/RankedWorld.Join.dll")];
-    let data = fs::read(source).map_err(|_| "The bundled join helper is missing.")?;
+    let data = fs::read(source).map_err(|_| "The bundled Ranked helper is missing.")?;
     let receipt = ticket_dir(&root).join("helper-installed.json");
     let installed_hash = fs::read(&receipt).ok().and_then(|bytes| serde_json::from_slice::<String>(&bytes).ok());
     for path in [&root.join("BepInEx"), &root.join("BepInEx/plugins"), destination.parent().unwrap()].into_iter().chain(std::iter::once(destination.as_path())).chain(legacy.iter().map(PathBuf::as_path)) {
@@ -107,19 +107,19 @@ pub fn install_helper(game: &Path, source: &Path) -> Result<(), String> {
         let existing = fs::read(path).map_err(|_| "Could not inspect an existing helper file.")?;
         let hash = format!("{:x}", Sha256::digest(&existing));
         if existing != data && hash != "1221d492da2820e1117a6403aa5951411db6ff6c7e142bc571788ea8e9aa7c15" && !(path == &destination && installed_hash.as_ref() == Some(&hash)) {
-            return Err(format!("An unrecognized file occupies {}. Move it before installing JoinHelper.", path.display()));
+            return Err(format!("An unrecognized file occupies {}. Move it before installing the Ranked helper.", path.display()));
         }
     }
     fs::create_dir_all(destination.parent().unwrap()).map_err(|_| "Could not access the plugins folder.")?;
     let temporary = destination.with_extension(format!("{}.tmp", uuid::Uuid::new_v4()));
-    fs::write(&temporary, &data).map_err(|_| "Could not write JoinHelper. Check game folder permissions.")?;
+    fs::write(&temporary, &data).map_err(|_| "Could not write the Ranked helper. Check game folder permissions.")?;
     if let Err(_) = fs::rename(&temporary, &destination) {
-        let _ = fs::remove_file(&temporary); return Err("Could not install JoinHelper. Close Gorilla Tag and try again.".into());
+        let _ = fs::remove_file(&temporary); return Err("Could not install the Ranked helper. Close Gorilla Tag and try again.".into());
     }
     if !same_file(source, &destination) { return Err("The installed helper failed verification.".into()); }
     write_json(&receipt, &format!("{:x}", Sha256::digest(&data)))?;
     for path in legacy.iter().filter(|p| p.exists()) {
-        fs::remove_file(path).map_err(|_| "JoinHelper installed, but an old helper could not be removed. Close the game and install again before restarting it.")?;
+        fs::remove_file(path).map_err(|_| "The Ranked helper installed, but an old helper could not be removed. Close the game and install again before restarting it.")?;
     }
     Ok(())
 }
@@ -140,9 +140,9 @@ pub fn helper_loaded(game: &Path) -> bool {
 }
 pub fn check_join_helper(game: &Path, source: &Path, running: bool) -> Result<(), String> {
     if running && (!same_file(&helper_path(game), source) || !helper_loaded(game)) {
-        return Err("Restart required. Close Gorilla Tag, install JoinHelper if needed, then start the game again to join a code.".into());
+        return Err("Restart required. Close Gorilla Tag, install the Ranked helper if needed, then start the game again to join a code.".into());
     }
-    if !same_file(&helper_path(game), source) { return Err("Install JoinHelper before joining a code.".into()); }
+    if !same_file(&helper_path(game), source) { return Err("Install the Ranked helper before joining a code.".into()); }
     Ok(())
 }
 pub fn write_json(path: &Path, value: &impl Serialize) -> Result<(), String> {

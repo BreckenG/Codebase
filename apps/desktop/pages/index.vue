@@ -69,6 +69,8 @@ const recap = computed(() => {
   const best = list.length ? Math.min(...list.map(m => m.placement ?? 99)) : null;
   return { rounds: played, elo: p.ranked.elo - e.elo, wins: p.ranked.wins - e.wins, minutes: Math.max(1, Math.round((e.until - e.at) / 60000)), best: best == null || best === 99 ? null : place(best), tags: list.reduce((n, m) => n + (m.tags || 0), 0) };
 });
+watch(rankUp, r => { if (r) desktop.notify({ kind: 'rank', title: r.tier.name, body: 'You ranked up', detail: r.tier.isTop ? '' : r.tier.eloToNext + ' MMR to the next division' }); });
+watch(() => match.value?.code, code => { if (code) desktop.notify({ kind: 'info', title: 'Scrim ready', body: 'Your match is in ' + code }); });
 let seenRounds = null;
 watch(() => player.value?.ranked?.rounds, n => {
   if (n == null) return;
