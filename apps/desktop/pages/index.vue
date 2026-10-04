@@ -71,6 +71,12 @@ const recap = computed(() => {
 });
 watch(rankUp, r => { if (r) desktop.notify({ kind: 'rank', title: r.tier.name, body: 'You ranked up', detail: r.tier.isTop ? '' : r.tier.eloToNext + ' MMR to the next division' }); });
 watch(() => match.value?.code, code => { if (code) desktop.notify({ kind: 'info', title: 'Scrim ready', body: 'Your match is in ' + code }); });
+let wasOn = null;
+watch(friends, list => {
+  const on = new Set(list.filter(f => f.online).map(f => f.discordId));
+  if (wasOn) for (const f of list) if (f.online && !wasOn.has(f.discordId)) { toast(f.name + ' is in a ' + f.category + ' room'); desktop.notify({ kind: 'info', title: f.name + ' is on', body: 'In a ' + f.category + ' room' }); }
+  wasOn = on;
+});
 let seenRounds = null;
 watch(() => player.value?.ranked?.rounds, n => {
   if (n == null) return;
@@ -95,7 +101,7 @@ useHead({ title: 'Home | Ranked World' });
 <template>
 <main id="main" class="wrap section launcher-home">
 <LauncherHero :player="player" />
-<div v-if="since" class="lsince" role="status"><span class="lsince__title">Since last time</span><span class="lsince__chip" :class="since.elo >= 0 ? 'is-up' : 'is-down'" style="--i:0"><AppIcon :name="since.elo >= 0 ? 'trophy' : 'activity'" />{{ signed(since.elo) }} MMR</span><span class="lsince__chip" style="--i:1">{{ since.rounds }} round{{ since.rounds === 1 ? '' : 's' }}</span><span v-if="since.wins > 0" class="lsince__chip" style="--i:2">{{ since.wins }} win{{ since.wins === 1 ? '' : 's' }}</span><span v-if="since.best" class="lsince__chip is-best" style="--i:3"><AppIcon name="sparkles" />New best</span><button class="lsince__close" aria-label="Dismiss" @click="since = null"><AppIcon name="x" /></button></div>
+<div v-if="since" class="lsince" role="status"><span class="lsince__title">Since last time</span><span class="lsince__chip" :class="since.elo >= 0 ? 'is-up' : 'is-down'" style="--i:0"><AppIcon :name="since.elo >= 0 ? 'trophy' : 'activity'" />{{ signed(since.elo) }} MMR</span><span class="lsince__chip" style="--i:1">{{ since.rounds }} round{{ since.rounds === 1 ? '' : 's' }}</span><span v-if="since.wins > 0" class="lsince__chip" style="--i:2">{{ since.wins }} win{{ since.wins === 1 ? '' : 's' }}</span><span v-if="since.best" class="lsince__chip is-best" style="--i:3"><AppIcon name="trophy" />New best</span><button class="lsince__close" aria-label="Dismiss" @click="since = null"><AppIcon name="x" /></button></div>
 <div class="lgrid">
 <div class="lcol">
 <section v-if="recap" class="lcard lrecap" role="status"><header class="lcard__head"><h2>Last session</h2><button class="lcard__link" @click="ended = null">Dismiss</button></header><div class="lrecap__big" :class="recap.elo >= 0 ? 'is-up' : 'is-down'">{{ signed(recap.elo) }}<small>MMR</small></div><dl class="lstats"><div><dt>Rounds</dt><dd>{{ recap.rounds }}</dd></div><div><dt>Wins</dt><dd>{{ recap.wins }}</dd></div><div><dt>Best finish</dt><dd>{{ recap.best || '-' }}</dd></div><div><dt>Played</dt><dd>{{ recap.minutes }} min</dd></div></dl></section>
