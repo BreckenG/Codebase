@@ -21,6 +21,7 @@ async function signOut() { signingOut.value = true; try { await apiFetch('/auth/
     <NuxtLink class="site-brand" to="/" aria-label="Ranked World home"><img src="/img/planet.png" width="34" height="28" alt="" /><span>Ranked World</span></NuxtLink>
     <nav aria-label="Main navigation" class="site-links">
       <NuxtLink v-for="item in links" :key="item.key" :to="item.href" :aria-current="on(item) ? 'page' : undefined" :class="{ selected: on(item) }">{{ item.label }}</NuxtLink>
+      <NuxtLink v-if="admin" to="/admin" class="site-links__admin" :aria-current="route.path === '/admin' ? 'page' : undefined" :class="{ selected: route.path === '/admin' }"><AppIcon name="shield" />Admin</NuxtLink>
     </nav>
     <div class="site-side">
       <NuxtLink class="site-plan" to="/subscribe"><AppIcon name="crown" />Membership</NuxtLink>
@@ -32,7 +33,6 @@ async function signOut() { signingOut.value = true; try { await apiFetch('/auth/
           <div v-if="open" class="site-menu" role="menu">
             <NuxtLink to="/me" role="menuitem"><AppIcon name="user" />Your profile</NuxtLink>
             <NuxtLink to="/settings" role="menuitem"><AppIcon name="settings" />Settings</NuxtLink>
-            <NuxtLink v-if="admin" to="/admin" role="menuitem"><AppIcon name="shield" />Admin</NuxtLink>
             <a href="https://discord.gg/gorillatagcomp" role="menuitem"><AppIcon name="discord" />Discord server</a>
             <button role="menuitem" :disabled="signingOut" @click="signOut"><AppIcon name="logOut" />Sign out</button>
             <p v-if="failure" role="alert" class="meta bad">{{ failure }}</p>

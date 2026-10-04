@@ -12,6 +12,8 @@
 .site-links a:hover{color:#f0f0ec}
 .site-links a.selected{color:#f0f0ec}
 .site-links a.selected::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:3px;background:var(--color-brand)}
+.site-links a.site-links__admin{gap:7px;color:var(--color-brand)}
+.site-links__admin .icon{width:15px;height:15px}
 .site-side{display:flex;align-items:center;gap:10px;margin-left:auto;flex:none}
 .site-plan{display:flex;align-items:center;gap:7px;height:36px;padding:0 12px;border:1px solid #ffffff1a;border-radius:var(--radius-sm);color:#dfc2a5;font-size:13px;font-weight:600;transition:border-color .15s ease,color .15s ease}
 .site-plan:hover{border-color:#ee862a80;color:#f0f0ec}
@@ -37,7 +39,7 @@
 @media(min-width:761px) and (max-width:1120px){
 .site-bar__in{gap:16px;padding:0 20px}
 .site-links a{padding:0 9px;font-size:13px}
-.site-links a:nth-child(n+5){display:none}
+.site-links a:nth-child(n+5):not(.site-links__admin){display:none}
 .site-plan{font-size:0;gap:0;padding:0 10px}
 .site-me__btn>span{display:none}
 }
