@@ -11,3 +11,5 @@ onMounted(checkAdmin);
 </template>
 <style src="~/assets/css/world.css">
 </style>
+<style src="~/assets/css/shell.css">
+</style>
