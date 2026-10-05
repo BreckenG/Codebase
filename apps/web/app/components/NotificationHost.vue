@@ -1,5 +1,5 @@
 <script setup>
-const {me}=useMe(),{enabled:desktop}=useDesktop(),{state,refresh,markRead}=useNotifications(),{toast}=useToast();
+const {me}=useMe(),{enabled:desktop,notify}=useDesktop(),{state,refresh,markRead}=useNotifications(),{toast}=useToast();
 const banners=ref([]),busy=ref("");
 let seen=new Set(),timer;
 watch(()=>me.value.user?.id,()=>{seen=new Set();banners.value=[];if(import.meta.client)refresh()},{immediate:true});
@@ -8,7 +8,7 @@ watch(()=>state.value.items,items=>{
 if(state.value.userId!==me.value.user?.id)return;
 const active=new Map(items.filter(n=>!n.readAt&&["pending","info"].includes(n.status)).map(n=>[bannerKey(n),n]));
 banners.value=banners.value.map(n=>active.get(bannerKey(n))).filter(Boolean);
-for(const[key,n]of active){if(!seen.has(key)&&banners.value.length<3){seen.add(key);banners.value.push(n)}}
+for(const[key,n]of active){if(!seen.has(key)&&banners.value.length<3){seen.add(key);banners.value.push(n);if(n.kind==='mmr_refund')notify({kind:'up',title:n.title,body:n.body})}}
 });
 async function dismiss(n,open=false){busy.value=n.id;try{await markRead([n.id]);banners.value=banners.value.filter(i=>i.id!==n.id);if(open)await navigateTo(n.to)}catch(e){toast(e.message,"bad")}finally{busy.value=""}}
 function visible(){if(!document.hidden&&me.value.user)refresh()}
