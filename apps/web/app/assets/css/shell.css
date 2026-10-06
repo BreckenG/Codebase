@@ -36,6 +36,14 @@
 .site-menu button{margin-top:4px;border-top:1px solid #ffffff10;border-radius:0 0 var(--radius-sm) var(--radius-sm);padding-top:4px;color:#ff8e9f}
 .site-menu button .icon{color:currentColor}
 }
+.site-special{color:var(--color-brand);border-color:color-mix(in srgb,var(--color-brand) 45%,transparent)}
+.site-special:hover,.site-special[aria-current=page]{border-color:var(--color-brand)}
+@media(min-width:1121px) and (max-width:1420px){
+.site-bar__in:has(.site-special) .site-links a:nth-child(5){display:none}
+}
+@media(min-width:1121px) and (max-width:1250px){
+.site-bar__in:has(.site-special) .site-links a:nth-child(6){display:none}
+}
 @media(min-width:761px) and (max-width:1120px){
 .site-bar__in{gap:16px;padding:0 20px}
 .site-links a{padding:0 9px;font-size:13px}

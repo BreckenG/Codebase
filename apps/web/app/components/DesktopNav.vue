@@ -19,7 +19,7 @@ async function signOut() { busy.value = true; try { await apiFetch('/auth/logout
   <nav aria-label="Launcher navigation">
     <div v-for="(group, g) in groups" :key="g" class="launcher-nav__group">
       <NuxtLink v-for="link in group" :key="link.to" :to="link.to" :class="{ selected: selected(link.to) }" :aria-current="selected(link.to) ? 'page' : undefined"><AppIcon :name="link.icon" /><span>{{ link.label }}</span><span v-if="link.to === '/notifications' && unread" class="launcher-nav__count">{{ unread > 99 ? '99+' : unread }}</span></NuxtLink>
-      <NuxtLink v-if="g === 2 && admin" to="/admin" :class="{ selected: selected('/admin') }"><AppIcon name="shield" /><span>Admin</span></NuxtLink>
+      <NuxtLink v-if="g === 2 && admin" to="/special" :class="{ selected: selected('/special') }"><AppIcon name="shield" /><span>Special</span></NuxtLink>
     </div>
   </nav>
   <div class="launcher-account">

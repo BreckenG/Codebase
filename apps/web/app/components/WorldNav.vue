@@ -21,9 +21,9 @@ async function signOut() { signingOut.value = true; try { await apiFetch('/auth/
     <NuxtLink class="site-brand" to="/" aria-label="Ranked World home"><img src="/img/planet.png" width="34" height="28" alt="" /><span>Ranked World</span></NuxtLink>
     <nav aria-label="Main navigation" class="site-links">
       <NuxtLink v-for="item in links" :key="item.key" :to="item.href" :aria-current="on(item) ? 'page' : undefined" :class="{ selected: on(item) }">{{ item.label }}</NuxtLink>
-      <NuxtLink v-if="admin" to="/admin" class="site-links__admin" :aria-current="route.path === '/admin' ? 'page' : undefined" :class="{ selected: route.path === '/admin' }"><AppIcon name="shield" />Admin</NuxtLink>
     </nav>
     <div class="site-side">
+      <ClientOnly><NuxtLink v-if="admin" class="site-plan site-special" to="/special" :aria-current="route.path === '/special' ? 'page' : undefined"><AppIcon name="shield" />Special</NuxtLink></ClientOnly>
       <NuxtLink class="site-plan" to="/subscribe"><AppIcon name="crown" />Membership</NuxtLink>
       <template v-if="me.user">
         <NuxtLink to="/notifications" class="site-bell" :class="{ selected: route.path === '/notifications' }" :aria-label="unread ? `Notifications, ${unread} unread` : 'Notifications'"><AppIcon name="bell" /><span v-if="unread">{{ unread > 99 ? '99+' : unread }}</span></NuxtLink>
@@ -43,7 +43,7 @@ async function signOut() { signingOut.value = true; try { await apiFetch('/auth/
     </div>
   </div>
 </header>
-<header class="world-mobile-head"><NuxtLink to="/" class="world-brand"><img src="/img/planet.png" width="25" height="25" alt="" />Ranked World</NuxtLink><NuxtLink v-if="admin" to="/admin" class="icon-btn" aria-label="Admin"><AppIcon name="shield" /></NuxtLink><NuxtLink to="/notifications" class="icon-btn mobile-notifications" :aria-label="unread ? `Notifications, ${unread} unread` : 'Notifications'"><AppIcon name="bell" /><span v-if="unread" class="notification-dot" /></NuxtLink><NuxtLink to="/settings" class="icon-btn" aria-label="Account settings"><AppIcon name="user" /></NuxtLink></header>
+<header class="world-mobile-head"><NuxtLink to="/" class="world-brand"><img src="/img/planet.png" width="25" height="25" alt="" />Ranked World</NuxtLink><NuxtLink v-if="admin" to="/special" class="icon-btn" aria-label="Special"><AppIcon name="shield" /></NuxtLink><NuxtLink to="/notifications" class="icon-btn mobile-notifications" :aria-label="unread ? `Notifications, ${unread} unread` : 'Notifications'"><AppIcon name="bell" /><span v-if="unread" class="notification-dot" /></NuxtLink><NuxtLink to="/settings" class="icon-btn" aria-label="Account settings"><AppIcon name="user" /></NuxtLink></header>
 <nav class="world-mobile-nav" aria-label="Mobile navigation"><NuxtLink v-for="item in mobile" :key="item.key" :to="item.href" :class="{ selected: active === item.key }" :aria-current="active === item.key ? 'page' : undefined"><AppIcon :name="item.icon" /><span>{{ item.label }}</span></NuxtLink></nav>
 </template>
 <style scoped>
