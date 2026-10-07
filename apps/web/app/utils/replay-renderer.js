@@ -25,7 +25,7 @@ export function frameAt(frames, t) {
   return result
 }
 
-async function loadPaintedMap() {
+export async function loadPaintedMap() {
   try {
     const res = await fetch('/api/replay-map', { credentials: 'same-origin' })
     if (!res.ok) return null
