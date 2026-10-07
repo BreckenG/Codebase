@@ -1,5 +1,5 @@
 <script setup>
-import WorldNav from '~/components/WorldNav.vue';
+import WorldNav from '~/components/layout/WorldNav.vue';
 const { enabled: desktop } = useDesktop();
 const { me, load } = useMe();
 await load();
