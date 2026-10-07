@@ -14,16 +14,16 @@ let renderer, view, from, to, started = 0, frame = 0, watcher, resizer, drag = n
 const keys = new Set()
 const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 const mix = (a, b, t) => a + (b - a) * t
-function topView() { const b = renderer.bounds, size = b.half * 1.06; return { yaw: 0, pitch: Math.PI / 2 - 0.0005, focal: 14, size, dist: size * 14, target: [...b.center], fog: 0, dim: 0.5 } }
-function groundView() { const b = renderer.bounds, size = b.half * 0.62; return { yaw: 0.7, pitch: 0.55, focal: 1.5, size, dist: size * 1.5, target: [...b.center], fog: 0.006, dim: 0.3 } }
-function draw() { if (renderer && view) renderer.render(view) }
+function topView() { const b = renderer.bounds, size = b.half * 1.06; return { yaw: 0, pitch: Math.PI / 2 - 0.0005, focal: 14, size, dist: size * 14, target: [...b.center], fog: 0, dim: 0.88, paint: 0, overlay: 1 } }
+function groundView() { const b = renderer.bounds, size = b.half * 0.95; return { yaw: 0.7, pitch: 0.82, focal: 1.5, size, dist: size * 1.5, target: [...b.center], fog: 0.004, dim: 0.72, paint: 1, overlay: 0.22 } }
+function draw() { if (!renderer || !view) return; if (explore.value && !to) { const b = renderer.bounds, reach = b.half * 1.3; view.target = [Math.max(b.center[0] - reach, Math.min(b.center[0] + reach, view.target[0])), Math.max(b.floor - 2, Math.min(b.top + 5, view.target[1])), Math.max(b.center[2] - reach, Math.min(b.center[2] + reach, view.target[2]))] } renderer.render(view) }
 function step(now) {
   frame = 0
   if (disposed || !renderer) return
   let again = false
   if (to) {
     const t = Math.min(1, (now - started) / 1300), k = ease(t), focal = Math.exp(mix(Math.log(from.focal), Math.log(to.focal), k)), size = mix(from.size, to.size, k)
-    view = { yaw: mix(from.yaw, to.yaw, k), pitch: mix(from.pitch, to.pitch, k), focal, size, dist: size * focal, target: from.target.map((n, i) => mix(n, to.target[i], k)), fog: mix(from.fog, to.fog, k), dim: mix(from.dim, to.dim, k) }
+    view = { yaw: mix(from.yaw, to.yaw, k), pitch: mix(from.pitch, to.pitch, k), focal, size, dist: size * focal, target: from.target.map((n, i) => mix(n, to.target[i], k)), fog: mix(from.fog, to.fog, k), dim: mix(from.dim, to.dim, k), paint: mix(from.paint, to.paint, k), overlay: mix(from.overlay, to.overlay, k) }
     if (t >= 1) { view = to; to = null } else again = true
   } else if (explore.value && keys.size) {
     const basis = heatBasis(view), speed = Math.max(0.08, view.dist * 0.012)
@@ -42,12 +42,12 @@ function glide(target, open) { if (!renderer || to) return; from = { ...view, ta
 function enter() { if (!explore.value) glide(groundView(), true) }
 function leave() { if (explore.value) glide(topView(), false) }
 function show() { if (!renderer || !data.value?.layers) return; renderer.setCells(data.value.layers[layer.value] || [], Boolean(current.value.events)); kick() }
-function down(event) { if (!explore.value || to) return; canvas.value.setPointerCapture(event.pointerId); drag = { x: event.clientX, y: event.clientY, pan: event.button === 2 || event.shiftKey } }
+function down(event) { if (!explore.value || to) return; canvas.value.setPointerCapture(event.pointerId); drag = { x: event.clientX, y: event.clientY, pan: event.button === 0 && !event.shiftKey } }
 function moved(event) {
   if (!drag || !explore.value) return
   const dx = event.clientX - drag.x, dy = event.clientY - drag.y
   drag.x = event.clientX; drag.y = event.clientY
-  if (drag.pan) { const basis = heatBasis(view), scale = view.dist / view.focal / canvas.value.clientHeight * 2; view.target = view.target.map((n, i) => n - basis.right[i] * dx * scale + basis.up[i] * dy * scale) }
+  if (drag.pan) { const basis = heatBasis(view), scale = view.dist / view.focal / canvas.value.clientHeight * 2, ahead = [-Math.sin(view.yaw), 0, -Math.cos(view.yaw)]; view.target = view.target.map((n, i) => n - basis.right[i] * dx * scale + ahead[i] * dy * scale / Math.max(0.35, Math.sin(view.pitch))) }
   else { view.yaw -= dx * 0.006; view.pitch = Math.max(0.12, Math.min(Math.PI / 2 - 0.02, view.pitch + dy * 0.005)) }
   kick()
 }
@@ -92,7 +92,7 @@ watch(layer, show)
 <p v-else-if="!ready" class="profile-heat__status" role="status">Loading the map...</p>
 <template v-else>
 <button v-if="explore" type="button" class="btn btn--ghost profile-heat__back" @click="leave"><AppIcon name="arrowLeft" />Top view</button>
-<span class="profile-heat__hint">{{ explore ? 'Drag to look. Scroll to zoom. WASD to move.' : 'Click the map to explore in 3D' }}</span>
+<span class="profile-heat__hint">{{ explore ? 'Hold left click to move. Hold right click to look. Scroll to zoom.' : 'Click the map to explore in 3D' }}</span>
 <span class="profile-heat__legend" aria-hidden="true">Less<i />More</span>
 </template>
 </div>
@@ -114,7 +114,7 @@ watch(layer, show)
 .profile-heat__hint,.profile-heat__legend{position:absolute;bottom:14px;display:inline-flex;align-items:center;gap:8px;min-height:28px;padding:0 10px;border-radius:var(--radius-sm);background:color-mix(in srgb,var(--surface-1) 82%,transparent);font-size:12px;color:var(--color-text-secondary);pointer-events:none}
 .profile-heat__hint{left:14px}
 .profile-heat__legend{right:14px}
-.profile-heat__legend i{width:72px;height:6px;border-radius:var(--radius-max);background:linear-gradient(90deg,#cc3314,#ee862a,#ffdb5c,#fff7db)}
+.profile-heat__legend i{width:72px;height:6px;border-radius:var(--radius-max);background:linear-gradient(90deg,#294df2,#1acce6,#59e64d,#ffe033,#fa4026)}
 .profile-heat__note{margin-top:14px;font-size:12px}
 .profile-heat__locked{padding:36px;border:1px solid var(--surface-4);border-radius:var(--radius-lg);background:radial-gradient(ellipse at 90% 0%,color-mix(in srgb,var(--color-brand) 9%,transparent),transparent 65%),var(--surface-1)}
 .profile-heat__locked h3{font-size:30px;margin:18px 0 14px;letter-spacing:-.03em}
