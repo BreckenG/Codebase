@@ -40,7 +40,47 @@ function geometry(raw) {
 
 function cleanPose(p) {
   if (!p || !['h', 'b', 'l', 'r'].every(k => vector(p[k])) || finite(p.ageMs) && p.ageMs > 500) return null
-  return { h: p.h, b: p.b, l: p.l, r: p.r, q: vector(p.q, 4) && Math.hypot(...p.q) > 0.001 ? p.q : null, tag: p.tag === 0 || p.tag === 1 ? p.tag : null }
+  const age = finite(p.ageMs) ? p.ageMs : finite(p.a) ? p.a : null
+  return { h: p.h, b: p.b, l: p.l, r: p.r, q: vector(p.q, 4) && Math.hypot(...p.q) > 0.001 ? p.q : null, tag: p.tag === 0 || p.tag === 1 ? p.tag : null, age: age !== null && age >= 0 ? age : null }
+}
+
+const same = (a, b) => ['h', 'b', 'l', 'r'].every(k => a[k].every((n, i) => n === b[k][i]))
+const blend = (a, b, k) => a.map((n, i) => round(n + (b[i] - n) * k))
+export function smoothFrames(frames) {
+  const updates = new Map()
+  for (const f of frames) for (const [id, pose] of Object.entries(f.p)) {
+    let list = updates.get(id)
+    if (!list) updates.set(id, list = [])
+    const last = list[list.length - 1], timed = pose.age !== null, at = timed ? f.t - pose.age : f.t
+    if (!last || (timed ? at > last.at + 20 : !same(pose, last.pose))) list.push({ at, pose, timed })
+    else if (pose.tag !== last.pose.tag) last.pose = { ...last.pose, tag: pose.tag }
+  }
+  const cursor = new Map()
+  return frames.map(f => {
+    const p = {}
+    for (const [id, raw] of Object.entries(f.p)) {
+      const list = updates.get(id)
+      let i = cursor.get(id) || 0
+      while (i + 1 < list.length && list[i + 1].at <= f.t) i++
+      cursor.set(id, i)
+      const cur = list[i], next = list[i + 1]
+      let pose = cur.pose
+      if (next && next.at - cur.at <= 500) {
+        const start = cur.timed && next.timed ? cur.at : Math.max(cur.at, next.at - 150)
+        if (f.t > start && next.at > start) {
+          const k = Math.min(1, (f.t - start) / (next.at - start)), a = cur.pose, b = next.pose
+          let q = a.q
+          if (a.q && b.q) {
+            const sign = a.q.reduce((n, v, j) => n + v * b.q[j], 0) < 0 ? -1 : 1, mixed = a.q.map((n, j) => n + (b.q[j] * sign - n) * k), size = Math.hypot(...mixed)
+            q = size > 0.001 ? mixed.map(n => round(n / size)) : a.q
+          }
+          pose = { h: blend(a.h, b.h, k), b: blend(a.b, b.b, k), l: blend(a.l, b.l, k), r: blend(a.r, b.r, k), q }
+        }
+      }
+      p[id] = { h: pose.h, b: pose.b, l: pose.l, r: pose.r, q: pose.q, tag: raw.tag }
+    }
+    return { t: f.t, p }
+  })
 }
 
 export function scrubReplay(raw, allowed, self, maximumDurationMs = Infinity) {
@@ -56,7 +96,7 @@ export function scrubReplay(raw, allowed, self, maximumDurationMs = Infinity) {
     const p = metadata.get(id)
     return { id: aliases.get(id), name: text(p?.name, `Player ${aliases.get(id).slice(1)}`), self: id === self, bot: p?.bot === true, platform: ['steam', 'meta'].includes(p?.platform) ? p.platform : 'unknown', color: vector(p?.color) ? p.color.map(n => Math.max(0, Math.min(1, n))) : null }
   })
-  const frames = records.filter(r => r.type === 'frame' && finite(r.t) && r.t >= 0).sort((a, b) => a.t - b.t).flatMap(r => {
+  const frames = smoothFrames(records.filter(r => r.type === 'frame' && finite(r.t) && r.t >= 0).sort((a, b) => a.t - b.t).flatMap(r => {
     const p = {}
     for (const [id, pose] of Object.entries(r.p || {})) {
       if (!aliases.has(id)) continue
@@ -64,19 +104,24 @@ export function scrubReplay(raw, allowed, self, maximumDurationMs = Infinity) {
       if (clean) p[aliases.get(id)] = clean
     }
     return Object.keys(p).length ? [{ t: r.t, p }] : []
-  })
+  }))
   const events = records.filter(r => r.type === 'tag' && finite(r.t) && r.t >= 0 && aliases.has(r.tagger) && aliases.has(r.target)).map(r => ({ type: 'tag', t: r.t, tagger: aliases.get(r.tagger), target: aliases.get(r.target) })).sort((a, b) => a.t - b.t)
   const stats = players.map(player => {
-    let last, distance = 0, seconds = 0, peak = 0, tagged = 0, untagged = 0, known = 0
+    let last, distance = 0, seconds = 0, peak = 0, tagged = 0, untagged = 0, known = 0, run = []
     for (const f of frames) {
       const p = f.p[player.id]
-      if (!p) { last = null; continue }
+      if (!p) { last = null; run = []; continue }
       if (last) {
         const dt = (f.t - last.t) / 1000
         if (dt > 0 && dt <= 0.5) {
           const d = Math.hypot(...p.b.map((n, k) => n - last.p.b[k]))
+          if (d / dt > 30) run = []
           if (d / dt <= 30) {
-            distance += d; seconds += dt; peak = Math.max(peak, d / dt)
+            distance += d; seconds += dt
+            run.push([f.t, d])
+            while (run.length > 1 && f.t - run[0][0] > 300) run.shift()
+            const span = (f.t - run[0][0]) / 1000 + dt
+            if (span >= 0.25) peak = Math.max(peak, run.reduce((n, x) => n + x[1], 0) / span)
             if (last.p.tag !== null) { known += dt; if (last.p.tag) tagged += dt; else untagged += dt }
           }
         }
