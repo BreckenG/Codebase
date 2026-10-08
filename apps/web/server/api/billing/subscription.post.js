@@ -17,7 +17,7 @@ assertPlan(tier,interval);
 return withBillingLease(`checkout:${user.id}`,async()=>{
 await connectDb();
 if(membershipConfig.discordPlan(await Subscription.findOne({discordId:user.id},{discordPlan:1,discordPlanEnds:1}).lean())!=="free")throw createError({statusCode:409,statusMessage:"You already have a membership through Discord. Change or cancel it in Discord under User Settings, Subscriptions."});
-await recordAcceptance(user.id,"billing");
+await recordAcceptance(user.id,"billing",body.policyVersion);
 const customerId=await customerFor(user);
 const fingerprint=crypto.createHash('sha256').update([customerId,tier,interval,paymentMethodId,String(body.referralCode||'').trim().toUpperCase()].join(':')).digest('hex');
 const existing=await activeSubscription(customerId);

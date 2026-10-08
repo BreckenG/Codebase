@@ -1,4 +1,4 @@
-import{POLICY_VERSION}from"../../../app/utils/legal.js";
+import{knownPolicy}from"../../../app/utils/legal.js";
 import{authConfigured,redirectUri,setSession,OAUTH,open,cookieOptions,loginReturnPath,MAX_AGE_MS}from"../../utils/auth";
 import{mintSession}from"../../utils/session-store.js";
 import{WebUser,connectDb}from"../../utils/db";
@@ -16,7 +16,7 @@ const{code,state}=getQuery(event);
 const accepted=open(getCookie(event,"gtr_state"));
 const expected=accepted?.state;
 setCookie(event,"gtr_state","",{...cookieOptions(),maxAge:0});
-if(!code||!state||state!==expected||accepted?.policyVersion!==POLICY_VERSION||!Number.isFinite(accepted?.acceptedAt))throw createError({statusCode:400,statusMessage:"Login failed. Try again."});
+if(!code||!state||state!==expected||!knownPolicy(accepted?.policyVersion)||!Number.isFinite(accepted?.acceptedAt))throw createError({statusCode:400,statusMessage:"Login failed. Try again."});
 const config=useRuntimeConfig();
 try{
 const token=await $fetch(OAUTH+"/oauth2/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({client_id:config.discordClientId,client_secret:config.discordClientSecret,grant_type:"authorization_code",code:String(code),redirect_uri:redirectUri()}).toString()});
