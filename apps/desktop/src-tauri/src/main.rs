@@ -1,5 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-mod api; mod game; mod updates; mod presence; mod cards; mod capture;
+mod api; mod game; mod updates; mod presence; mod cards; mod capture; mod device;
 use api::{Api, Grant, Reply, SignInInfo};
 use game::{JoinStatus, JoinTicket, Settings};
 use serde::{Deserialize, Serialize};
@@ -164,6 +164,8 @@ fn notify(window: WebviewWindow, payload: NotePayload, state: State<Desktop>) ->
     game::write_json(&game::ticket_dir(&root).join("notify.json"), &json!({ "version": 1, "id": uuid::Uuid::new_v4().to_string(), "kind": kind, "title": title, "body": clip(payload.body, 60), "detail": clip(payload.detail, 60), "createdAt": now, "expiresAt": now + 20_000 }))
 }
 #[tauri::command]
+fn device_ids(window: WebviewWindow) -> Result<device::Ids, String> { local_window(&window)?; Ok(device::collect()) }
+#[tauri::command]
 fn cancel_join(window: WebviewWindow, state: State<Desktop>) -> Result<(), String> {
     local_window(&window)?; let mut pending = state.pending_room.lock().map_err(|_| "Launch status is busy.")?; let root = configured_game(&state)?;
     let ticket = game::ticket_dir(&root).join("launch.json");
@@ -292,7 +294,7 @@ fn main() {
                 .build()?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![cards::save_profile_card, updates::check_update, updates::install_update, desktop_status, set_game_path, detect_game, install_join_helper, launch_game, cancel_join, notify, api_request, open_external, begin_sign_in, poll_sign_in, cancel_sign_in, sign_out])
+        .invoke_handler(tauri::generate_handler![cards::save_profile_card, updates::check_update, updates::install_update, desktop_status, set_game_path, detect_game, install_join_helper, launch_game, cancel_join, device_ids, notify, api_request, open_external, begin_sign_in, poll_sign_in, cancel_sign_in, sign_out])
         .build(tauri::generate_context!()).expect("Could not start Ranked World")
         .run(|app, event| { if matches!(event, tauri::RunEvent::Exit) { app.state::<Desktop>().presence.shutdown(); } });
 }

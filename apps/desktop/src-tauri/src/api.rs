@@ -47,9 +47,23 @@ fn replay_request(url: &url::Url, method: &str, authenticated: bool) -> bool {
     let Some(id) = url.path().strip_prefix("/api/me/replays/") else { return false; };
     id.len() == 36 && uuid::Uuid::parse_str(id).ok().is_some_and(|value| value.hyphenated().to_string().eq_ignore_ascii_case(id))
 }
+#[cfg(windows)]
+fn device_id() -> Option<String> {
+    use sha2::{Digest, Sha256};
+    use winreg::{enums::{HKEY_LOCAL_MACHINE, KEY_READ, KEY_WOW64_64KEY}, RegKey};
+    let key = RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey_with_flags(r"SOFTWARE\Microsoft\Cryptography", KEY_READ | KEY_WOW64_64KEY).ok()?;
+    let guid: String = key.get_value("MachineGuid").ok()?;
+    if guid.trim().len() < 8 { return None; }
+    let hash = Sha256::digest(format!("rankedworld-device:{}", guid.trim().to_lowercase()).as_bytes());
+    Some(hash.iter().map(|b| format!("{:02x}", b)).collect())
+}
+#[cfg(not(windows))]
+fn device_id() -> Option<String> { None }
 impl Api {
     pub fn new() -> Result<Self, String> {
-        let client = reqwest::Client::builder().timeout(Duration::from_secs(20)).redirect(reqwest::redirect::Policy::none()).user_agent("RankedWorldLauncher").build().map_err(|_| "Could not create the website connection.")?;
+        let mut headers = reqwest::header::HeaderMap::new();
+        if let Some(id) = device_id().and_then(|id| reqwest::header::HeaderValue::from_str(&id).ok()) { headers.insert("X-Ranked-Device", id); }
+        let client = reqwest::Client::builder().timeout(Duration::from_secs(20)).redirect(reqwest::redirect::Policy::none()).user_agent("RankedWorldLauncher").default_headers(headers).build().map_err(|_| "Could not create the website connection.")?;
         Ok(Self { client })
     }
     pub async fn request(&self, path: &str, method: &str, body: Option<String>, bearer: Option<String>) -> Result<Reply, String> {
