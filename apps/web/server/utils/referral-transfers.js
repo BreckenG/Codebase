@@ -28,7 +28,7 @@ export async function referralOnboarding(code, country, ownerId, admin = false) 
       await Referral.updateOne({ code }, { $set: { connectAccountId: accountId } });
     }
     const base = useRuntimeConfig().public.baseUrl.replace(/\/$/, '');
-    const page = admin ? '/admin' : '/subscribe';
+    const page = admin ? '/special' : '/subscribe';
     const link = await stripe().accountLinks.create({ account: accountId, type: 'account_onboarding', return_url: `${base}${page}?referral=return`, refresh_url: `${base}${page}?referral=refresh` });
     return { url: link.url };
   });
