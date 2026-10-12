@@ -21,7 +21,9 @@ const INDEXABLE = {
 };
 
 const BLOCKED = {
-  "/admin": "admin only",
+  "/admin": "old link, sends you to /special",
+  "/special": "staff only",
+  "/payouts": "management only",
   "/launcher/connect": "device code approval step"
 };
 

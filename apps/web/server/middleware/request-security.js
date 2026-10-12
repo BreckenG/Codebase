@@ -10,6 +10,7 @@ if(path.startsWith('/api/')||path.startsWith('/auth'))setResponseHeader(event,'C
 if(!['POST','PUT','PATCH','DELETE'].includes(event.method))return;
 if(path==='/api/billing/webhook'){await boundRequestBody(event,1048576);return;}
 if(!path.startsWith('/api/')&&!path.startsWith('/auth/'))return;
+if(path.startsWith('/api/staff/')){await boundRequestBody(event,32768);return;}
 const expected=new URL(useRuntimeConfig().public.baseUrl).origin;
 if(getHeader(event,'origin')!==expected)throw createError({statusCode:403,statusMessage:'This action must come from the Ranked World website.'});
 await boundRequestBody(event,32768);
