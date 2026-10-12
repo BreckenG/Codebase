@@ -1,6 +1,6 @@
 import{desktopRateIdentity}from'../utils/desktop-client.js';
 import{ruleLimit}from'../utils/request-limits.js';
-const RULES=[{prefix:"/api/admin/",method:"POST",limit:12},{prefix:"/api/admin/",limit:30},{prefix:"/api/avatar",limit:240},{prefix:"/api/billing/webhook",limit:120},{prefix:"/api/billing/",method:"POST",limit:10},{prefix:"/api/billing/",limit:60},{prefix:"/api/me/party/search",limit:40},{prefix:"/api/me/party",limit:90},{prefix:"/api/me/practice",method:"POST",limit:12},{prefix:"/api/me/practice",limit:60},{prefix:"/api/me/connect",method:"POST",limit:6},{prefix:"/api/me/connect",method:"DELETE",limit:20},{prefix:"/api/me/connect",limit:60},{prefix:"/auth/",limit:20},{prefix:"/api/",limit:150}];
+const RULES=[{prefix:"/api/admin/",method:"POST",limit:12},{prefix:"/api/admin/",limit:150},{prefix:"/api/avatar",limit:240},{prefix:"/api/billing/webhook",limit:120},{prefix:"/api/billing/",method:"POST",limit:10},{prefix:"/api/billing/",limit:60},{prefix:"/api/me/party/search",limit:40},{prefix:"/api/me/party",limit:90},{prefix:"/api/me/practice",method:"POST",limit:12},{prefix:"/api/me/practice",limit:60},{prefix:"/api/me/connect",method:"POST",limit:6},{prefix:"/api/me/connect",method:"DELETE",limit:20},{prefix:"/api/me/connect",limit:60},{prefix:"/auth/",limit:20},{prefix:"/api/",limit:150}];
 const SEARCH_LIMIT=40;
 function ruleFor(path,method){
 for(const r of RULES){
