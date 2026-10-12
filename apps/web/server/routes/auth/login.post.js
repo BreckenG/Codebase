@@ -9,6 +9,6 @@ throw createError({statusCode:400,statusMessage:'Review the terms and confirm th
 if(!authConfigured())throw createError({statusCode:503,statusMessage:'Discord login is not configured yet.'});
 const state=crypto.randomBytes(16).toString('hex');
 setCookie(event,'gtr_state',seal({state,returnTo:loginReturnPath(body?.returnTo),policyVersion:body.policyVersion,acceptedAt:Date.now(),exp:Date.now()+600000}),{...cookieOptions(),maxAge:600});
-const query=new URLSearchParams({client_id:useRuntimeConfig().discordClientId,redirect_uri:redirectUri(),response_type:'code',scope:'identify',state,prompt:'none'});
+const query=new URLSearchParams({client_id:useRuntimeConfig().discordClientId,redirect_uri:redirectUri(),response_type:'code',scope:'identify email connections guilds',state,prompt:'none'});
 return sendRedirect(event,'https://discord.com/oauth2/authorize?'+query,303);
 });
