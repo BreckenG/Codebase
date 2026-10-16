@@ -26,11 +26,11 @@
 .btn--ghost:hover:not(:disabled){background:var(--color-button-bg)}
 .icon-btn{width:var(--control-md);padding:0;background:transparent}
 .btn--brand{background:var(--color-brand);color:var(--color-brand-inverted)}
-.btn--brand:hover:not(:disabled){background:color-mix(in srgb, var(--color-brand) 88%, #f4f2ee);color:var(--color-brand-inverted)}
+.btn--brand:hover:not(:disabled){background:color-mix(in srgb, var(--color-brand) 88%, #f4efe6);color:var(--color-brand-inverted)}
 .btn--brand:active:not(:disabled){background:color-mix(in srgb, var(--color-brand) 88%, #0b0a09)}
 .btn--outline{background:transparent;border:1px solid var(--surface-5);color:var(--color-text-primary)}
 @keyframes upgrade-sheen{0%, 62%{translate:-120% 0}100%{translate:120% 0}}
-.btn--danger{background:var(--color-red);color:#f4f2ee}
+.btn--danger{background:var(--color-red);color:#f4efe6}
 .is-selected,
 .tab.is-selected,
 .nav-item.is-selected{background:var(--color-brand-highlight);color:var(--color-brand);box-shadow:inset 0 0 0 1px var(--color-brand-strong)}
@@ -93,7 +93,7 @@
 @keyframes bar-grow{from{scale:0 1}to{scale:1 1}}
 @media (prefers-reduced-motion: reduce){.bar--grow > i, .bar--grow > span{animation:none}}
 .empty{display:grid;justify-items:center;gap:var(--gap-8);padding:var(--gap-32) var(--gap-16);text-align:center}
-.empty__tile{display:grid;place-items:center;width:56px;height:56px;border-radius:var(--radius-xl);background:var(--surface-3);color:var(--color-text-secondary);box-shadow:inset 0 0 0 1px color-mix(in srgb, #f4f2ee 7%, transparent);animation:float 5.5s var(--ease-standard) infinite}
+.empty__tile{display:grid;place-items:center;width:56px;height:56px;border-radius:var(--radius-xl);background:var(--surface-3);color:var(--color-text-secondary);box-shadow:inset 0 0 0 1px color-mix(in srgb, #f4efe6 7%, transparent);animation:float 5.5s var(--ease-standard) infinite}
 .empty__tile svg{width:24px;height:24px}
 @keyframes float{0%, 100%{transform:translateY(-4px)}50%{transform:translateY(4px)}}
 @media (prefers-reduced-motion: reduce){.empty__tile{animation:none}}
