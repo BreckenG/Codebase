@@ -13,6 +13,8 @@ function membership(value) {
     replayAnalytics: rank >= 1,
     mirrorBot: rank === 2,
     earlyCodes: rank === 2,
+    firstIn: rank === 2,
+    lobbyPreview: rank === 2,
     friendLeaderboards: rank >= 1,
     eloBreakdown: rank >= 1,
     historyLimit: rank ? null : 25,
@@ -38,4 +40,5 @@ function activePlan(doc, now = Date.now()) {
   const web = stripePlan(doc, now), app = discordPlan(doc, now);
   return levels[app] > levels[web] ? app : web;
 }
-module.exports = { membership, activePlan, stripePlan, discordPlan };
+const FIRST_IN_MS = 120000;
+module.exports = { membership, activePlan, stripePlan, discordPlan, FIRST_IN_MS };
