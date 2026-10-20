@@ -1,6 +1,7 @@
 import{publicProfile}from"./public-profile.js";
 import{cardProfile}from"./player-card.js";
 import{entitlementFor}from"./entitlements";
+import membershipConfig from"../../../../packages/shared/membership.cjs";
 import{clampCard}from"../../app/utils/profile-card.js";
 import{DIVISIONS,CATEGORY_RANGES,tierForElo}from"@ranked-world/ranks";
 import{Player,MatchLedger,CodeSession,RankedBan,Social,WebUser,connectDb}from"./db";
@@ -21,7 +22,7 @@ if(tr.roundsPlayed)winRate=Math.round(tr.wins/tr.roundsPlayed*100);
 return{elo:tr.elo,peakElo:tr.peakElo,rounds:tr.roundsPlayed,wins:tr.wins,losses,winRate,tags:tr.tags,survivalSeconds:tr.survivalSeconds,winStreak:tr.winStreak,lossStreak:tr.lossStreak,tier:t};
 }
 function shapePlayer(p){
-return{photonId:p.photonId,discordId:p.discordId||null,name:p.name||p.username||"Unknown player",username:p.username||"",avatar:p.avatar||"",linked:Boolean(p.linked),ranked:shapeTrack(p.ranked||{}),scrim:shapeTrack(p.scrim||{})};
+return{photonId:p.photonId,discordId:p.discordId||null,name:p.name||p.username||"Unknown player",username:p.username||"",avatar:p.avatar||"",color:p.gorillaColor?.length===3?p.gorillaColor:null,cosmetics:(p.cosmetics||[]).filter(c=>/^[A-Z][A-Z0-9]{4}[.]$/.test(c)).slice(0,16),linked:Boolean(p.linked),ranked:shapeTrack(p.ranked||{}),scrim:shapeTrack(p.scrim||{})};
 }
 export async function findPlayer(id){
 await connectDb();
@@ -128,23 +129,25 @@ const or=[{photonId:doc.photonId}];
 if(doc.discordId)or.push({discordId:doc.discordId});
 return Boolean(await RankedBan.exists({active:true,$and:[{$or:or},{$or:[{expiresAt:null},{expiresAt:{$gt:new Date()}}]}]}));
 }
-export async function codes(category,all=false){
+export async function earlyCount(categories){
+await connectDb();
+return CodeSession.countDocuments({category:{$in:categories},active:true,openedAt:{$gt:new Date(Date.now()-membershipConfig.FIRST_IN_MS)}});
+}
+export async function codes(category,all=false,perks={}){
 await connectDb();
 if(!category&&!all)return[];
 const sessions=await CodeSession.find(all?{purpose:"ranked",active:true}:{category}).sort({active:-1,openedAt:-1}).limit(all?120:60).lean();
+const fresh=Date.now()-membershipConfig.FIRST_IN_MS;
+const open=sessions.filter(s=>all||perks.firstIn||!s.active||new Date(s.openedAt).getTime()<=fresh);
+const look=all||perks.lobbyPreview;
+const ids=look?open.flatMap(s=>s.players.filter(p=>!p.leftAt).map(p=>p.photonId)).filter(Boolean):[];
+const people=ids.length?new Map((await Player.find({photonId:{$in:ids}},"photonId discordId name avatar ranked.elo").lean()).map(p=>[p.photonId,p])):new Map();
 const out=[];
-for(const s of sessions){
-const here=[];
-const left=[];
-for(const p of s.players){
-const label=p.name||"Unknown player";
-if(p.leftAt){
-left.push({name:label,leftAt:p.leftAt});
-}else{
-here.push({name:label});
-}
-}
-out.push({code:s.code,purpose:s.purpose,category:s.category||null,active:s.active,openedAt:s.openedAt,closedAt:s.closedAt,count:here.length,players:here,left});
+for(const s of open){
+const here=s.players.filter(p=>!p.leftAt);
+const players=look?here.map(p=>{const d=people.get(p.photonId);return{name:p.name||d?.name||"Unknown player",discordId:d?.discordId||null,avatar:d?.avatar||"",tier:d?tierForElo(d.ranked?.elo||0).name:null};}):[];
+const early=s.active&&new Date(s.openedAt).getTime()>fresh;
+out.push({code:s.code,purpose:s.purpose,category:s.category||null,active:s.active,openedAt:s.openedAt,closedAt:s.closedAt,count:here.length,players,early});
 }
 const cat=c=>{const n=CATEGORY_RANGES.findIndex(r=>r.category===c);return n<0?CATEGORY_RANGES.length:n;};
 return out.sort((a,b)=>(b.active?1:0)-(a.active?1:0)||(all?cat(a.category)-cat(b.category)||b.count-a.count:b.count-a.count||cat(a.category)-cat(b.category))||a.code.localeCompare(b.code));
