@@ -4,8 +4,9 @@ import{entitlementFor}from"../../utils/entitlements";
 import{PracticeSession,Player,PartyCommand,connectDb}from"../../utils/db";
 import{PRACTICE_DIFFICULTIES}from"../../utils/plans";
 const RANK={free:0,plus:1,pro:2};
+const PRACTICE_TESTERS=new Set(["1185849692395929611","1075160686000349286","1269741594538414122","1226251910961430589"]);
 export default defineEventHandler(async event=>{
-if(features.locked("practice"))return{signedIn:false,comingSoon:true,comingSoonText:features.copy("practice").blurb,perDay:0,used:0,session:null,difficulties:[],error:null};
+if(features.locked("practice")&&!PRACTICE_TESTERS.has(String(currentUser(event)?.id)))return{signedIn:false,comingSoon:true,comingSoonText:features.copy("practice").blurb,perDay:0,used:0,session:null,difficulties:[],error:null};
 const user=currentUser(event);
 if(!user)return{signedIn:false,perDay:0,used:0,session:null,difficulties:[],error:null};
 await connectDb();

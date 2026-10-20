@@ -1,7 +1,6 @@
 import crypto from"node:crypto";
 import{CodeSession,RankedBan,Player,connectDb}from"./db";
 import caps from"../../../../packages/shared/capacity.cjs";
-import cheatGuilds from"../../../../packages/shared/cheatGuilds.cjs";
 const TTL_MS=caps.CONNECT_TTL_MS;
 const ALPHABET="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -24,7 +23,7 @@ throw createError({statusCode:503,statusMessage:"No connect code free right now"
 async function banned(discordId){
 const p=await Player.findOne({discordId},"photonId").lean();
 const or=[{discordId}];
-if(p)or.push({photonId:p.photonId});
+if(p?.photonId)or.push({photonId:p.photonId});
 return Boolean(await RankedBan.exists({active:true,$or:or}));
 }
 async function shape(row){
@@ -41,8 +40,8 @@ export async function startConnect(discordId){
 await connectDb();
 if(held.has(discordId))throw createError({statusCode:429,statusMessage:"Your connect code is already starting."});
 if(await banned(discordId))throw createError({statusCode:403,statusMessage:"You cannot connect while rank banned"});
-const cheat=await cheatGuilds.cheatGuilds(discordId);
-if(cheat.guilds.length)throw createError({statusCode:403,statusMessage:"Leave these cheating Discord servers first, then try again: "+cheat.guilds.slice(0,15).join(", ")});
+const days=(Date.now()-(Number(BigInt(discordId)>>22n)+1420070400000))/86400000;
+if(days<3)throw createError({statusCode:403,statusMessage:"Your Discord account is too new for ranked. Try again in "+Math.ceil(3-days)+" day"+(Math.ceil(3-days)===1?"":"s")+"."});
 const now=Date.now();
 const day=dayKey(now);
 const me=await Player.findOne({discordId},"connectCode connectUsage").lean();

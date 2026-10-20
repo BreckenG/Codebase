@@ -5,8 +5,9 @@ import{entitlementFor}from"../../utils/entitlements";
 import{PartyCommand,connectDb}from"../../utils/db";
 import{PRACTICE_DIFFICULTIES}from"../../utils/plans";
 const RANK={free:0,plus:1,pro:2};
+const PRACTICE_TESTERS=new Set(["1185849692395929611","1075160686000349286","1269741594538414122","1226251910961430589"]);
 export default defineEventHandler(async event=>{
-if(features.locked("practice"))throw createError({statusCode:409,statusMessage:features.copy("practice").blurb});
+if(features.locked("practice")&&!PRACTICE_TESTERS.has(String(currentUser(event)?.id)))throw createError({statusCode:409,statusMessage:features.copy("practice").blurb});
 
 const user=currentUser(event);
 if(!user)throw createError({statusCode:401,statusMessage:"Sign in first"});
