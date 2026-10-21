@@ -23,6 +23,23 @@ const planName = computed(() => {
   return `Ranked World ${plan.value[0].toUpperCase()}${plan.value.slice(1)}`;
 });
 const linked = computed(() => mine.value?.player || null);
+const confirmVoice = ref(false);
+const withdrawing = ref(false);
+async function withdrawVoice() {
+  if (!confirmVoice.value) {
+    confirmVoice.value = true;
+    return;
+  }
+  withdrawing.value = true;
+  try {
+    await apiPost('/api/me/voice-consent', { accepted: false });
+    toast('Voice agreement withdrawn. Agree again on Play to rejoin ranked codes.');
+  } catch (e) {
+    toast(e.message || 'Could not save that. Try again.');
+  }
+  withdrawing.value = false;
+  confirmVoice.value = false;
+}
 const unlinking = ref(false);
 const confirmUnlink = ref(false);
 const signingOut = ref(false);
@@ -201,6 +218,14 @@ useHead({ title: 'Settings | Ranked World' });
               <a class="btn" href="mailto:contact@rankedworld.com?subject=Privacy%20request">Email a privacy request</a>
               <NuxtLink class="btn btn--ghost" to="/legal/privacy">Read Privacy policy</NuxtLink>
             </div>
+            <template v-if="signedIn">
+              <p>Withdraw your ranked voice chat agreement. You are removed from ranked codes until you agree again.</p>
+              <div class="go-row">
+                <button class="btn btn--ghost" :disabled="withdrawing" @click="withdrawVoice">
+                  {{ confirmVoice ? 'Confirm withdraw' : 'Withdraw voice agreement' }}
+                </button>
+              </div>
+            </template>
           </section>
 
           <section id="support" class="st__block">
