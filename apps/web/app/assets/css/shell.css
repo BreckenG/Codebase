@@ -51,41 +51,6 @@
 .site-plan{font-size:0;gap:0;padding:0 10px}
 .site-me__btn>span{display:none}
 }
-@media(min-width:761px){
-.world-app.launcher-app .world-content{margin-left:84px;padding-bottom:72px}
-.launcher-app .launcher-nav{width:84px;padding:14px 8px 12px;align-items:stretch;background:#08080a;border-right:1px solid #ffffff0d}
-.launcher-app .launcher-brand{justify-content:center;padding:4px 0 18px}
-.launcher-app .launcher-brand>span{display:none}
-.launcher-app .launcher-brand img{width:38px;height:32px}
-.launcher-app .launcher-nav nav{gap:10px}
-.launcher-app .launcher-nav__group{gap:4px}
-.launcher-app .launcher-nav__group+.launcher-nav__group{padding-top:10px}
-.launcher-app .launcher-nav nav a{flex-direction:column;justify-content:center;gap:5px;min-height:56px;padding:8px 2px;border-radius:var(--radius-lg);font-size:10px;font-weight:600;line-height:1.1;text-align:center}
-.launcher-app .launcher-nav nav a .icon{width:20px;height:20px}
-.launcher-app .launcher-nav nav a.selected{background:none;color:#f4efe6}
-.launcher-app .launcher-nav nav a.selected .icon{color:var(--color-brand)}
-.launcher-app .launcher-nav nav a.selected::before{content:"";position:absolute;left:-8px;top:12px;bottom:12px;width:3px;background:var(--color-brand)}
-.launcher-app .launcher-nav__count{position:absolute;top:4px;right:10px;margin:0;min-width:17px;padding:1px 4px;border-radius:999px;font-size:10px}
-.launcher-app .launcher-account{padding:12px 0 0}
-.launcher-app .launcher-me{flex-direction:column;gap:2px;padding:0;border:0;background:none}
-.launcher-app .launcher-me__who{flex:none;justify-content:center}
-.launcher-app .launcher-me__who>span{display:none}
-.launcher-app .launcher-links{flex-direction:column;align-items:center;gap:6px;margin-top:8px;padding:0}
-.launcher-app .launcher-links a{font-size:10px}
-.launcher-app .launcher-links a:first-child{font-size:0;gap:0}
-.launcher-app .launcher-links a:first-child .icon{width:17px;height:17px}
-.launcher-app .launcher-signin{min-height:40px;padding:0;font-size:0;gap:0}
-.launcher-app .desktop-bar{position:fixed;top:auto;left:84px;right:0;bottom:0;z-index:40;gap:14px;min-height:72px;padding:10px 20px 10px 24px;border-bottom:0;border-top:1px solid #ffffff12;background:#08080a}
-.launcher-app .desktop-bar__game{gap:12px}
-.launcher-app .desktop-bar__game::before{content:"";width:9px;height:9px;border-radius:999px;background:#6e6a75}
-.launcher-app .desktop-bar.is-ready .desktop-bar__game::before{background:var(--color-brand)}
-.launcher-app .desktop-bar.is-running .desktop-bar__game::before{background:var(--color-green)}
-.launcher-app .desktop-bar__game strong{font-size:14px}
-.launcher-app .desktop-bar__game span{font-size:12px}
-.launcher-app .desktop-bar__actions>.btn--brand{min-width:230px;min-height:50px;justify-content:center;font-family:var(--font-display);font-size:17px;font-weight:800;letter-spacing:-.01em}
-.launcher-app .desktop-bar__actions>.btn--brand .icon{width:18px;height:18px}
-.launcher-app .desktop-bar__notice{order:-1;padding-bottom:8px;border-bottom:1px solid #ffffff0f}
-}
 .world-app .world-division{display:flex;align-items:center;gap:10px;font-weight:600}
 .world-app .world-division img{width:34px;height:34px;flex:none;object-fit:contain;image-rendering:pixelated}
 .world-app .world-ladder--grid .world-division img{width:28px;height:28px}

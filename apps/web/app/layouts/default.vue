@@ -19,7 +19,7 @@ const sideAd = computed(() => desktop && ads.value && has('side') && me.value.lo
     <NuxtLoadingIndicator color="var(--color-brand)" :height="2" />
     <a class="skip-link" href="#main">Skip to content</a>
     <DesktopNav />
-    <div class="world-content" :class="{ site: route.path !== '/' }">
+    <div class="world-content site">
       <DesktopBar />
       <div v-if="ads && (has('top') || has('side'))" class="wrap ad-top" :class="{ 'ad-top--fallback': !has('top') }">
         <AdSlot place="top" shape="strip" />

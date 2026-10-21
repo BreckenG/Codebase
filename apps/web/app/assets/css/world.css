@@ -268,15 +268,6 @@
 @media(max-width:1100px){.world-plan{padding-left:18px;padding-right:18px}.world-plan-heading{flex-wrap:wrap}.world-rank-guide{gap:28px;grid-template-columns:minmax(0,1fr) 200px}}
 @media(max-width:760px){.world-app .world-content > .section{padding-top:28px}.world-app .world-billing-controls{align-items:flex-start;flex-direction:column;gap:12px}.world-billing-tabs{width:100%}.world-billing-tabs button{flex:1;padding:10px 8px;font-size:12px}.world-plans,.world-benefit-columns,.world-rank-guide{grid-template-columns:1fr}.world-plan{padding:24px}.world-plan-price strong{font-size:38px}.world-rank-notes{padding-top:0}.world-division-list li{gap:10px}.world-division-list img{width:48px;height:48px}.world-app .world-division-list h3{font-size:14px}}
 .world-inline-arrow{display:inline-block;width:14px;height:14px;vertical-align:middle;margin-left:4px}
-.desktop-bar{display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding:18px 32px;border-bottom:1px solid #2a2a31;background:#101013}
-.desktop-bar__game{display:flex;align-items:center;gap:14px;margin-right:auto}
-.desktop-bar__game img{object-fit:contain}
-.desktop-bar__game strong,.desktop-bar__game span{display:block}
-.desktop-bar__game strong{color:#f4efe6;font-size:14px}
-.desktop-bar__game span{color:#9a96a1;font-size:12px;margin-top:3px}
-.desktop-bar__actions,.desktop-settings__actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
-.desktop-bar__notice{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-basis:100%;font-size:13px}
-.desktop-bar__notice strong{color:#f4efe6;letter-spacing:.1em}
 .desktop-game-card{display:flex;align-items:center;gap:24px;padding:28px;margin:8px 0 32px;border:1px solid #2e2e36;border-radius:var(--radius-lg);background:#141418}
 .desktop-game-card img{width:90px;height:70px;object-fit:contain}
 .desktop-game-card > div{flex:1}
