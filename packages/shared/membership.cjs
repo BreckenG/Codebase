@@ -41,8 +41,7 @@ function activePlan(doc, now = Date.now()) {
   return levels[app] > levels[web] ? app : web;
 }
 const FIRST_IN_MS = 120000;
-const TRY_MS = 604800000;
 const PEEK_MS = 300000;
-const tryReady = (at, now = Date.now()) => !at || now - new Date(at).getTime() >= TRY_MS;
+const tryReady = (at) => !at;
 const tryLive = (at, ms, now = Date.now()) => Boolean(at) && now - new Date(at).getTime() < ms;
-module.exports = { membership, activePlan, stripePlan, discordPlan, FIRST_IN_MS, TRY_MS, PEEK_MS, tryReady, tryLive };
+module.exports = { membership, activePlan, stripePlan, discordPlan, FIRST_IN_MS, PEEK_MS, tryReady, tryLive };

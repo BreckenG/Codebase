@@ -2,7 +2,6 @@ import{currentUser}from"../../utils/auth";
 import{Player,CodeSession,connectDb}from"../../utils/db";
 import{findPlayer}from"../../utils/players";
 import{entitlementFor}from"../../utils/entitlements";
-import membershipConfig from"../../../../../packages/shared/membership.cjs";
 export default defineEventHandler(async event=>{
 const user=currentUser(event);
 if(!user)throw createError({statusCode:401,statusMessage:"Sign in first"});
@@ -21,8 +20,7 @@ if(!await CodeSession.exists({code,purpose:"ranked",active:true}))throw createEr
 set["tries.peekCode"]=code;
 }
 await connectDb();
-const week=new Date(Date.now()-membershipConfig.TRY_MS);
-const res=await Player.updateOne({_id:doc._id,$or:[{[field]:null},{[field]:{$lte:week}}]},{$set:set});
-if(!res.modifiedCount)throw createError({statusCode:409,statusMessage:"Your free try comes back next week"});
+const res=await Player.updateOne({_id:doc._id,[field]:null},{$set:set});
+if(!res.modifiedCount)throw createError({statusCode:409,statusMessage:"You already used your free try"});
 return{ok:true};
 });

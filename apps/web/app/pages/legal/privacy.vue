@@ -67,7 +67,7 @@ useSeo({
           <h2>Who can see it</h2>
           <p>
             Anyone can see your public profile: display name, Discord ID, rank, statistics, recent matches, color, and
-            cosmetics. Pro members and players using their weekly peek can see who is in a ranked code. Staff can see
+            cosmetics. Pro members and players using their free peek can see who is in a ranked code. Staff can see
             moderation information. Your game account ID, devices, and payment details are never public.
           </p>
           <p>
@@ -111,8 +111,8 @@ useSeo({
         <section>
           <h2>Cookies</h2>
           <p>
-            We only use necessary cookies and browser storage, for sign in and ban enforcement. No ad trackers or analytics. See
-            the <NuxtLink to="/legal/cookies">Cookie policy</NuxtLink>.
+            We only use necessary cookies and browser storage, for sign in and ban enforcement. No ad trackers or
+            analytics. See the <NuxtLink to="/legal/cookies">Cookie policy</NuxtLink>.
           </p>
         </section>
         <section>

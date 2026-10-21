@@ -30,7 +30,7 @@ const FREE = [
   '1 practice match per day (coming soon)',
   'Basic training categories',
   'Last 25 matches',
-  'One lobby peek and one early pass a week',
+  'One free lobby peek and early pass',
 ];
 const features = [
   {
@@ -42,8 +42,8 @@ const features = [
   { name: 'Replay length', free: 'None', plus: 'Up to 15 minutes', pro: 'Up to 60 minutes' },
   { name: 'Movement stats', free: 'Basic', plus: 'All available stats', pro: 'All available stats' },
   { name: 'Profile cards', free: 'Basic', plus: 'More themes and fonts', pro: 'All customization' },
-  { name: 'First into new codes', free: 'Once a week', plus: 'Once a week', pro: '2 minutes before public' },
-  { name: 'See who is in each code', free: 'One peek a week', plus: 'One peek a week', pro: 'Names and ranks' },
+  { name: 'First into new codes', free: 'One free try', plus: 'One free try', pro: '2 minutes before public' },
+  { name: 'See who is in each code', free: 'One free peek', plus: 'One free peek', pro: 'Names and ranks' },
   { name: 'Join full codes', free: 'None', plus: 'None', pro: '2 extra seats past 10' },
   { name: 'Upcoming code preview', free: 'None', plus: 'None', pro: '15 minutes before rotation' },
   { name: 'Queue priority', free: 'Standard', plus: 'Priority', pro: 'Priority' },

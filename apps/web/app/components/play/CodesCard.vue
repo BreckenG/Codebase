@@ -207,7 +207,7 @@ const resets = computed(() => {
         :title="`${hidden} new ${hidden === 1 ? 'code just opened' : 'codes just opened'} for Pro`"
       >
         <template v-if="tries?.firstIn">
-          You get one free First in pass a week. Use it to see {{ hidden === 1 ? 'it' : 'them' }} now, before
+          You get one free First in pass. Use it to see {{ hidden === 1 ? 'it' : 'them' }} now, before
           {{ hidden === 1 ? 'it goes' : 'they go' }} public.
         </template>
         <template v-else>
