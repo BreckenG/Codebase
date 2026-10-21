@@ -13,6 +13,12 @@ export function activityAction(method, path) {
   return `${method} ${clean}`.slice(0, 120)
 }
 
+export function appType(ua, desktop) {
+  if (desktop) return 'Launcher'
+  const hit = [['Edg/', 'Edge'], ['OPR/', 'Opera'], ['Firefox/', 'Firefox'], ['Chrome/', 'Chrome'], ['Safari/', 'Safari']].find(([k]) => ua.includes(k))
+  return hit ? hit[1] : 'Other'
+}
+
 export function recordActivity(event, user) {
   const path = event.path || '', method = event.node.req.method || 'GET'
   if (!user?.id || SKIP.some(prefix => path.startsWith(prefix))) return
@@ -24,7 +30,7 @@ export function recordActivity(event, user) {
   const row = {
     at: new Date(now), discordId: user.id, username: String(user.username || '').slice(0, 40), source: event.context?.desktopUser ? 'launcher' : 'web', action,
     ip: ip === 'unknown' ? null : scramble('ip', ip),
-    device: String(getRequestHeader(event, 'user-agent') || '').slice(0, 160),
+    device: appType(String(getRequestHeader(event, 'user-agent') || ''), event.context?.desktopUser),
     lang: String(getRequestHeader(event, 'accept-language') || '').split(',')[0].slice(0, 12) || null,
   }
   connectDb().then(async () => {
