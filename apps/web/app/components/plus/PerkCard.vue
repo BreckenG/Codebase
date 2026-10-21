@@ -15,9 +15,11 @@ defineProps({
       <h3>{{ title }}</h3>
       <div class="pc__text"><slot /></div>
     </div>
-    <NuxtLink class="btn btn--brand pc__go" :to="to">
-      {{ cta || `Get ${tier === 'pro' ? 'Pro' : 'Plus'}` }}<AppIcon name="arrowRight" />
-    </NuxtLink>
+    <slot name="go">
+      <NuxtLink class="btn btn--brand pc__go" :to="to">
+        {{ cta || `Get ${tier === 'pro' ? 'Pro' : 'Plus'}` }}<AppIcon name="arrowRight" />
+      </NuxtLink>
+    </slot>
   </section>
 </template>
 
@@ -62,16 +64,19 @@ defineProps({
   max-width: 60ch;
   color: var(--text);
 }
-.pc__go {
+.pc__go,
+:slotted(.pc__go) {
   position: relative;
   flex: none;
 }
-.pc__go svg {
+.pc__go svg,
+:slotted(.pc__go svg) {
   width: 16px;
   height: 16px;
   transition: transform 0.3s var(--ease);
 }
-.pc:hover .pc__go svg {
+.pc:hover .pc__go svg,
+.pc:hover :slotted(.pc__go svg) {
   transform: translateX(4px);
 }
 .pc__spark i {

@@ -139,13 +139,13 @@ if(!category&&!all)return[];
 const sessions=await CodeSession.find(all?{purpose:"ranked",active:true}:{category}).sort({active:-1,openedAt:-1}).limit(all?120:60).lean();
 const fresh=Date.now()-membershipConfig.FIRST_IN_MS;
 const open=sessions.filter(s=>all||perks.firstIn||!s.active||new Date(s.openedAt).getTime()<=fresh);
-const look=all||perks.lobbyPreview;
-const ids=look?open.flatMap(s=>s.players.filter(p=>!p.leftAt).map(p=>p.photonId)).filter(Boolean):[];
+const look=s=>all||perks.lobbyPreview||s.code===perks.peekCode;
+const ids=open.filter(look).flatMap(s=>s.players.filter(p=>!p.leftAt).map(p=>p.photonId)).filter(Boolean);
 const people=ids.length?new Map((await Player.find({photonId:{$in:ids}},"photonId discordId name avatar ranked.elo").lean()).map(p=>[p.photonId,p])):new Map();
 const out=[];
 for(const s of open){
 const here=s.players.filter(p=>!p.leftAt);
-const players=look?here.map(p=>{const d=people.get(p.photonId);return{name:p.name||d?.name||"Unknown player",discordId:d?.discordId||null,avatar:d?.avatar||"",tier:d?tierForElo(d.ranked?.elo||0).name:null};}):[];
+const players=look(s)?here.map(p=>{const d=people.get(p.photonId);return{name:p.name||d?.name||"Unknown player",discordId:d?.discordId||null,avatar:d?.avatar||"",tier:d?tierForElo(d.ranked?.elo||0).name:null};}):[];
 const early=s.active&&new Date(s.openedAt).getTime()>fresh;
 out.push({code:s.code,purpose:s.purpose,category:s.category||null,active:s.active,openedAt:s.openedAt,closedAt:s.closedAt,count:here.length,players,early});
 }

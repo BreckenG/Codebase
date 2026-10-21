@@ -446,11 +446,11 @@ useSeo(() => ({ title: selectedMode.value.title, description: selectedMode.value
             />
             <div v-else-if="activeMode === 'ranked' && codeData?.reason === 'banned'" class="empty">
               <h3>You are rank banned.</h3>
-              <p>
-                Most rank bans are given by staff after reviewing the evidence. The anti-cheat bans by itself only for
-                clear cases like cheat menus, low hertz and anti report, and tells you when it did. Any ban can be
-                appealed to real staff.
-              </p>
+              <p>Any rank ban can be appealed, and a real staff member reviews every appeal.</p>
+            </div>
+            <div v-else-if="activeMode === 'ranked' && codeData?.reason === 'policy'" class="empty">
+              <h3>Agree to the new terms first.</h3>
+              <p>Our terms and privacy policy changed. Agree to them to see and join ranked codes.</p>
             </div>
             <div v-else-if="activeMode === 'practice' && practiceError" class="alert" role="alert">
               <p>Could not load your practice sessions.</p>
@@ -466,6 +466,8 @@ useSeo(() => ({ title: selectedMode.value.title, description: selectedMode.value
               :codes="myCodes"
               :hidden="codeData?.hidden || 0"
               :lobby="Boolean(codeData?.lobbyPreview)"
+              :tries="codeData?.tries || null"
+              @refresh="refreshCodes"
               :practice="prac"
               :mirror="mirror"
               :bracket="bracket"
