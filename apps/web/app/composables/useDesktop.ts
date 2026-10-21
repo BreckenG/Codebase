@@ -1,6 +1,6 @@
 import { invoke, isTauri } from '@tauri-apps/api/core';
 type JoinState = { requestId: string; code: string; state: string; message: string; updatedAt: number; };
-type DesktopStatus = { gamePath: string | null; gameInstalled: boolean; bepInExInstalled: boolean; helperInstalled: boolean; gameRunning: boolean; signedIn: boolean; captureRecording: boolean; join: JoinState | null; version: string; };
+type DesktopStatus = { gamePath: string | null; gameInstalled: boolean; bepInExInstalled: boolean; helperInstalled: boolean; gameRunning: boolean; signedIn: boolean; join: JoinState | null; version: string; };
 type SignInInfo = { userCode: string; verificationUri: string; expiresIn: number; interval: number; };
 type LauncherUpdate = { available: boolean; version: string | null; };
 type UpdateProgress = { phase: 'downloading' | 'installing'; downloaded: number; total: number | null; };

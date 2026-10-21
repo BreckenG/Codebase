@@ -1,5 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-mod api; mod game; mod updates; mod presence; mod cards; mod capture; mod device;
+mod api; mod game; mod updates; mod presence; mod cards; mod device;
 use api::{Api, Grant, Reply, SignInInfo};
 use game::{JoinStatus, JoinTicket, Settings};
 use serde::{Deserialize, Serialize};
@@ -79,7 +79,6 @@ struct DesktopStatus {
     helper_loaded: bool,
     game_running: bool,
     signed_in: bool,
-    capture_recording: bool,
     join: Option<JoinStatus>,
     version: &'static str,
 }
@@ -99,7 +98,6 @@ fn desktop_status(window: WebviewWindow, app: tauri::AppHandle, state: State<Des
         helper_installed: game.as_ref().is_some_and(|p| game::same_file(&game::helper_path(p), &helper)),
         helper_loaded: game.as_ref().is_some_and(|p| game::helper_loaded(p)),
         game_running: game::game_running(), signed_in: api::token()?.is_some(),
-        capture_recording: game.as_ref().is_some_and(|p| capture::recording(&game::ticket_dir(p))),
         join: pending.as_ref().map(|p| p.status.clone()), version: env!("CARGO_PKG_VERSION"),
     })
 }
@@ -255,7 +253,6 @@ async fn sign_out(window: WebviewWindow, state: State<'_, Desktop>) -> Result<()
         let mut account = state.account.lock().map_err(|_| "Sign-in is busy.")?; account.invalidate(); let token = api::token()?; api::clear_token()?; state.presence.clear();
         token
     };
-    if let Ok(root) = configured_game(&state) { capture::wipe(&capture::spool_dir(&root)); }
     if let Some(token) = token { let _ = state.api.request("/api/desktop/logout", "POST", Some("{}".into()), Some(token)).await; }
     Ok(())
 }
@@ -266,28 +263,6 @@ fn main() {
             let mut settings: Settings = fs::read(&cfg_path).ok().and_then(|b| serde_json::from_slice(&b).ok()).unwrap_or_default();
             if settings.game_path.is_none() { settings.game_path = game::discover_game(); }
             app.manage(Desktop { api: Api::new()?, presence: presence::Presence::new(Some("1526780247545221312"), Some("https://rankedworld.com/img/discord-presence.png"))?, settings: Mutex::new(settings), cfg_path, account: Mutex::new(Account::default()), pending_room: Mutex::new(None) });
-            let handle = app.handle().clone();
-            tauri::async_runtime::spawn(async move {
-                loop {
-                    let (game, api) = {
-                        let state = handle.state::<Desktop>();
-                        let game = state.settings.lock().ok().and_then(|s| s.game_path.clone());
-                        (game, state.api.clone())
-                    };
-                    if let Some(root) = game {
-                        let spool = capture::spool_dir(&root);
-                        capture::sweep(&spool, std::time::SystemTime::now());
-                        if let Ok(Some(token)) = api::token() {
-                            capture::drain(&spool, capture::DRAIN_BATCH, |item, body| {
-                                let api = api.clone();
-                                let token = token.clone();
-                                async move { capture::put(&api, &token, &item, body).await }
-                            }).await;
-                        }
-                    }
-                    tokio::time::sleep(capture::DRAIN_EVERY).await;
-                }
-            });
             tauri::WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
                 .title("Ranked World").inner_size(1280.0, 840.0).min_inner_size(960.0, 640.0)
                 .on_navigation(local_url)
