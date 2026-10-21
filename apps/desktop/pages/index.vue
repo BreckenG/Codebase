@@ -235,7 +235,14 @@ const more = [
   { to: '/play?mode=scrims', icon: 'users', label: 'Party and scrims' },
   { to: '/history?view=replays', icon: 'play', label: 'Replays' },
 ];
-const signed = (n) => (n > 0 ? '+' : n < 0 ? '-' : '') + num(Math.abs(n));
+function signed(n) {
+  if (n > 0) return `+${num(n)}`;
+  return n < 0 ? `-${num(-n)}` : num(0);
+}
+const partyLine = computed(() => {
+  const n = party.value?.members?.length || 1;
+  return n === 1 ? 'Solo, you get teammates from the queue' : `${n} in your party`;
+});
 let poll;
 let slow = 0;
 onMounted(() => {
@@ -248,262 +255,575 @@ onMounted(() => {
 });
 onBeforeUnmount(() => clearInterval(poll));
 useHead({ title: 'Home | Ranked World' });
-function trend(delta) {
+function tone(delta) {
   if (delta > 0) return 'is-up';
   return delta < 0 ? 'is-down' : '';
 }
 </script>
 <template>
-  <main id="main" class="wrap section launcher-home">
-    <LauncherHero :player="player" />
-    <div v-if="since" class="lsince" role="status">
-      <span class="lsince__title">Since last time</span
-      ><span class="lsince__chip" :class="since.elo >= 0 ? 'is-up' : 'is-down'" style="--i: 0"
-        ><AppIcon :name="since.elo >= 0 ? 'trophy' : 'activity'" />{{ signed(since.elo) }} MMR</span
-      ><span class="lsince__chip" style="--i: 1">{{ since.rounds }} round{{ since.rounds === 1 ? '' : 's' }}</span
-      ><span v-if="since.wins > 0" class="lsince__chip" style="--i: 2"
-        >{{ since.wins }} win{{ since.wins === 1 ? '' : 's' }}</span
-      ><span v-if="since.best" class="lsince__chip is-best" style="--i: 3"><AppIcon name="trophy" />New best</span
-      ><button class="lsince__close" aria-label="Dismiss" @click="since = null"><AppIcon name="x" /></button>
-    </div>
-    <div class="lgrid">
-      <div class="lcol">
-        <section v-if="recap" class="lcard lrecap" role="status">
-          <header class="lcard__head">
-            <h2>Last session</h2>
-            <button class="lcard__link" @click="ended = null">Dismiss</button>
-          </header>
-          <div class="lrecap__big" :class="recap.elo >= 0 ? 'is-up' : 'is-down'">
-            {{ signed(recap.elo) }}<small>MMR</small>
-          </div>
-          <dl class="lstats">
-            <div>
-              <dt>Rounds</dt>
-              <dd>{{ recap.rounds }}</dd>
-            </div>
-            <div>
-              <dt>Wins</dt>
-              <dd>{{ recap.wins }}</dd>
-            </div>
-            <div>
-              <dt>Best finish</dt>
-              <dd>{{ recap.best || '-' }}</dd>
-            </div>
-            <div>
-              <dt>Played</dt>
-              <dd>{{ recap.minutes }} min</dd>
-            </div>
-          </dl>
-        </section>
-        <section v-if="error && !player" class="lcard lcard--empty" role="alert">
-          <p>Could not load your stats.</p>
-          <button class="btn" @click="refresh">Retry</button>
-        </section>
-        <section v-else-if="pending && !player" class="lcard lcard--empty" aria-busy="true" role="status">
-          <span class="lskel" /><span class="lskel lskel--short" />
-        </section>
-        <section v-else-if="!linked" class="lcard lstart">
-          <h2>Get set up</h2>
-          <ol>
-            <li :class="me.user ? 'is-done' : 'is-now'">
-              <span class="lstart__mark"><AppIcon v-if="me.user" name="check" /><template v-else>1</template></span
-              >Sign in with Discord
-            </li>
-            <li :class="me.user ? 'is-now' : ''">
-              <span class="lstart__mark">2</span>Connect Gorilla Tag<NuxtLink
-                v-if="me.user"
-                to="/play"
-                class="btn btn--brand"
-                >Connect</NuxtLink
-              >
-            </li>
-            <li><span class="lstart__mark">3</span>Join a ranked code</li>
-          </ol>
-        </section>
-        <section v-else class="lcard ltrend">
-          <header class="lcard__head">
-            <div class="lseg" role="tablist" aria-label="Track">
-              <button
-                v-for="key in ['ranked', 'scrim']"
-                :key="key"
-                role="tab"
-                :aria-selected="mode === key"
-                @click="mode = key"
-              >
-                {{ key === 'ranked' ? 'Ranked' : 'Scrims' }}
-              </button>
-            </div>
-            <span v-if="trend" class="ltrend__change" :class="trend.change >= 0 ? 'is-up' : 'is-down'"
-              >{{ signed(trend.change) }} over {{ trend.count }} rounds</span
-            >
-          </header>
-          <div class="ltrend__big"><CountUp :value="track?.elo || 0" /><small>MMR</small></div>
-          <svg
-            v-if="trend"
-            :key="mode + trend.line"
-            class="ltrend__svg"
-            viewBox="0 0 600 120"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <defs>
-              <linearGradient id="ltrend-fill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#ee862a" stop-opacity=".32" />
-                <stop offset="1" stop-color="#ee862a" stop-opacity="0" />
-              </linearGradient>
-            </defs>
-            <path class="ltrend__area" :d="trend.area" fill="url(#ltrend-fill)" />
-            <path class="ltrend__line" :d="trend.line" />
-            <circle class="ltrend__dot" :cx="trend.end[0]" :cy="trend.end[1]" r="5" />
-          </svg>
-          <p v-else class="lcard__note">Play a few rounds to see your trend.</p>
-          <dl class="lstats">
-            <div>
-              <dt>Win rate</dt>
-              <dd>{{ track?.winRate ?? 0 }}%</dd>
-            </div>
-            <div>
-              <dt>Rounds</dt>
-              <dd><CountUp :value="track?.rounds || 0" /></dd>
-            </div>
-            <div>
-              <dt>Best</dt>
-              <dd><CountUp :value="track?.peakElo || 0" /></dd>
-            </div>
-            <div>
-              <dt>Streak</dt>
-              <dd :class="{ 'is-hot': (track?.winStreak || 0) >= 2 }">
-                <AppIcon v-if="(track?.winStreak || 0) >= 2" name="flame" />{{ track?.winStreak || 0 }}
-              </dd>
-            </div>
-          </dl>
-        </section>
-        <section class="lcard lrounds">
-          <header class="lcard__head">
-            <h2>Recent rounds</h2>
-            <NuxtLink to="/history" class="lcard__link">History<AppIcon name="arrowRight" /></NuxtLink>
-          </header>
-          <ol v-if="rounds.length">
-            <li v-for="(round, i) in rounds" :key="(round.at || '') + i" :style="{ '--i': i }">
-              <span class="lrounds__place" :class="{ 'is-win': round.placement === 0 }"
-                ><AppIcon v-if="round.placement === 0" name="crown" /><template v-else>{{
-                  round.placement == null ? '-' : '#' + (round.placement + 1)
-                }}</template></span
-              ><span class="lrounds__code"
-                ><strong>{{ round.code || (round.category ? round.category + ' code' : 'Round') }}</strong
-                ><small>{{ round.at ? ago(round.at) : '' }}</small></span
-              ><span class="lrounds__delta" :class="trend(round.delta)">{{
-                round.delta == null ? '-' : signed(round.delta)
-              }}</span>
-            </li>
-          </ol>
-          <p v-else class="lcard__note">{{ linked ? 'No rounds yet.' : 'Your rounds show up here.' }}</p>
-        </section>
+  <main id="main" class="page">
+    <div class="wrap home">
+      <LauncherHero :player="player" />
+
+      <div v-if="since" class="since panel" role="status">
+        <strong>Since last time</strong>
+        <span class="chip" :class="since.elo >= 0 ? 'chip--live' : 'since__down'">
+          <AppIcon :name="since.elo >= 0 ? 'trophy' : 'activity'" />{{ signed(since.elo) }} MMR
+        </span>
+        <span class="chip">{{ since.rounds }} round{{ since.rounds === 1 ? '' : 's' }}</span>
+        <span v-if="since.wins > 0" class="chip">{{ since.wins }} win{{ since.wins === 1 ? '' : 's' }}</span>
+        <span v-if="since.best" class="chip chip--brand"><AppIcon name="trophy" />New best</span>
+        <button class="icon-btn since__close" aria-label="Dismiss" @click="since = null"><AppIcon name="x" /></button>
       </div>
-      <div class="lcol">
-        <section class="lcard lcodes">
-          <header class="lcard__head">
-            <h2><span class="llive" aria-hidden="true" />Live codes</h2>
-            <span v-if="codes.length" class="lcard__count">{{ codes.length }}</span>
-          </header>
-          <VoiceConsentNotice
-            v-if="rooms?.reason === 'voice-consent'"
-            :version="rooms.version"
-            @accepted="refreshCodes"
-          />
-          <p v-else-if="loadingCodes && !codes.length" class="lcard__note" role="status">Loading...</p>
-          <div v-else-if="codeError && !codes.length" class="lcard__note" role="alert">
-            Codes did not load. <button class="lcard__link" @click="refreshCodes">Retry</button>
-          </div>
-          <ul v-else-if="codes.length">
-            <li v-for="code in codes.slice(0, 4)" :key="code.code">
-              <div class="lcodes__top">
-                <strong>{{ code.code }}</strong
-                ><span class="lcodes__tag">{{ code.category || rooms.bracket }}</span
-                ><span v-if="(code.count ?? 0) >= RANKED_SLOTS - 2" class="lcodes__hot">Almost full</span>
+
+      <div class="grid">
+        <div class="col">
+          <section v-if="recap" class="panel card" role="status">
+            <div class="section-head">
+              <h2>Session review</h2>
+              <button class="btn btn--ghost btn--small" @click="ended = null">Dismiss</button>
+            </div>
+            <p class="big" :class="recap.elo >= 0 ? 'pos' : 'neg'">{{ signed(recap.elo) }}<small>MMR</small></p>
+            <dl class="stats">
+              <div class="stat">
+                <dt>{{ recap.rounds }}</dt>
+                <dd>Rounds</dd>
               </div>
-              <span class="lcodes__seats" :aria-label="(code.count ?? 0) + ' of ' + RANKED_SLOTS + ' players'"
-                ><i
-                  v-for="n in RANKED_SLOTS"
-                  :key="n"
-                  :class="{ 'is-on': n <= (code.count ?? 0) }"
-                  :style="{ '--n': n }" /></span
-              ><RoomJoinButton :code="code.code" />
-            </li>
-          </ul>
-          <p v-else class="lcard__note">
-            {{ linked ? 'No codes open right now.' : 'Connect your account to see codes.' }}
-          </p>
-          <NuxtLink to="/play" class="lcard__foot">All codes<AppIcon name="arrowRight" /></NuxtLink>
-        </section>
-        <section v-if="linked" class="lcard lscrim">
-          <header class="lcard__head">
-            <h2>Scrims</h2>
-            <NuxtLink to="/play?mode=scrims" class="lcard__link">Party</NuxtLink>
-          </header>
-          <template v-if="match"
-            ><p class="lscrim__state">
-              <strong>{{ match.code || 'Preparing your room' }}</strong
-              ><span>{{ match.size }} {{ match.state }}</span>
-            </p>
-            <RoomJoinButton v-if="match.code" :code="match.code" /></template
-          ><template v-else-if="queued"
-            ><p class="lscrim__state">
-              <strong>Finding a {{ party.size }}</strong
-              ><span>{{ party.searching || 0 }} of {{ party.need }} players in queue</span>
-            </p>
-            <button class="btn" :disabled="partyBusy" @click="partySend('cancel')">Leave queue</button></template
-          ><template v-else
-            ><p class="lscrim__state">
-              <strong>{{ party?.size || '4v4' }} {{ (party?.ruleset || 'gtc').toUpperCase() }}</strong
-              ><span>{{
-                (party?.members?.length || 1) === 1
-                  ? 'Solo, you get teammates from the queue'
-                  : party.members.length + ' in your party'
-              }}</span>
-            </p>
-            <button
-              class="btn btn--brand"
-              :disabled="partyBusy || (party && !party.youLead)"
-              @click="partySend('play')"
+              <div class="stat">
+                <dt>{{ recap.wins }}</dt>
+                <dd>Wins</dd>
+              </div>
+              <div class="stat">
+                <dt>{{ recap.best || '-' }}</dt>
+                <dd>Best finish</dd>
+              </div>
+              <div class="stat">
+                <dt>{{ recap.minutes }}m</dt>
+                <dd>Played</dd>
+              </div>
+            </dl>
+          </section>
+
+          <div v-if="error && !player" class="alert" role="alert">
+            <p>Could not load your stats.</p>
+            <button class="btn btn--small" @click="refresh">Retry</button>
+          </div>
+          <div v-else-if="pending && !player" class="skeleton" aria-busy="true" role="status" />
+          <section v-else-if="!linked" class="panel card">
+            <div class="section-head"><h2>Get set up</h2></div>
+            <ol class="steps">
+              <li :class="me.user ? 'done' : 'now'">
+                <span class="steps__mark"><AppIcon v-if="me.user" name="check" /><template v-else>1</template></span>
+                Sign in with Discord
+              </li>
+              <li :class="me.user ? 'now' : ''">
+                <span class="steps__mark">2</span>Connect Gorilla Tag
+                <NuxtLink v-if="me.user" to="/play" class="btn btn--brand btn--small">Connect</NuxtLink>
+              </li>
+              <li><span class="steps__mark">3</span>Join a ranked code</li>
+            </ol>
+          </section>
+          <section v-else class="panel card">
+            <div class="section-head">
+              <div class="seg" role="tablist" aria-label="Track">
+                <button
+                  v-for="key in ['ranked', 'scrim']"
+                  :key="key"
+                  role="tab"
+                  :aria-selected="mode === key"
+                  @click="mode = key"
+                >
+                  {{ key === 'ranked' ? 'Ranked' : 'Scrims' }}
+                </button>
+              </div>
+              <span v-if="trend" class="meta" :class="trend.change >= 0 ? 'pos' : 'neg'">
+                {{ signed(trend.change) }} over {{ trend.count }} rounds
+              </span>
+            </div>
+            <p class="big"><CountUp :value="track?.elo || 0" /><small>MMR</small></p>
+            <svg
+              v-if="trend"
+              :key="mode + trend.line"
+              class="chart"
+              viewBox="0 0 600 120"
+              preserveAspectRatio="none"
+              aria-hidden="true"
             >
-              {{ party && !party.youLead ? 'Your leader queues' : 'Queue for a scrim' }}
-            </button></template
-          >
-          <p v-if="partyData?.error" class="lcard__note" role="alert">{{ partyData.error }}</p>
-        </section>
-        <section v-if="linked" class="lcard lfriends">
-          <header class="lcard__head">
-            <h2>Friends</h2>
-            <span v-if="online" class="lcard__count">{{ online }} on</span>
-          </header>
-          <ul v-if="friends.length">
-            <li v-for="f in friends.slice(0, 6)" :key="f.discordId">
-              <PlayerAvatar :name="f.name" :src="f.avatar" :discord-id="f.discordId" :size="30" /><NuxtLink
-                :to="'/player/' + f.discordId"
-                class="lfriends__who"
-                ><strong>{{ f.name }}</strong
-                ><small>{{ f.rank }}</small></NuxtLink
-              ><span class="lfriends__state" :class="{ 'is-on': f.online }">{{
-                f.online ? 'In a ' + f.category + ' room' : 'Offline'
-              }}</span>
-            </li>
-          </ul>
-          <p v-else class="lcard__note">No friends added yet. Add them from /panel in Discord.</p>
-          <NuxtLink v-if="friends.length > 6" to="/leaderboard?sort=friends" class="lcard__foot"
-            >All {{ friends.length }} friends</NuxtLink
-          >
-        </section>
-        <nav class="lcard lmore" aria-label="More">
-          <NuxtLink v-for="m in more" :key="m.to" :to="m.to"
-            ><span class="lmore__icon"><AppIcon :name="m.icon" /></span>{{ m.label
-            }}<AppIcon name="arrowRight" class="lmore__go"
-          /></NuxtLink>
-        </nav>
+              <defs>
+                <linearGradient id="home-fill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#ee862a" stop-opacity=".32" />
+                  <stop offset="1" stop-color="#ee862a" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <path :d="trend.area" fill="url(#home-fill)" />
+              <path class="chart__line" :d="trend.line" vector-effect="non-scaling-stroke" />
+              <circle class="chart__dot" :cx="trend.end[0]" :cy="trend.end[1]" r="5" />
+            </svg>
+            <p v-else class="meta">Play a few rounds to see your trend.</p>
+            <dl class="stats">
+              <div class="stat">
+                <dt>{{ track?.winRate ?? 0 }}%</dt>
+                <dd>Win rate</dd>
+              </div>
+              <div class="stat">
+                <dt><CountUp :value="track?.rounds || 0" /></dt>
+                <dd>Rounds</dd>
+              </div>
+              <div class="stat">
+                <dt><CountUp :value="track?.peakElo || 0" /></dt>
+                <dd>Best</dd>
+              </div>
+              <div class="stat">
+                <dt :class="{ hot: (track?.winStreak || 0) >= 2 }">
+                  <AppIcon v-if="(track?.winStreak || 0) >= 2" name="flame" />{{ track?.winStreak || 0 }}
+                </dt>
+                <dd>Streak</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="panel card">
+            <div class="section-head">
+              <h2>Recent rounds</h2>
+              <NuxtLink to="/history" class="meta">History -&gt;</NuxtLink>
+            </div>
+            <ol v-if="rounds.length" class="rows">
+              <li v-for="(round, i) in rounds" :key="(round.at || '') + i" class="row reveal-up" :style="{ '--i': i }">
+                <span class="place" :class="{ win: round.placement === 0 }">
+                  <AppIcon v-if="round.placement === 0" name="crown" />
+                  <template v-else>{{ round.placement == null ? '-' : `#${round.placement + 1}` }}</template>
+                </span>
+                <span class="who">
+                  <strong>{{ round.code || (round.category ? `${round.category} code` : 'Round') }}</strong>
+                  <small class="meta">{{ round.at ? ago(round.at) : '' }}</small>
+                </span>
+                <strong class="delta" :class="tone(round.delta)">
+                  {{ round.delta == null ? '-' : signed(round.delta) }}
+                </strong>
+              </li>
+            </ol>
+            <p v-else class="meta">{{ linked ? 'No rounds yet.' : 'Your rounds show up here.' }}</p>
+          </section>
+        </div>
+
+        <div class="col">
+          <section class="panel card">
+            <div class="section-head">
+              <h2><span class="live" aria-hidden="true" />Live codes</h2>
+              <span v-if="codes.length" class="chip">{{ codes.length }}</span>
+            </div>
+            <VoiceConsentNotice
+              v-if="rooms?.reason === 'voice-consent'"
+              :version="rooms.version"
+              @accepted="refreshCodes"
+            />
+            <p v-else-if="loadingCodes && !codes.length" class="meta" role="status">Loading...</p>
+            <div v-else-if="codeError && !codes.length" class="alert" role="alert">
+              <p>Codes did not load.</p>
+              <button class="btn btn--small" @click="refreshCodes">Retry</button>
+            </div>
+            <ul v-else-if="codes.length" class="codes">
+              <li v-for="code in codes.slice(0, 4)" :key="code.code" class="code">
+                <div class="code__top">
+                  <strong>{{ code.code }}</strong>
+                  <span v-if="code.early" class="code__early"><AppIcon name="crown" />Pro early</span>
+                  <span v-else class="chip">{{ code.category || rooms.bracket }}</span>
+                  <span v-if="(code.count ?? 0) >= RANKED_SLOTS - 2" class="chip chip--brand">Almost full</span>
+                </div>
+                <span class="code__seats" :aria-label="`${code.count ?? 0} of ${RANKED_SLOTS} players`">
+                  <i v-for="n in RANKED_SLOTS" :key="n" :class="{ on: n <= (code.count ?? 0) }" />
+                </span>
+                <RoomJoinButton :code="code.code" />
+              </li>
+            </ul>
+            <p v-else class="meta">{{ linked ? 'No codes open right now.' : 'Connect your account to see codes.' }}</p>
+            <NuxtLink to="/play" class="btn btn--ghost btn--small card__foot"
+              >All codes<AppIcon name="arrowRight"
+            /></NuxtLink>
+          </section>
+
+          <section v-if="linked" class="panel card">
+            <div class="section-head">
+              <h2>Scrims</h2>
+              <NuxtLink to="/play?mode=scrims" class="meta">Party -&gt;</NuxtLink>
+            </div>
+            <template v-if="match">
+              <p class="state">
+                <strong>{{ match.code || 'Preparing your room' }}</strong
+                ><span class="meta">{{ match.size }} {{ match.state }}</span>
+              </p>
+              <RoomJoinButton v-if="match.code" :code="match.code" />
+            </template>
+            <template v-else-if="queued">
+              <p class="state">
+                <strong>Finding a {{ party.size }}</strong>
+                <span class="meta">{{ party.searching || 0 }} of {{ party.need }} players in queue</span>
+              </p>
+              <button class="btn" :disabled="partyBusy" @click="partySend('cancel')">Leave queue</button>
+            </template>
+            <template v-else>
+              <p class="state">
+                <strong>{{ party?.size || '4v4' }} {{ (party?.ruleset || 'gtc').toUpperCase() }}</strong>
+                <span class="meta">{{ partyLine }}</span>
+              </p>
+              <button
+                class="btn btn--brand"
+                :disabled="partyBusy || (party && !party.youLead)"
+                @click="partySend('play')"
+              >
+                {{ party && !party.youLead ? 'Your leader queues' : 'Queue for a scrim' }}
+              </button>
+            </template>
+            <p v-if="partyData?.error" class="bad" role="alert">{{ partyData.error }}</p>
+          </section>
+
+          <section v-if="linked" class="panel card">
+            <div class="section-head">
+              <h2>Friends</h2>
+              <span v-if="online" class="chip chip--live">{{ online }} on</span>
+            </div>
+            <ul v-if="friends.length" class="rows">
+              <li v-for="f in friends.slice(0, 6)" :key="f.discordId" class="row">
+                <PlayerAvatar :name="f.name" :src="f.avatar" :discord-id="f.discordId" :size="32" />
+                <NuxtLink :to="`/player/${f.discordId}`" class="who">
+                  <strong>{{ f.name }}</strong
+                  ><small class="meta">{{ f.rank }}</small>
+                </NuxtLink>
+                <span class="friend" :class="{ on: f.online }">{{
+                  f.online ? `In a ${f.category} room` : 'Offline'
+                }}</span>
+              </li>
+            </ul>
+            <p v-else class="meta">No friends added yet. Add them from /panel in Discord.</p>
+            <NuxtLink
+              v-if="friends.length > 6"
+              to="/leaderboard?sort=friends"
+              class="btn btn--ghost btn--small card__foot"
+            >
+              All {{ friends.length }} friends
+            </NuxtLink>
+          </section>
+
+          <nav class="more" aria-label="More">
+            <NuxtLink v-for="m in more" :key="m.to" :to="m.to" class="panel more__item">
+              <AppIcon :name="m.icon" />{{ m.label }}<AppIcon name="arrowRight" class="more__go" />
+            </NuxtLink>
+          </nav>
+        </div>
       </div>
     </div>
-    <ClientOnly
-      ><RankUpMoment v-if="rankUp" :tier="rankUp.tier" :gain="rankUp.gain" @close="rankUp = null"
-    /></ClientOnly>
+    <ClientOnly>
+      <RankUpMoment v-if="rankUp" :tier="rankUp.tier" :gain="rankUp.gain" @close="rankUp = null" />
+    </ClientOnly>
   </main>
 </template>
+
+<style scoped>
+.home {
+  display: grid;
+  gap: 20px;
+}
+.since {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 18px;
+}
+.since strong {
+  color: var(--ink);
+  font-size: 14px;
+}
+.since__down {
+  background: rgba(255, 92, 124, 0.12);
+  color: var(--bad);
+}
+.since__close {
+  margin-left: auto;
+}
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.col {
+  display: grid;
+  gap: 20px;
+}
+.card {
+  display: grid;
+  gap: 16px;
+}
+.card .section-head {
+  margin: 0;
+}
+.card h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+}
+.card__foot {
+  justify-self: start;
+}
+.big {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+}
+.big small {
+  color: var(--dim);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.stats .stat dt {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 24px;
+}
+.stats .hot {
+  color: var(--brand);
+}
+.stats svg {
+  width: 18px;
+  height: 18px;
+}
+.chart {
+  display: block;
+  width: 100%;
+  height: 120px;
+  overflow: visible;
+}
+.chart__line {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 2.5;
+}
+.chart__dot {
+  fill: var(--brand);
+  stroke: var(--bg);
+  stroke-width: 3;
+}
+.steps {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--dim);
+  font-weight: 600;
+}
+.steps li.now,
+.steps li.done {
+  color: var(--ink);
+}
+.steps .btn {
+  margin-left: auto;
+}
+.steps__mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--raise);
+  font-size: 13px;
+}
+.steps li.now .steps__mark {
+  background: var(--brand);
+  color: var(--brand-ink);
+}
+.steps li.done .steps__mark {
+  background: rgba(58, 208, 125, 0.16);
+  color: var(--good);
+}
+.steps__mark svg {
+  width: 14px;
+  height: 14px;
+}
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rows .row {
+  padding: 12px 0;
+}
+.place {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: var(--r);
+  background: var(--raise);
+  color: var(--ink);
+  font-weight: 700;
+}
+.place.win {
+  background: rgba(238, 134, 42, 0.16);
+  color: var(--brand);
+}
+.place svg {
+  width: 18px;
+  height: 18px;
+}
+.who {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.who strong {
+  overflow: hidden;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.delta {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+.delta.is-up {
+  color: var(--good);
+}
+.delta.is-down {
+  color: var(--bad);
+}
+.live {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--good);
+  box-shadow: 0 0 0 4px rgba(58, 208, 125, 0.18);
+}
+.codes {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.code {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--raise);
+}
+.code__top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.code__top strong {
+  margin-right: auto;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+}
+.code__early {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pro) 16%, transparent);
+  color: var(--pro);
+  font-size: 12px;
+  font-weight: 700;
+}
+.code__early svg {
+  width: 13px;
+  height: 13px;
+}
+.code__seats {
+  display: flex;
+  gap: 4px;
+}
+.code__seats i {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--raise-2);
+}
+.code__seats i.on {
+  background: var(--good);
+}
+.state {
+  display: grid;
+  gap: 2px;
+}
+.state strong {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 24px;
+}
+.friend {
+  color: var(--dim);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.friend.on {
+  color: var(--good);
+}
+.more {
+  display: grid;
+  gap: 10px;
+}
+.more__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  color: var(--ink);
+  font-weight: 600;
+  transition:
+    transform 0.25s var(--ease),
+    border-color 0.25s;
+}
+.more__item:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-2);
+}
+.more__item svg {
+  width: 18px;
+  height: 18px;
+  color: var(--brand);
+}
+.more__go {
+  margin-left: auto;
+  color: var(--dim) !important;
+}
+@media (max-width: 1000px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
