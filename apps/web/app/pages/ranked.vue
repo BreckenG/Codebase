@@ -1,4 +1,5 @@
 <script setup>
+const VIDEO = '/video/ranked-system.mp4';
 const BADGES = ['bronze_1', 'silver_1', 'gold_1', 'platinum_1', 'ruby_1', 'sapphire'];
 const video = ref(null);
 const started = ref(false);
@@ -28,14 +29,7 @@ useSeo({
       <section class="section">
         <div class="section-head"><h2>How the Ranked system works</h2></div>
         <div class="rk__player">
-          <video
-            ref="video"
-            class="rk__video"
-            src="/video/ranked-system.mp4"
-            :controls="started"
-            playsinline
-            preload="metadata"
-          />
+          <video ref="video" class="rk__video" :src="VIDEO" :controls="started" playsinline preload="metadata" />
           <button v-if="!started" class="rk__cover" aria-label="Play the ranked system video" @click="play">
             <span class="rk__badges" aria-hidden="true">
               <img
