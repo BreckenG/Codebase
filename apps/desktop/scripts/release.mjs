@@ -1,0 +1,13 @@
+import { readFile, mkdir, copyFile, writeFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+const root = fileURLToPath(new URL('../', import.meta.url));
+const { version } = JSON.parse(await readFile(path.join(root, 'src-tauri/tauri.conf.json'), 'utf8'));
+const bundle = path.join(root, `src-tauri/target/release/bundle/nsis/Ranked World_${version}_x64-setup.exe`);
+const signature = (await readFile(bundle + '.sig', 'utf8')).trim();
+if (!signature || !/^[A-Za-z0-9+/=]+$/.test(signature)) throw new Error('Build a signed installer before publishing.');
+const folder = path.join(root, '../web/app/public/downloads/launcher');
+await mkdir(path.join(folder, version), { recursive: true });
+await copyFile(bundle, path.join(folder, version, 'RankedWorld-Setup.exe'));
+await copyFile(bundle + '.sig', path.join(folder, version, 'RankedWorld-Setup.exe.sig'));
+await writeFile(path.join(folder, 'latest.json'), JSON.stringify({ version, notes: 'A new look, plus updated terms and privacy policy.', pub_date: new Date().toISOString(), platforms: { 'windows-x86_64': { signature, url: `https://rankedworld.com/downloads/launcher/${version}/RankedWorld-Setup.exe` } } }, null, 2));
