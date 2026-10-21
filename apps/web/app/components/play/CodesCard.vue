@@ -14,8 +14,9 @@ const props = defineProps({
   invite: { type: String, default: '' },
   hidden: { type: Number, default: 0 },
   lobby: { type: Boolean, default: false },
+  tries: { type: Object, default: null },
 });
-const emit = defineEmits(['start', 'stop', 'mirror', 'mirror-stop']);
+const emit = defineEmits(['start', 'stop', 'mirror', 'mirror-stop', 'refresh']);
 const { data: cat } = await useApiFetch('/api/plans', { key: 'plans', default: () => null });
 const RANK = { free: 0, plus: 1, pro: 2 };
 const planName = (t) => (t === 'pro' ? 'Pro' : 'Plus');
@@ -57,6 +58,21 @@ function rotationLabel(code) {
   return `Scheduled in ${Math.max(1, Math.ceil((at - now.value) / 60000))} min`;
 }
 
+const trying = ref(false);
+const tryError = ref('');
+
+async function use(kind, code) {
+  trying.value = true;
+  tryError.value = '';
+  try {
+    await apiPost('/api/me/try', { kind, code });
+    emit('refresh');
+  } catch (e) {
+    tryError.value = e.message;
+  }
+  trying.value = false;
+}
+
 function publicIn(c) {
   const ms = new Date(c.openedAt).getTime() + 120000 - now.value;
   if (ms <= 0) return 'now';
@@ -65,7 +81,8 @@ function publicIn(c) {
 
 function seats(c) {
   const n = c.count || 0;
-  if (n >= RANKED_SLOTS) return 'full';
+  if (n >= RANKED_SLOTS + 2) return 'full';
+  if (n >= RANKED_SLOTS) return props.plan === 'pro' ? 'Pro seat open' : 'full';
   if (n >= RANKED_SLOTS - 2) return 'almost full';
   return 'open';
 }
@@ -135,7 +152,7 @@ const resets = computed(() => {
             <span v-if="c.early" class="tile__early"><AppIcon name="crown" />Public in {{ publicIn(c) }}</span>
             <span v-else-if="c.category" class="chip">{{ c.category }}</span>
           </div>
-          <ul v-if="lobby && c.players?.length" class="tile__who" aria-label="Players in this code">
+          <ul v-if="c.players?.length" class="tile__who" aria-label="Players in this code">
             <li
               v-for="p in c.players.slice(0, 6)"
               :key="p.discordId || p.name"
@@ -147,6 +164,15 @@ const resets = computed(() => {
             </li>
             <li v-if="c.players.length > 6" class="meta">+{{ c.players.length - 6 }} more</li>
           </ul>
+          <button
+            v-else-if="!lobby && c.count && tries?.peek"
+            class="tile__peek"
+            :disabled="trying"
+            @click="use('peek', c.code)"
+          >
+            <span class="tile__blur" aria-hidden="true"><i v-for="n in Math.min(c.count, 5)" :key="n" /></span>
+            Free peek<PerkTag tier="pro" />
+          </button>
           <NuxtLink
             v-else-if="!lobby && c.count"
             class="tile__peek"
@@ -174,20 +200,33 @@ const resets = computed(() => {
         <p>Codes open as players in your bracket come online. Practice against a bot while you wait.</p>
         <NuxtLink class="btn" to="/play?mode=practice">Open Practice</NuxtLink>
       </div>
+      <p v-if="tryError" class="meta" role="alert">{{ tryError }}</p>
       <PerkCard
         v-if="hidden"
         tier="pro"
         :title="`${hidden} new ${hidden === 1 ? 'code just opened' : 'codes just opened'} for Pro`"
       >
-        Pro players get every new code two minutes before everyone else, so the room is never full when you get there.
+        <template v-if="tries?.firstIn">
+          You get one free First in pass a week. Use it to see {{ hidden === 1 ? 'it' : 'them' }} now, before
+          {{ hidden === 1 ? 'it goes' : 'they go' }} public.
+        </template>
+        <template v-else>
+          Pro players get every new code two minutes before everyone else, so the room is never full when you get there.
+        </template>
+        <template v-if="tries?.firstIn" #go>
+          <button class="btn btn--brand pc__go" :disabled="trying" @click="use('first-in')">
+            Use free pass<AppIcon name="arrowRight" />
+          </button>
+        </template>
       </PerkCard>
       <PerkCard v-else-if="plan !== 'pro'" tier="pro" title="Get in first, see who's inside">
-        Pro players get new codes two minutes before they go public, and see who is in every code before joining.
+        Pro players get new codes two minutes before they go public, see who is in every code, and still get in when a
+        code is full.
       </PerkCard>
       <section v-else class="codes__next panel">
         <div>
-          <h3>Early code access</h3>
-          <p class="meta">Your bracket's next codes, 15 minutes early.</p>
+          <h3>Up next</h3>
+          <p class="meta">Your bracket's next codes, 15 minutes before they open.</p>
         </div>
         <p v-if="previewError" class="meta" role="status">{{ previewError }}</p>
         <div v-for="c in upcoming" :key="c.code" class="row">
@@ -421,6 +460,14 @@ const resets = computed(() => {
   color: var(--dim);
   font-size: 13px;
   font-weight: 600;
+}
+button.tile__peek {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 .tile__peek:hover {
   color: var(--ink);

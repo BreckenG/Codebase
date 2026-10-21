@@ -47,6 +47,7 @@ const highlights = computed(() =>
         'Every card customization',
         'New codes 2 minutes before everyone',
         'See who is in every code',
+        '2 extra seats in full codes',
         'No ads',
         '10 practice matches per day (coming soon)',
         'All Plus benefits',

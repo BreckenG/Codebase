@@ -7,8 +7,8 @@ const HOUSE = [
   {
     key: 'pro',
     tone: 'pro',
-    title: 'See your codes 15 minutes early',
-    perks: ['100 replays kept for 30 days', '10 practice matches a day', 'No ads'],
+    title: 'Get into new codes first',
+    perks: ['New codes 2 minutes early', 'See who is in every code', '2 extra seats in full codes'],
     label: 'Go Pro',
     to: '/subscribe',
     art: '/img/hero/forest-treehouse.webp',
