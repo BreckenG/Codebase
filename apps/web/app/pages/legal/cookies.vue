@@ -2,7 +2,7 @@
 useSeo({
   title: 'Cookie policy',
   description:
-    'The two necessary cookies Ranked World sets, what each one does, how long it lasts, and why there is no analytics or advertising cookie.',
+    'The necessary cookies Ranked World sets, what each one does, how long it lasts, and why there is no analytics or advertising cookie.',
 });
 </script>
 <template>
@@ -44,6 +44,13 @@ useSeo({
                     ban evasion.
                   </td>
                   <td>24 months</td>
+                </tr>
+                <tr>
+                  <td>rw_keep, rw_seen (browser storage)</td>
+                  <td>
+                    A copy of the browser identifier above and when it was last checked. Used only to enforce bans.
+                  </td>
+                  <td>24 months, or until you clear site data</td>
                 </tr>
                 <tr>
                   <td>gtr_state</td>

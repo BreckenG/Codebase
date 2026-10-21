@@ -1,8 +1,7 @@
 <script setup>
 useSeo({
   title: 'Terms and conditions',
-  description:
-    'The rules for using Ranked World: age and account requirements, fair play, connecting a Gorilla Tag account, memberships and account closure.',
+  description: 'The rules for using Ranked World: who can use it, fair play, ranked codes, and memberships.',
 });
 </script>
 <template>
@@ -26,82 +25,63 @@ useSeo({
           </p>
         </section>
         <section>
-          <h2>Age and account requirements</h2>
+          <h2>Who can use it</h2>
           <p>
-            You must be at least 13 and meet any higher minimum age required by your country and
+            You must be at least 13, or older if your country or
             <a
               href="https://support.discord.com/hc/en-us/articles/360040724612-Why-is-Discord-asking-for-my-birthday"
               rel="noreferrer"
               >Discord</a
-            >. If you are a minor, your parent or guardian must agree to these terms where required. A subscription
-            purchase also requires permission to use the payment method.
-          </p>
-          <p>
-            Only connect an account you control. Keep sign-in credentials and private connection codes secure. Tell us
-            if someone uses your account without permission.
+            >
+            requires it. If you are a minor, a parent or guardian must agree to these terms where the law requires it.
+            Only connect accounts you control, and keep your sign in and private codes safe.
           </p>
         </section>
         <section>
-          <h2>Playing and account connection</h2>
+          <h2>Rules</h2>
           <p>
-            Connecting associates your game identifier with Discord and records your results. Your display name, rank,
-            statistics, and recent match results appear publicly. Scrims record movement for replays. In ranked codes we
-            record movement, connection quality, color, and cosmetics for anti-cheat and moderation, as described in the
-            Privacy policy. Read the connection notice before requesting a code. Connecting does not authorize separate
-            AI training.
+            Do not cheat, manipulate results, evade bans, harass others, share private codes, or interfere with the
+            service. A ban applies to the person, not only the account. Some bans, including bans of alternate accounts,
+            are applied automatically. Your Discord account must meet a minimum age to connect. You can appeal any
+            moderation decision.
           </p>
+        </section>
+        <section>
+          <h2>Ranked codes</h2>
           <p>
-            Do not cheat, manipulate results, evade bans, harass others, share private codes without authorization, or
-            interfere with the service. A ban applies to the person, not only the account. To enforce bans we record
-            which accounts appear to belong to the same person, using account, device, payment, and gameplay information
-            as described in the Privacy policy, and accounts linked to a banned player can be banned automatically. Your
-            Discord account must be at least 3 days old to connect a game account, and connecting starts on the website
-            or the launcher. Some cheating detections also apply a ban automatically. We can restrict features or
-            accounts for these reasons. You can contact support to appeal a moderation decision.
-          </p>
-          <p>
-            Voice chat in ranked codes is transcribed to text for moderation, audio clips of flagged lines are kept, and
-            a voice signature and a few short voice clips are kept for each player to find alternate accounts of banned
-            players. You must agree to this before you can see or join ranked codes. Staff can record ranked codes and
-            publish videos or streams that include your name, gameplay, voice, and moderation actions taken in that
-            code. If you do not agree, do not join ranked codes. See the
-            <NuxtLink to="/legal/privacy">Privacy policy</NuxtLink>.
+            Your display name, rank, statistics, and recent matches are public. To join ranked codes you must agree to
+            voice chat being transcribed and voice matched. Staff can record ranked codes and publish videos that show
+            names, gameplay, voice, and moderation actions. Connecting does not give permission to train AI bots on your
+            gameplay. See the <NuxtLink to="/legal/privacy">Privacy policy</NuxtLink>.
           </p>
         </section>
         <section>
           <h2>Paid plans</h2>
           <p>
-            Paid subscriptions are available only when checkout is enabled. The selected plan, billing interval,
-            recurring price, taxes, and amount due must be shown before you authorize payment. Do not buy a plan based
-            on an announced or planned feature.
+            The plan, billing interval, price, taxes, and amount due are shown before you pay. Features marked coming
+            soon are not part of what you buy.
           </p>
           <p>
-            Subscriptions renew until cancelled. Cancel through
-            <NuxtLink to="/settings#membership">Settings</NuxtLink> or contact us if you cannot access your account. See
-            the <NuxtLink to="/legal/refunds">Refund policy</NuxtLink>. A ban does not automatically remove statutory
-            refund rights.
+            Subscriptions renew until cancelled. Cancel in <NuxtLink to="/settings#membership">Settings</NuxtLink>, or
+            in Discord if you subscribed there. See the <NuxtLink to="/legal/refunds">Refund policy</NuxtLink>. A ban
+            does not remove refund rights the law gives you.
           </p>
         </section>
         <section>
           <h2>Availability and changes</h2>
           <p>
-            Features can be unavailable during maintenance, outages, or development. Rank or matchmaking outcomes are
-            not guaranteed. If a change affects a paid service, applicable consumer rights still apply. Material changes
-            to these terms require appropriate notice; where renewed agreement is required, continued browsing alone
-            does not replace it.
+            Features can be down for maintenance or outages, and ranks and matchmaking are not guaranteed. When we make
+            an important change to these terms, we ask you to agree again.
           </p>
         </section>
         <section>
           <h2>Content and intellectual property</h2>
           <p>
-            Use only content you own or have permission to use. Do not upload or submit another person's recordings for
-            training without an appropriate legal basis and permission where required. Rights to Gorilla Tag and
-            third-party content remain with their owners. Our own logo and rank artwork do not grant permission to use
-            Another Axiom's game content.
+            Only share content you own or have permission to use. Gorilla Tag and other third-party content belong to
+            their owners.
           </p>
           <p>
-            Report copyright concerns through the <NuxtLink to="/legal/business">contact page</NuxtLink>, identifying
-            the work, the material in question, and how we can reach you. See the
+            Report copyright concerns through the <NuxtLink to="/legal/business">contact page</NuxtLink>. See the
             <a href="https://www.gorillatagvr.com/fan-content-mod-policy" rel="noreferrer"
               >Another Axiom Fan Content and Mod Policy</a
             >.
@@ -110,9 +90,8 @@ useSeo({
         <section>
           <h2>Your legal rights</h2>
           <p>
-            These terms do not exclude rights or remedies that applicable law does not allow us to exclude, including
-            mandatory consumer protections. The project operates from Colorado, United States. Your location can give
-            you additional rights. Nothing here requires you to waive a lawful complaint, payment dispute, or claim.
+            Nothing here takes away rights the law gives you. Ranked World operates from Colorado, United States, and
+            where you live can give you more rights.
           </p>
         </section>
       </div>
