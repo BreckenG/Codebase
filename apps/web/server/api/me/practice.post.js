@@ -1,16 +1,12 @@
 import{requireReplayConsent}from"../../utils/replay-consent";
-import{currentUser}from"../../utils/auth";
-import features from"../../../../../packages/shared/features.cjs";
+import{requireBots}from"../../utils/bots";
 import{entitlementFor}from"../../utils/entitlements";
-import{PartyCommand,connectDb}from"../../utils/db";
+import{connectDb}from"../../utils/db";
+import{queueCommand}from"../../utils/mirror";
 import{PRACTICE_DIFFICULTIES}from"../../utils/plans";
 const RANK={free:0,plus:1,pro:2};
-const PRACTICE_TESTERS=new Set(["1185849692395929611","1075160686000349286","1269741594538414122","1226251910961430589"]);
 export default defineEventHandler(async event=>{
-if(features.locked("practice")&&!PRACTICE_TESTERS.has(String(currentUser(event)?.id)))throw createError({statusCode:409,statusMessage:features.copy("practice").blurb});
-
-const user=currentUser(event);
-if(!user)throw createError({statusCode:401,statusMessage:"Sign in first"});
+const user=requireBots(event);
 const{action,difficulty}=await readBody(event);
 await connectDb();
 let cmd;
@@ -28,9 +24,6 @@ cmd="practice_stop";
 }else{
 throw createError({statusCode:400,statusMessage:"Unknown action"});
 }
-await PartyCommand.deleteMany({userId:user.id,state:{$ne:"pending"}});
-const already=await PartyCommand.countDocuments({userId:user.id,state:"pending"});
-if(already>=3)throw createError({statusCode:429,statusMessage:"Still applying the last one"});
-await PartyCommand.create({userId:user.id,action:cmd,arg});
+await queueCommand(user.id,cmd,arg);
 return{queued:true};
 });
