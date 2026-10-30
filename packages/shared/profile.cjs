@@ -13,7 +13,7 @@ module.exports = function profileSchema(mongoose) {
   }, { _id: false });
   const acceptance = new Schema({ version: String, at: Date, source: String, revokedAt: Date }, { _id: false });
   const schema = new Schema({
-    platform: { type: String, enum: ["steam", "meta", "unknown"], default: "unknown" }, platformUpdatedAt: Date,
+    platform: { type: String, enum: ["steam", "meta", "pc", "pico", "psvr", "unknown"], default: "unknown" }, platformUpdatedAt: Date,
     photonId: String, discordId: String, name: { type: String, default: "" },
     names: { type: [String], default: [] }, username: { type: String, default: "" },
     avatar: { type: String, default: "" }, gorillaColor: { type: [Number], default: undefined }, cosmetics: { type: [String], default: undefined }, cosmeticsAt: Date, tries: { peekAt: Date, peekCode: String, firstInAt: Date }, linked: { type: Boolean, default: false }, serverBanned: { type: Boolean, default: false },
@@ -28,6 +28,8 @@ module.exports = function profileSchema(mongoose) {
     connectUsage: { day: String, n: Number },
     practiceUsage: { type: Map, of: Number, default: () => ({}) },
     mirror: { tier: String, a: Number, b: Number, matches: Number, rounds: Number, updatedAt: Date },
+    mirrorBot: { status: String, name: String, startedAt: Date, builtAt: Date, error: String, stats: { hours: Number, rounds: Number, heldRounds: Number, cells: Number, ownShare: Number, heldInOwn: Number, floor: Number, floorSd: Number } },
+    mirrorPublic: { at: Date, by: String, how: String, name: String, title: String, display: String, removedAt: Date, removedBy: String },
     stripeCustomerId: String, stripeSubscriptionId: String, plan: { type: String, default: "free" },
     interval: String, status: String, currentPeriodEnd: Date, cancelAtPeriodEnd: Boolean,
     pendingPlan: String, pendingInterval: String, stripeScheduleId: String,
