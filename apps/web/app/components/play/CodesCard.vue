@@ -16,7 +16,7 @@ const props = defineProps({
   lobby: { type: Boolean, default: false },
   tries: { type: Object, default: null },
 });
-const emit = defineEmits(['start', 'stop', 'mirror', 'mirror-stop', 'refresh']);
+const emit = defineEmits(['start', 'stop', 'mirror', 'mirror-build', 'mirror-stop', 'refresh']);
 const { data: cat } = await useApiFetch('/api/plans', { key: 'plans', default: () => null });
 const RANK = { free: 0, plus: 1, pro: 2 };
 const planName = (t) => (t === 'pro' ? 'Pro' : 'Plus');
@@ -100,6 +100,13 @@ const left = computed(() => Math.max(0, perDay.value - (props.practice?.used || 
 const session = computed(() => props.practice?.session || null);
 const difficulties = computed(() => props.practice?.difficulties || []);
 const level = ref('average');
+const BOT = {
+  noob: ['bronze', 'shrug'],
+  easy: ['silver', 'wave'],
+  average: ['gold', 'thumbsup'],
+  good: ['ruby', 'peace'],
+  best: ['sapphire', 'flex'],
+};
 const chosen = computed(() => difficulties.value.find((d) => d.value === level.value) || difficulties.value[0] || null);
 
 function begin() {
@@ -267,7 +274,9 @@ const resets = computed(() => {
               }}
             </p>
             <div class="live__row">
-              <span class="meta">{{ session.difficulty }}</span>
+              <span class="meta">{{
+                session.mode === 'mirror' ? `Mirror bot: ${session.target || 'mirror'}` : session.difficulty
+              }}</span>
               <RoomJoinButton v-if="session.code && session.phase !== 'starting'" :code="session.code" />
             </div>
             <dl v-if="session.points" class="live__score">
@@ -280,19 +289,28 @@ const resets = computed(() => {
                 <dd>Bot</dd>
               </div>
             </dl>
-            <button class="btn" :disabled="busy" @click="emit('stop')">End practice</button>
+            <div class="go-row">
+              <button class="btn" :disabled="busy" @click="emit('stop')">End practice</button>
+              <NuxtLink v-if="session.mode === 'mirror'" class="btn btn--ghost" to="/play?mode=mirror">
+                Open Mirror Bots
+              </NuxtLink>
+            </div>
           </div>
         </template>
         <template v-else-if="left">
-          <div class="picks" role="group" aria-label="Practice difficulty">
+          <div class="picks bots" role="group" aria-label="Practice difficulty">
             <button
-              v-for="d in difficulties"
+              v-for="(d, i) in difficulties"
               :key="d.value"
-              class="pick"
+              class="pick bot reveal-up"
               :class="{ on: d.value === level }"
+              :style="{ '--i': i }"
               :aria-pressed="d.value === level"
               @click="level = d.value"
             >
+              <span class="bot__rig" aria-hidden="true">
+                <GorillaPortrait :tier="(BOT[d.value] || BOT.average)[0]" :pose="(BOT[d.value] || BOT.average)[1]" />
+              </span>
               <span class="pick__name">{{ d.label }}</span>
               <span class="meta">{{ d.blurb }}</span>
               <span v-if="d.locked" class="tag">{{ planName(d.tier) }}</span>
@@ -359,12 +377,37 @@ const resets = computed(() => {
       :busy="busy"
       :failure="failure"
       @start="(o) => emit('mirror', o)"
+      @build="emit('mirror-build')"
       @stop="emit('mirror-stop')"
     />
   </div>
 </template>
 
 <style scoped>
+.bots {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+}
+.bot {
+  justify-items: center;
+  text-align: center;
+  padding-top: 8px;
+}
+.bot__rig {
+  width: 120px;
+  margin-bottom: 2px;
+  opacity: 0.75;
+  filter: saturate(0.7);
+  transition:
+    transform 0.4s var(--ease),
+    opacity 0.3s,
+    filter 0.3s;
+}
+.bot:hover .bot__rig,
+.bot.on .bot__rig {
+  opacity: 1;
+  filter: none;
+  transform: translateY(-4px) scale(1.06);
+}
 .codes {
   display: grid;
   gap: 28px;
