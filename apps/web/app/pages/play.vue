@@ -1,7 +1,7 @@
 <script setup>
 const { enabled: desktop } = useDesktop();
 const INVITE = 'https://discord.gg/gorillatagcomp';
-const RULES_URL = 'https://docs.google.com/document/d/1eXH8xxJhVOlcAHepLoUWq2g3vYdt-j_2bUlf3GuZk-0/edit?usp=sharing';
+const RULES_URL = 'https://docs.google.com/document/d/1vGrO5_X3q7dqE4hQsukDLMEGfZGoqP7WZzPylGjarpQ/edit?tab=t.mtm9x4fs03hl';
 const route = useRoute();
 const activeMode = computed(() => playMode(route.query.mode));
 const MODES = [
@@ -46,17 +46,20 @@ const practiceFailure = ref('');
 let practiceTimeout;
 const { me, load: loadMe } = useMe();
 const { toast } = useToast();
+const featReq = useApiFetch('/api/features', { key: 'panel-features', default: () => ({ locked: {}, bots: false }) });
+await featReq;
+const { data: feats } = featReq;
+const botsOpen = computed(() => Boolean(feats.value?.bots));
+const visibleModes = computed(() => MODES.filter((m) => botsOpen.value || (m.key !== 'practice' && m.key !== 'mirror')));
 const mineReq = useApiFetch('/api/me/player', { key: 'panel-player', default: () => ({ player: null }) });
 const codeReq = useApiFetch('/api/codes', { key: 'panel-codes', default: () => ({ codes: [] }) });
-const pracReq = useApiFetch('/api/me/practice', { key: 'panel-practice', default: () => null });
-const mirrorReq = useApiFetch('/api/me/mirror', { key: 'panel-mirror', default: () => null });
-const featReq = useApiFetch('/api/features', { key: 'panel-features', default: () => ({ locked: {} }) });
-await Promise.all([mineReq, codeReq, pracReq, mirrorReq, featReq]);
+const pracReq = useApiFetch('/api/me/practice', { key: 'panel-practice', default: () => null, immediate: botsOpen.value });
+const mirrorReq = useApiFetch('/api/me/mirror', { key: 'panel-mirror', default: () => null, immediate: botsOpen.value });
+await Promise.all([mineReq, codeReq, pracReq, mirrorReq]);
 const { data: mine, refresh: refreshMine, error: playerError } = mineReq;
 const { data: codeData, refresh: refreshCodes, error: codeError } = codeReq;
 const { data: prac, refresh: refreshPrac, error: practiceError } = pracReq;
 const { data: mirror, refresh: refreshMirror } = mirrorReq;
-const { data: feats } = featReq;
 const soon = computed(() => (feats.value?.locked || {})[activeMode.value] || null);
 const locked = (key) => Boolean((feats.value?.locked || {})[key]);
 const selectedMode = computed(() => {
@@ -123,9 +126,24 @@ const startPractice = (level) =>
     'Could not start a practice code.',
   );
 const stopPractice = () => stopSession('/api/me/practice', refreshPrac);
-const startMirror = (offset) =>
-  startSession('/api/me/mirror', { action: 'start', offset }, refreshMirror, 'Could not start a Mirror Bot session.');
+const startMirror = (o) =>
+  startSession(
+    '/api/me/mirror',
+    { action: 'play', target: o.target, penalty: o.penalty },
+    refreshMirror,
+    'Could not start a Mirror Bot session.',
+  );
 const stopMirror = () => stopSession('/api/me/mirror', refreshMirror);
+async function buildMirror() {
+  practiceFailure.value = '';
+  try {
+    await apiFetch('/api/me/mirror', { method: 'POST', body: { action: 'build' } });
+    setTimeout(() => refreshMirror().catch(() => null), 2500);
+  } catch (e) {
+    practiceFailure.value = e?.data?.statusMessage || 'Could not start your mirror build.';
+    toast(practiceFailure.value);
+  }
+}
 const plan = computed(() => me.value.plan?.plan || 'free');
 const player = computed(() => mine.value?.player || null);
 const bracket = computed(() => player.value?.ranked?.tier?.category || null);
@@ -251,9 +269,9 @@ onMounted(async () => {
   await loadMe();
   if (!me.value.user) return;
   pracPoll = setInterval(() => {
-    refreshPrac().catch(() => null);
+    if (botsOpen.value) refreshPrac().catch(() => null);
     refreshCodes().catch(() => null);
-    if (activeMode.value === 'mirror') refreshMirror().catch(() => null);
+    if (botsOpen.value && activeMode.value === 'mirror') refreshMirror().catch(() => null);
   }, 5000);
   if (player.value?.linked) return;
   conn.value = await apiGet('/api/me/connect').catch(() => conn.value);
@@ -283,7 +301,7 @@ useSeo(() => ({ title: selectedMode.value.title, description: selectedMode.value
 
       <nav class="seg play__modes" aria-label="Play mode">
         <NuxtLink
-          v-for="m in MODES"
+          v-for="m in visibleModes"
           :key="m.key"
           :to="{ path: '/play', query: { mode: m.key } }"
           :aria-current="activeMode === m.key ? 'page' : undefined"
@@ -456,6 +474,10 @@ useSeo(() => ({ title: selectedMode.value.title, description: selectedMode.value
               <p>Could not load your practice sessions.</p>
               <button class="btn btn--small" @click="refreshPrac">Try again</button>
             </div>
+            <div v-else-if="(activeMode === 'practice' || activeMode === 'mirror') && !botsOpen" class="empty">
+              <h3>{{ selectedMode.name }} is not open yet.</h3>
+              <p>Practice Bots and Mirror Bots are still being tested. They open to everyone later.</p>
+            </div>
             <div v-else-if="soon" class="empty">
               <h3>{{ soon.title }} is coming soon.</h3>
               <p>{{ soon.blurb }}</p>
@@ -478,6 +500,7 @@ useSeo(() => ({ title: selectedMode.value.title, description: selectedMode.value
               @start="startPractice"
               @stop="stopPractice"
               @mirror="startMirror"
+              @mirror-build="buildMirror"
               @mirror-stop="stopMirror"
             />
           </ReplayConsentGate>
