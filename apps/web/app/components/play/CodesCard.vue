@@ -144,7 +144,7 @@ const resets = computed(() => {
     <template v-if="mode === 'ranked'">
       <div class="section-head">
         <h2>Open codes</h2>
-        <span class="meta">{{ codes.length }} open / {{ bracket || 'Your bracket' }}</span>
+        <span class="meta">{{ codes.length }} open</span>
       </div>
       <div v-if="codes.length" class="codes__grid">
         <article
@@ -157,7 +157,6 @@ const resets = computed(() => {
           <div class="tile__top">
             <strong>{{ c.code }}</strong>
             <span v-if="c.early" class="tile__early"><AppIcon name="crown" />Public in {{ publicIn(c) }}</span>
-            <span v-else-if="c.category" class="chip">{{ c.category }}</span>
           </div>
           <ul v-if="c.players?.length" class="tile__who" aria-label="Players in this code">
             <li
@@ -231,10 +230,7 @@ const resets = computed(() => {
         code is full.
       </PerkCard>
       <section v-else class="codes__next panel">
-        <div>
-          <h3>Up next</h3>
-          <p class="meta">Your bracket's next codes, 15 minutes before they open.</p>
-        </div>
+        <h3>Up next</h3>
         <p v-if="previewError" class="meta" role="status">{{ previewError }}</p>
         <div v-for="c in upcoming" :key="c.code" class="row">
           <AppIcon name="hash" />
@@ -423,6 +419,7 @@ const resets = computed(() => {
 .tile {
   --seat: var(--good);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   padding: 22px;
   border-radius: var(--r-lg);
@@ -446,6 +443,7 @@ const resets = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 10px;
 }
 .tile__top strong {
@@ -498,8 +496,10 @@ const resets = computed(() => {
 }
 .tile__peek {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
   color: var(--dim);
   font-size: 13px;
   font-weight: 600;

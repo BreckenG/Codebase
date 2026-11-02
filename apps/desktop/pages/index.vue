@@ -427,7 +427,6 @@ function tone(delta) {
                 <div class="code__top">
                   <strong>{{ code.code }}</strong>
                   <span v-if="code.early" class="code__early"><AppIcon name="crown" />Pro early</span>
-                  <span v-else class="chip">{{ code.category || rooms.bracket }}</span>
                   <span v-if="(code.count ?? 0) >= RANKED_SLOTS - 2" class="chip chip--brand">Almost full</span>
                 </div>
                 <span class="code__seats" :aria-label="`${code.count ?? 0} of ${RANKED_SLOTS} players`">

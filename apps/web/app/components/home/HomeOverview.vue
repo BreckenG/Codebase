@@ -108,7 +108,7 @@ onBeforeUnmount(() => clearInterval(poll));
               <span class="ov__hash"><AppIcon name="hash" /></span>
               <div class="ov__code-main">
                 <strong>{{ c.code }}</strong>
-                <span class="meta">{{ c.category || codeData.bracket }} / {{ c.count || 0 }} players</span>
+                <span class="meta">{{ c.count || 0 }} players</span>
               </div>
               <RoomJoinButton :code="c.code" />
             </div>
