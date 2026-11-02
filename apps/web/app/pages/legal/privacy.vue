@@ -35,6 +35,11 @@ useSeo({
               heat maps of where you play that only you can see.
             </li>
             <li>
+              Ranked movement recordings, to train and run AI practice bots. That includes a mirror bot built from your
+              own movement that only you can play. A mirror of you is only offered to other players if you tell us yes.
+              Agreeing to this is part of joining ranked codes.
+            </li>
+            <li>
               Scrim, Auto Ref, and Practice movement, to make replays. We ask separate permission before recording these
               modes or using them to train AI bots. Withdrawing stops new recordings but does not undo bots already
               trained.
@@ -97,7 +102,11 @@ useSeo({
         <section>
           <h2>How long we keep it</h2>
           <ul>
-            <li>Ranked round replays: 5 days.</li>
+            <li>Ranked round replays you can watch back: 5 days.</li>
+            <li>
+              Ranked movement recordings and mirror bots built from them: as long as we use them for bots, or until you
+              ask us to delete them. Removing a public mirror deletes its files.
+            </li>
             <li>Anti-cheat clips on our servers: 3 days. Copies sent to staff are kept as moderation records.</li>
             <li>Account activity log: 180 days.</li>
             <li>Security information: 24 months after it was last used.</li>
@@ -127,7 +136,8 @@ useSeo({
           <h2>Your choices and rights</h2>
           <p>
             You can withdraw your voice agreement or replay permission in Settings at any time. Withdrawing voice
-            removes you from ranked codes. Disconnecting your game account does not delete your data.
+            removes you from ranked codes. To stop your ranked movement being used for bots, or to take down a public
+            mirror of you, email us and we will do it. Disconnecting your game account does not delete your data.
           </p>
           <p>
             Email <a :href="'mailto:' + CONTACT_EMAIL">{{ CONTACT_EMAIL }}</a> to ask for a copy, correction, or

@@ -50,9 +50,12 @@ useSeo({
           <h2>Ranked codes</h2>
           <p>
             Your display name, rank, statistics, and recent matches are public. To join ranked codes you must agree to
-            voice chat being transcribed and voice matched. Staff can record ranked codes and publish videos that show
-            names, gameplay, voice, and moderation actions. Connecting does not give permission to train AI bots on your
-            gameplay. See the <NuxtLink to="/legal/privacy">Privacy policy</NuxtLink>.
+            voice chat being transcribed and voice matched, and to recordings of your ranked gameplay (movement, name,
+            and tags) being used to train and run AI practice bots, including a mirror bot that copies how you move.
+            Only you can play your own mirror. We only make a mirror of you available to other players if you tell us
+            yes, and you can have it removed at any time. Staff can record ranked codes and publish videos that show
+            names, gameplay, voice, and moderation actions. See the
+            <NuxtLink to="/legal/privacy">Privacy policy</NuxtLink>.
           </p>
         </section>
         <section>
