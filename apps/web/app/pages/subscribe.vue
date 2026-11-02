@@ -313,4 +313,15 @@ useSeo({
     grid-template-columns: 1fr;
   }
 }
+@media (max-width: 480px) {
+  .sub__cycle .seg {
+    width: 100%;
+  }
+  .sub__cycle .seg > button {
+    flex: 1;
+    justify-content: center;
+    padding: 0 6px;
+    font-size: 13px;
+  }
+}
 </style>

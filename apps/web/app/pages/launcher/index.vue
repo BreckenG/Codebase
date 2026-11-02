@@ -55,7 +55,7 @@ useSeo({
           <img
             ref="shot"
             class="ln__shot"
-            src="/img/launcher-home.jpg?v=2"
+            src="/img/launcher-home.jpg?v=3"
             alt="The launcher home screen with sample data"
             width="1280"
             height="820"
@@ -78,6 +78,9 @@ useSeo({
 </template>
 
 <style scoped>
+.page {
+  overflow-x: clip;
+}
 .ln__hero {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
