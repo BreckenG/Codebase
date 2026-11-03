@@ -16,6 +16,10 @@ const TITLES = {
   504: 'Request timed out',
 };
 const title = computed(() => TITLES[code.value] || 'Could not open this page');
+const detail = computed(() => {
+  const text = String(props.error?.message || '');
+  return code.value >= 500 && text && text !== title.value ? text.slice(0, 160) : '';
+});
 
 function back() {
   const previous = window.history.state?.back;
@@ -37,6 +41,7 @@ useHead(() => ({ title: `${title.value} | Ranked World` }));
         </span>
       </div>
       <h1>{{ title }}</h1>
+      <p v-if="detail" class="meta er__why">{{ detail }}</p>
       <div class="go-row">
         <button class="btn btn--brand" @click="back"><AppIcon name="arrowLeft" />Back</button>
         <a class="btn btn--ghost" href="/">Home</a>
@@ -55,6 +60,11 @@ useHead(() => ({ title: `${title.value} | Ranked World` }));
   min-height: 100vh;
   padding: 40px 16px;
   text-align: center;
+}
+.er__why {
+  max-width: 34em;
+  margin-top: -8px;
+  overflow-wrap: anywhere;
 }
 .er__fig {
   width: min(420px, 90vw);
