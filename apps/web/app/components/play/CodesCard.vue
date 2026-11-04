@@ -95,8 +95,8 @@ const owned = computed(
 const labels = computed(() => Object.fromEntries(categories.value.map((c) => [c.key, c.label])));
 const teaching = computed(() => props.trainer.filter((c) => c.active !== false && owned.value.has(c.category)));
 const signedIn = computed(() => Boolean(props.practice?.signedIn));
-const perDay = computed(() => props.practice?.perDay ?? cat.value?.practicePerDay?.[props.plan] ?? 1);
-const left = computed(() => Math.max(0, perDay.value - (props.practice?.used || 0)));
+const perWeek = computed(() => props.practice?.perWeek ?? cat.value?.practicePerWeek?.[props.plan] ?? 1);
+const left = computed(() => Math.max(0, perWeek.value - (props.practice?.used || 0)));
 const session = computed(() => props.practice?.session || null);
 const difficulties = computed(() => props.practice?.difficulties || []);
 const level = ref('average');
@@ -132,10 +132,11 @@ onBeforeUnmount(() => {
 const resets = computed(() => {
   if (!now.value) return '';
   const d = new Date(now.value);
-  const ms = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) - now.value;
-  const h = Math.floor(ms / 3600000);
+  const ms = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 7 - ((d.getUTCDay() + 6) % 7)) - now.value;
+  const days = Math.floor(ms / 86400000);
+  const h = Math.floor((ms % 86400000) / 3600000);
   const m = Math.floor((ms % 3600000) / 60000);
-  return h ? `${h}h ${m}m` : `${m}m`;
+  return days ? `${days}d ${h}h` : h ? `${h}h ${m}m` : `${m}m`;
 });
 </script>
 
@@ -254,7 +255,7 @@ const resets = computed(() => {
       <template v-else>
         <div class="section-head">
           <h2>{{ session ? 'Your session' : 'Pick a bot' }}</h2>
-          <span class="meta">{{ left }} / {{ perDay }} matches left</span>
+          <span class="meta">{{ left }} / {{ perWeek }} matches left this week</span>
         </div>
         <template v-if="session">
           <div class="live panel" role="status">
@@ -269,6 +270,7 @@ const resets = computed(() => {
                   : 'Join this code at the computer in Gorilla Tag.'
               }}
             </p>
+            <OpeningBar v-if="session.phase === 'starting'" :since="session.startedAt" />
             <div class="live__row">
               <span class="meta">{{
                 session.mode === 'mirror' ? `Mirror bot: ${session.target || 'mirror'}` : session.difficulty
@@ -317,13 +319,13 @@ const resets = computed(() => {
               <AppIcon name="play" />{{ busy ? 'Starting your session...' : 'Start practice' }}
             </button>
             <NuxtLink v-if="chosen?.locked" class="btn" to="/subscribe">Get {{ chosen.label }}</NuxtLink>
-            <span class="meta">{{ resets ? `Resets in ${resets}` : 'Resets at midnight UTC' }}</span>
+            <span class="meta">{{ resets ? `Resets in ${resets}` : 'Resets Monday at midnight UTC' }}</span>
           </div>
         </template>
         <div v-else class="empty">
-          <h3>Daily limit reached</h3>
+          <h3>Weekly limit reached</h3>
           <p>
-            You have used all {{ perDay }} matches. Your allowance resets at midnight UTC{{
+            You have used all {{ perWeek }} matches this week. Your allowance resets Monday at midnight UTC{{
               resets ? `, in ${resets}` : ''
             }}.
           </p>

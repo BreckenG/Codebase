@@ -14,7 +14,7 @@ const pro = computed(() => Boolean(m.value.pro));
 const range = computed(() => m.value.penalty || { min: 3, max: 6, def: 3 });
 const penalty = ref(3);
 watch(range, (r) => (penalty.value = r.def), { immediate: true });
-const left = computed(() => Math.max(0, (m.value.perDay || 0) - (m.value.used || 0)));
+const left = computed(() => Math.max(0, (m.value.perWeek || 0) - (m.value.used || 0)));
 const ready = computed(() => self.value.status === 'ready');
 const building = computed(() => self.value.status === 'building');
 const need = computed(() => self.value.need || 0);
@@ -43,7 +43,7 @@ const STATUS = {
   <section class="mirror" aria-labelledby="mirror-heading">
     <div class="section-head">
       <h2 id="mirror-heading">{{ session ? 'Your session' : 'Mirror bots' }}</h2>
-      <span class="meta">{{ left }} / {{ m.perDay || 0 }} matches left</span>
+      <span class="meta">{{ left }} / {{ m.perWeek || 0 }} matches left this week</span>
     </div>
     <div v-if="failure" class="alert" role="alert">
       <p>{{ failure }}</p>
@@ -65,6 +65,7 @@ const STATUS = {
             : 'Join this code at the computer in Gorilla Tag.'
         }}
       </p>
+      <OpeningBar v-if="session.phase === 'starting'" :since="session.startedAt" />
       <div class="live__row">
         <span class="chip chip--brand"><AppIcon name="bot" />{{ label(session) }}</span>
         <RoomJoinButton v-if="session.code && session.phase !== 'starting'" :code="session.code" />
@@ -164,7 +165,7 @@ const STATUS = {
       </div>
       <div class="section-head">
         <h2>Public mirrors</h2>
-        <span v-if="!pro" class="meta">A Pro feature</span>
+        <span v-if="!pro" class="meta">{{ m.freeTry ? 'A Pro feature, you have 1 free try' : 'A Pro feature' }}</span>
       </div>
       <div v-if="!publics.length" class="empty">
         <h3>No public mirrors yet</h3>
