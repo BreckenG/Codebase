@@ -94,7 +94,7 @@ export function scrubReplay(raw, allowed, self, maximumDurationMs = Infinity) {
   for (const r of records) if (r.type === 'players' && Array.isArray(r.players)) for (const p of r.players) if (aliases.has(p.id)) metadata.set(p.id, p)
   const players = ids.map(id => {
     const p = metadata.get(id)
-    return { id: aliases.get(id), name: text(p?.name, `Player ${aliases.get(id).slice(1)}`), self: id === self, bot: p?.bot === true, platform: ['steam', 'meta'].includes(p?.platform) ? p.platform : 'unknown', color: vector(p?.color) ? p.color.map(n => Math.max(0, Math.min(1, n))) : null }
+    return { id: aliases.get(id), name: text(p?.name, `Player ${aliases.get(id).slice(1)}`), self: id === self, bot: p?.bot === true, platform: ['steam', 'meta', 'pc', 'pico', 'psvr'].includes(p?.platform) ? p.platform : 'unknown', color: vector(p?.color) ? p.color.map(n => Math.max(0, Math.min(1, n))) : null }
   })
   const frames = smoothFrames(records.filter(r => r.type === 'frame' && finite(r.t) && r.t >= 0).sort((a, b) => a.t - b.t).flatMap(r => {
     const p = {}

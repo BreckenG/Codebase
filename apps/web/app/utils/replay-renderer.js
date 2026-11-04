@@ -1,5 +1,5 @@
 import { prepareReplayGeometry } from './replay-geometry.js'
-import { loadQuestModel, loadIndexModel, loadViveModel, createReplayAvatars } from './replay-avatar.mjs'
+import { loadAvatarModels, createReplayAvatars } from './replay-avatar.mjs'
 
 const sub = (a, b) => a.map((n, i) => n - b[i])
 const dot = (a, b) => a.reduce((n, v, i) => n + v * b[i], 0)
@@ -59,7 +59,7 @@ function paintedProgram(gl) {
 }
 
 export async function createReplayRenderer(canvas, geometry) {
-  const [assets, indexAssets, viveAssets] = await Promise.all([loadQuestModel(), loadIndexModel(), loadViveModel()])
+  const models = await loadAvatarModels()
   const gl = canvas.getContext('webgl', { alpha: false, antialias: true, stencil: true })
   if (!gl) throw new Error('This device does not support the replay graphics viewer.')
   function shader(type, source) { const value = gl.createShader(type); gl.shaderSource(value, source); gl.compileShader(value); if (!gl.getShaderParameter(value, gl.COMPILE_STATUS)) throw new Error('Replay shader unavailable'); return value }
@@ -70,7 +70,7 @@ export async function createReplayRenderer(canvas, geometry) {
   const position = gl.getAttribLocation(program, 'position')
   const light = gl.getAttribLocation(program, 'light')
   const uniforms = Object.fromEntries(['eye', 'right', 'up', 'forward', 'aspect', 'color'].map(k => [k, gl.getUniformLocation(program, k)]))
-  const map = gl.createBuffer(), solid = gl.createBuffer(), avatars = createReplayAvatars(gl, assets, indexAssets, viveAssets)
+  const map = gl.createBuffer(), solid = gl.createBuffer(), avatars = createReplayAvatars(gl, models)
   const prepared = prepareReplayGeometry(geometry)
   gl.bindBuffer(gl.ARRAY_BUFFER, solid); gl.bufferData(gl.ARRAY_BUFFER, prepared.surfaces, gl.STATIC_DRAW)
   let mapCount = 0
