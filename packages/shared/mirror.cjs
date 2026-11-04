@@ -18,17 +18,17 @@ const PLAN_COPY = {
   free: {
     mirror: false,
     headline: "Mirror Bot is a Pro feature",
-    body: "Free keeps 1 practice match a day against Noob, Easy or Average, and the difficulty is the one you pick.",
+    body: "Free keeps 1 practice match a week against Noob, Easy or Average, and the difficulty is the one you pick.",
   },
   plus: {
     mirror: false,
     headline: "Mirror Bot is a Pro feature",
-    body: "Plus keeps 3 practice matches a day and unlocks Good, and the difficulty is still the one you pick.",
+    body: "Plus keeps 5 practice matches a week and unlocks Good, and the difficulty is still the one you pick.",
   },
   pro: {
     mirror: true,
     headline: "Mirror Bot picks its own difficulty",
-    body: "Pro gets 10 matches a day, every difficulty up to Best, and a bot that reads your own recordings for its routes and its level.",
+    body: "Pro gets 15 matches a week, every difficulty up to Best, and a bot that reads your own recordings for its routes and its level.",
   },
 };
 function enabled() {
