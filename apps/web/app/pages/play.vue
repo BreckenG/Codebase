@@ -513,7 +513,7 @@ useSeo(() => ({ title: selectedMode.value.title, description: selectedMode.value
             <span :style="{ width: `${player.ranked.tier.isTop ? 100 : player.ranked.tier.percent}%` }" />
           </div>
           <p v-if="activeMode === 'practice' || activeMode === 'mirror'" class="meta">
-            Practice allowance resets at midnight UTC.
+            Practice allowance resets Monday at midnight UTC.
           </p>
           <NuxtLink class="btn btn--small" :to="`/player/${player.discordId || player.photonId}`"
             >View your profile</NuxtLink

@@ -26,11 +26,11 @@ const cycles = computed(() => tiers.value[0]?.intervals || []);
 const openTier = ref(null);
 const modalTier = computed(() => tiers.value.find((t) => t.key === openTier.value) || null);
 const FREE = [
-  'Ranked codes and leaderboards',
-  '1 practice match per day (coming soon)',
-  'Basic training categories',
-  'Last 25 matches',
-  'One free lobby peek and early pass',
+  'Ranked codes, leaderboards and scrims',
+  'Basic movement stats and profile cards',
+  'Last 5 matches',
+  'One free try: a lobby peek, an early pass or a public mirror match',
+  '1 practice or mirror match a week (coming soon)',
 ];
 const features = [
   {
@@ -42,16 +42,18 @@ const features = [
   { name: 'Replay length', free: 'None', plus: 'Up to 15 minutes', pro: 'Up to 60 minutes' },
   { name: 'Movement stats', free: 'Basic', plus: 'All available stats', pro: 'All available stats' },
   { name: 'Profile cards', free: 'Basic', plus: 'More themes and fonts', pro: 'All customization' },
-  { name: 'First into new codes', free: 'One free try', plus: 'One free try', pro: '2 minutes before public' },
-  { name: 'See who is in each code', free: 'One free peek', plus: 'One free peek', pro: 'Names and ranks' },
-  { name: 'Join full codes', free: 'None', plus: 'None', pro: '2 extra seats past 10' },
+  { name: 'First into new codes', free: 'Free try', plus: 'Free try', pro: '2 minutes before public' },
+  { name: 'See who is in each code', free: 'Free try', plus: 'Free try', pro: 'Names and ranks of everyone' },
+  { name: 'Join full codes', free: 'None', plus: 'None', pro: '2 extra slots past 10' },
   { name: 'Upcoming code preview', free: 'None', plus: 'None', pro: '15 minutes before rotation' },
   { name: 'Queue priority', free: 'Standard', plus: 'Priority', pro: 'Priority' },
   { name: 'Friend leaderboard', free: 'None', plus: 'Included', pro: 'Included' },
-  { name: 'Practice matches (coming soon)', free: '1 per day', plus: '3 per day', pro: '10 per day' },
+  { name: 'Practice and mirror matches (coming soon)', free: '1 per week', plus: '5 per week', pro: '15 per week' },
   { name: 'Bot difficulty (coming soon)', free: 'Up to Average', plus: 'Up to Good', pro: 'Up to Best' },
-  { name: 'Training categories (coming soon)', free: 'Basic', plus: 'Advanced + cut offs', pro: 'All categories' },
-  { name: 'Match history', free: '25 matches', plus: 'Unlimited', pro: 'Unlimited' },
+  { name: 'Mirror bots (coming soon)', free: 'Your own', plus: 'Your own', pro: 'Yours + public mirrors' },
+  { name: 'Public mirror match', free: 'Free try', plus: 'Free try', pro: 'Included' },
+  { name: 'Training categories (coming soon)', free: 'None', plus: 'Advanced + cut offs', pro: 'All categories' },
+  { name: 'Match history', free: '5 matches', plus: 'Unlimited', pro: 'Unlimited' },
 ];
 const COLS = [
   { key: 'free', name: 'Free' },
@@ -62,7 +64,7 @@ const includes = (key) => (key === 'plus' ? 'Includes Free benefits' : 'Includes
 useSeo({
   title: 'Membership: Plus and Pro',
   description:
-    'Compare Free, Plus and Pro on Ranked World. Replays, movement stats, profile card themes, practice matches per day, bot difficulty and match history.',
+    'Compare Free, Plus and Pro on Ranked World. Replays, movement stats, profile card themes, practice matches per week, bot difficulty and match history.',
 });
 </script>
 
@@ -170,6 +172,10 @@ useSeo({
               </tbody>
             </table>
           </div>
+          <p class="meta sub__fine">
+            Free and Plus get one free try in total, used on a lobby peek, an early pass or a public mirror match.
+            Features marked coming soon can still change before they launch.
+          </p>
         </section>
 
         <details class="sub__more">
@@ -215,6 +221,10 @@ useSeo({
 .sub__note {
   margin-top: 18px;
   text-align: center;
+}
+.sub__fine {
+  margin-top: 14px;
+  max-width: 70ch;
 }
 .sub__table {
   overflow-x: auto;

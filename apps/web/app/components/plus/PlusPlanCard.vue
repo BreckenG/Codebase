@@ -40,16 +40,16 @@ const highlights = computed(() =>
         '10 recent scrim and practice replays, up to 15 minutes',
         'All available movement stats',
         'More card styles and priority queue',
-        '3 practice matches per day (coming soon)',
+        '5 practice or mirror matches a week (coming soon)',
       ]
     : [
         '100 scrim and practice replays, up to 60 minutes',
         'Every card customization',
         'New codes 2 minutes before everyone',
         'See who is in every code',
-        '2 extra seats in full codes',
+        '2 extra slots in full codes',
         'No ads',
-        '10 practice matches per day (coming soon)',
+        '15 practice or mirror matches a week (coming soon)',
         'All Plus benefits',
       ],
 );

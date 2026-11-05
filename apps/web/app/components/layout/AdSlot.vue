@@ -8,7 +8,7 @@ const HOUSE = [
     key: 'pro',
     tone: 'pro',
     title: 'Get into new codes first',
-    perks: ['New codes 2 minutes early', 'See who is in every code', '2 extra seats in full codes'],
+    perks: ['New codes 2 minutes early', 'See who is in every code', '2 extra slots in full codes'],
     label: 'Go Pro',
     to: '/subscribe',
     art: '/img/hero/forest-treehouse.webp',
