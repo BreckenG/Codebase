@@ -20,7 +20,7 @@ if(!await CodeSession.exists({code,purpose:"ranked",active:true}))throw createEr
 set["tries.peekCode"]=code;
 }
 await connectDb();
-const res=await Player.updateOne({_id:doc._id,[field]:null},{$set:set});
+const res=await Player.updateOne({_id:doc._id,"tries.peekAt":null,"tries.firstInAt":null,"tries.mirrorAt":null},{$set:set});
 if(!res.modifiedCount)throw createError({statusCode:409,statusMessage:"You already used your free try"});
 return{ok:true};
 });

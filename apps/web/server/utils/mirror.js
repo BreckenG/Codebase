@@ -6,7 +6,7 @@ export const MIN_ROUNDS=20;
 export async function roundsFor(photonId){
 if(!photonId)return 0;
 await connectDb();
-return mongoose.connection.db.collection("ranked_replays").countDocuments({photonIds:photonId});
+return mongoose.connection.db.collection("match_ledger").countDocuments({photonId,track:"ranked"});
 }
 export function clampPenalty(v){
 const n=Math.round(Number(v));

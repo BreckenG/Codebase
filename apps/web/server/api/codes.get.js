@@ -28,6 +28,6 @@ const peek=!perks.lobbyPreview&&membershipConfig.tryLive(t.peekAt,membershipConf
 const view={...perks,firstIn:perks.firstIn||pass,peekCode:peek?t.peekCode:null};
 const list=(await Promise.all([bracket,...extra].map(c=>codes(c,false,view)))).flat();
 const hidden=view.firstIn?0:await earlyCount([bracket,...extra]);
-const tries={peek:!perks.lobbyPreview&&membershipConfig.tryReady(t.peekAt),firstIn:!perks.firstIn&&membershipConfig.tryReady(t.firstInAt),pass,peekCode:view.peekCode};
+const tries={peek:!perks.lobbyPreview&&!membershipConfig.tryUsed(t),firstIn:!perks.firstIn&&!membershipConfig.tryUsed(t),pass,peekCode:view.peekCode};
 return{codes:list,bracket:extra.length?[bracket,...extra].join(" + "):bracket,reason:null,hidden,firstIn:Boolean(perks.firstIn),lobbyPreview:Boolean(perks.lobbyPreview),tries};
 });
