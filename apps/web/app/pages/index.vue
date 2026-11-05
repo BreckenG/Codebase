@@ -4,7 +4,7 @@ useSeo({
   title: 'Ranked World - Competitive Gorilla Tag Ranked Codes and MMR',
   brandTitle: true,
   description:
-    'Ranked World is a competitive Gorilla Tag platform. Join ranked codes for your bracket, climb the MMR leaderboard and run scrims. Practice bots are coming soon.',
+    'Ranked World is a competitive Gorilla Tag platform. Join ranked codes for your skill bracket, climb the MMR leaderboard, run scrims and watch your matches back in 3D.',
 });
 </script>
 

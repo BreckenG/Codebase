@@ -34,6 +34,28 @@ const FEATURES = [
     body: 'Use the launcher to launch straight into a ranked match with one click.',
   },
 ];
+const FAQ = [
+  {
+    q: 'What is Ranked World?',
+    a: 'A competitive platform for Gorilla Tag. You join ranked codes matched to your skill, every round updates your MMR, and you climb a public leaderboard. It is fan made and not affiliated with Another Axiom.',
+  },
+  {
+    q: 'How do Gorilla Tag ranked codes work?',
+    a: 'Connect your Discord account to your Gorilla Tag account, then join the code for your bracket in game. Each code holds 10 players and codes are split into four brackets, LOW, MID, HIGH and TOP, so you play people near your level.',
+  },
+  {
+    q: 'How do the ranks and MMR work?',
+    a: 'There are 6 ranks and 15 divisions. Bronze, Silver, Gold and Platinum have three divisions each, Ruby has two and Sapphire is the top. Every ranked round moves your MMR based on how you did against the rest of the lobby.',
+  },
+  {
+    q: 'Is Ranked World free?',
+    a: 'Yes. Ranked codes, the leaderboard and scrims are free. Plus and Pro add extras like replays, movement stats, early access to new codes and more practice matches.',
+  },
+  {
+    q: 'Do I need the launcher?',
+    a: 'No. You can join codes straight from the game. The Windows launcher joins your code with one click and shows your round results inside VR.',
+  },
+];
 </script>
 
 <template>
@@ -41,7 +63,8 @@ const FEATURES = [
     <section class="land__hero wrap">
       <div class="land__copy">
         <h1 class="reveal-up land__title">Ranked World</h1>
-        <div class="land__cta reveal-up" style="--i: 1">
+        <p class="reveal-up land__lead" style="--i: 1">Ranked codes, an MMR ladder and scrims for Gorilla Tag.</p>
+        <div class="land__cta reveal-up" style="--i: 2">
           <NuxtLink class="btn btn--brand btn--large" to="/play">Start Ranking</NuxtLink>
           <NuxtLink class="btn btn--large" to="/ranked">How Ranked works</NuxtLink>
         </div>
@@ -108,6 +131,16 @@ const FEATURES = [
       </div>
     </section>
 
+    <section class="section wrap">
+      <h2 v-reveal>Questions</h2>
+      <div class="land__faq">
+        <details v-for="(f, i) in FAQ" :key="f.q" v-reveal="i % 2" class="panel">
+          <summary>{{ f.q }}<AppIcon name="plus" /></summary>
+          <p>{{ f.a }}</p>
+        </details>
+      </div>
+    </section>
+
     <section class="section wrap land__end">
       <div>
         <h2 v-reveal>Claim your<br />spot.</h2>
@@ -133,6 +166,12 @@ const FEATURES = [
 .land__title {
   white-space: nowrap;
   font-size: clamp(44px, 7.4vw, 112px);
+}
+.land__lead {
+  max-width: 26ch;
+  margin-top: 18px;
+  color: var(--text);
+  font-size: 20px;
 }
 .land__cta {
   display: flex;
@@ -217,6 +256,43 @@ const FEATURES = [
 }
 .land__feature p {
   margin-top: 10px;
+  color: var(--dim);
+}
+.land__faq {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+}
+.land__faq summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+.land__faq summary::-webkit-details-marker {
+  display: none;
+}
+.land__faq summary svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--dim);
+  transition:
+    transform 0.3s var(--ease),
+    color 0.3s;
+}
+.land__faq details[open] summary svg {
+  transform: rotate(45deg);
+  color: var(--brand);
+}
+.land__faq p {
+  max-width: 70ch;
+  margin-top: 12px;
   color: var(--dim);
 }
 .land__end {
