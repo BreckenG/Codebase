@@ -1,4 +1,5 @@
 <script setup>
+import { phaseLabel } from '~/utils/practice-phase.js';
 const props = defineProps({
   plan: { type: String, default: 'free' },
   mirror: { type: Object, default: null },
@@ -31,6 +32,10 @@ const STICK = {
 };
 const label = (s) =>
   s.mode === 'mirror' ? (s.self ? 'Your mirror' : `${s.target}'s mirror`) : `Level bot, ${s.difficulty}`;
+const why = (e) =>
+  /no ranked rounds/i.test(e)
+    ? 'None of your ranked matches since Oct 28 are saved yet. Play a few more and build again.'
+    : String(e).replace(/\*\*|`/g, '');
 const STATUS = {
   none: 'No mirror yet, build one!',
   building: 'Building your mirror. This takes a few minutes.',
@@ -55,7 +60,7 @@ const STATUS = {
     </div>
     <div v-else-if="session" class="live panel" role="status">
       <span class="chip" :class="{ 'chip--live': session.phase !== 'starting' }">
-        <span class="dot" />{{ session.phase }}
+        <span class="dot" />{{ phaseLabel(session) }}
       </span>
       <h3 class="live__code">{{ session.phase === 'starting' ? 'Opening your room...' : session.code }}</h3>
       <p class="meta">
@@ -154,7 +159,8 @@ const STATUS = {
           </template>
           <template v-else>
             <p class="mirror__lead">{{ STATUS[self.status] || STATUS.none }}</p>
-            <p v-if="self.status === 'failed' && self.error" class="bad">{{ self.error }}</p>
+            <p v-if="self.status === 'failed' && self.error" class="bad">{{ why(self.error) }}</p>
+            <p class="meta">Needs {{ need || 20 }} ranked matches played since Oct 28.</p>
             <div class="go-row">
               <button class="btn btn--brand btn--large" :disabled="busy || building" @click="emit('build')">
                 <AppIcon :name="building ? 'clock' : 'bot'" />{{ building ? 'Building...' : 'Build my mirror' }}
