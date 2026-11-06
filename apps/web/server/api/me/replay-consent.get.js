@@ -1,5 +1,5 @@
 import{currentUser}from"../../utils/auth";
-import{replayConsent}from"../../utils/replay-consent";
+import{replayConsent}from"../../utils/consent";
 export default defineEventHandler(async event=>{
 const user=currentUser(event);
 if(!user)throw createError({statusCode:401,statusMessage:"Sign in first"});

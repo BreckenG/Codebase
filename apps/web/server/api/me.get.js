@@ -1,5 +1,5 @@
 import{Player,connectDb}from"../utils/db";
-import{replayConsent}from"../utils/replay-consent";
+import{replayConsent}from"../utils/consent";
 import{currentUser,authConfigured}from"../utils/auth";
 import{planFor}from"../utils/billing";
 import{POLICY_VERSION}from"../../app/utils/legal.js";

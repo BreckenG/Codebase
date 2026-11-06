@@ -1,4 +1,4 @@
-import{requireReplayConsent}from"./replay-consent";
+import{requireReplayConsent}from"./consent";
 import{searchDiscordMembers}from"./roles";
 import{Party,PartyCommand,ScrimMatch,Player,WebUser,connectDb}from"./db";
 import{tierForElo}from"@ranked-world/ranks";
