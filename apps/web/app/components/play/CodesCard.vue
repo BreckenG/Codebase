@@ -1,5 +1,6 @@
 <script setup>
 import { RANKED_SLOTS } from '@ranked-world/ranks';
+import { phaseLabel } from '~/utils/practice-phase.js';
 
 const props = defineProps({
   mode: { type: String, default: 'ranked' },
@@ -260,7 +261,7 @@ const resets = computed(() => {
         <template v-if="session">
           <div class="live panel" role="status">
             <span class="chip" :class="{ 'chip--live': session.phase !== 'starting' }"
-              ><span class="dot" />{{ session.phase }}</span
+              ><span class="dot" />{{ phaseLabel(session) }}</span
             >
             <h3 class="live__code">{{ session.phase === 'starting' ? 'Opening your room...' : session.code }}</h3>
             <p class="meta">
