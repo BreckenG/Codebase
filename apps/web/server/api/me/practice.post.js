@@ -1,9 +1,9 @@
-import{requireReplayConsent}from"../../utils/replay-consent";
+import{requireReplayConsent}from"../../utils/consent";
 import{requireBots}from"../../utils/bots";
 import bots from"../../../../../packages/shared/bots.cjs";
 import{entitlementFor}from"../../utils/entitlements";
 import{connectDb}from"../../utils/db";
-import{queueCommand}from"../../utils/mirror";
+import{queueCommand}from"../../utils/bots";
 import{PRACTICE_DIFFICULTIES}from"../../utils/plans";
 const RANK={free:0,plus:1,pro:2};
 export default defineEventHandler(async event=>{

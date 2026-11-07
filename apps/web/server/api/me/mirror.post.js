@@ -1,9 +1,9 @@
-import{requireReplayConsent}from"../../utils/replay-consent";
+import{requireReplayConsent}from"../../utils/consent";
 import{requireBots}from"../../utils/bots";
 import membership from"../../../../../packages/shared/membership.cjs";
 import{entitlementFor}from"../../utils/entitlements";
 import{Player,connectDb}from"../../utils/db";
-import{BUILD_STALE_MS,MIN_ROUNDS,clampPenalty,isPublic,queueCommand,roundsFor}from"../../utils/mirror";
+import{BUILD_STALE_MS,MIN_ROUNDS,ROUNDS_FROM_TEXT,clampPenalty,isPublic,queueCommand,roundsFor}from"../../utils/bots";
 export default defineEventHandler(async event=>{
 const user=requireBots(event);
 const{action,target,penalty}=await readBody(event);
@@ -19,7 +19,7 @@ if(action==="build"){
 const rounds=await roundsFor(me.photonId);
 if(rounds<MIN_ROUNDS){
 const left=MIN_ROUNDS-rounds;
-throw createError({statusCode:409,statusMessage:`Play ${left} more ranked match${left===1?"":"es"} first`});
+throw createError({statusCode:409,statusMessage:`Play ${left} more ranked match${left===1?"":"es"} first. Your mirror learns from matches played since ${ROUNDS_FROM_TEXT}.`});
 }
 const b=me.mirrorBot;
 if(b?.status==="building"&&b.startedAt&&Date.now()-new Date(b.startedAt).getTime()<BUILD_STALE_MS)throw createError({statusCode:409,statusMessage:"Your mirror is still building"});
