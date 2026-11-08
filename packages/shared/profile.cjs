@@ -27,6 +27,7 @@ module.exports = function profileSchema(mongoose) {
     connectCode: { code: String, createdAt: Date, expiresAt: Date },
     connectUsage: { day: String, n: Number },
     practiceUsage: { type: Map, of: Number, default: () => ({}) },
+    autoRefUsage: { type: Map, of: Number, default: () => ({}) },
     mirror: { tier: String, a: Number, b: Number, matches: Number, rounds: Number, updatedAt: Date },
     mirrorBot: { status: String, name: String, startedAt: Date, builtAt: Date, error: String, stats: { hours: Number, rounds: Number, heldRounds: Number, cells: Number, ownShare: Number, heldInOwn: Number, floor: Number, floorSd: Number } },
     mirrorPublic: { at: Date, by: String, how: String, name: String, title: String, display: String, removedAt: Date, removedBy: String },

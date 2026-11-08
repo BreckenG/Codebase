@@ -19,6 +19,9 @@ function membership(value) {
     eloBreakdown: rank >= 1,
     historyLimit: rank ? null : 5,
     practicePerWeek: [1, 5, 15][rank],
+    autoRef: rank >= 1,
+    autoRefPerWeek: [0, 3, null][rank],
+    autoRefPerDay: [0, null, 2][rank],
     priorityQueueMs: rank ? 30000 : 0,
     premiumPractice: rank >= 1,
     practiceBest: rank === 2,
@@ -49,5 +52,8 @@ function weekKey(now = Date.now()) {
   d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
   return "w" + d.toISOString().slice(0, 10);
 }
+function dayKey(now = Date.now()) {
+  return "d" + new Date(now).toISOString().slice(0, 10);
+}
 const tryLive = (at, ms, now = Date.now()) => Boolean(at) && now - new Date(at).getTime() < ms;
-module.exports = { membership, activePlan, stripePlan, discordPlan, FIRST_IN_MS, PEEK_MS, tryReady, tryUsed, tryLive, weekKey };
+module.exports = { membership, activePlan, stripePlan, discordPlan, FIRST_IN_MS, PEEK_MS, tryReady, tryUsed, tryLive, weekKey, dayKey };
