@@ -30,11 +30,11 @@ const FREE = [
   'Basic movement stats and profile cards',
   'Last 5 matches',
   'One free try: a lobby peek, an early pass or a public mirror match',
-  '1 practice or mirror match a week (coming soon)',
+  '1 practice or mirror match a week',
 ];
 const features = [
   {
-    name: 'Replay library (scrims and practice)',
+    name: 'Replay library (scrims and Auto Ref)',
     free: 'None',
     plus: '10 replays / 7 days',
     pro: '100 replays / 30 days',
@@ -43,16 +43,16 @@ const features = [
   { name: 'Movement stats', free: 'Basic', plus: 'All available stats', pro: 'All available stats' },
   { name: 'Profile cards', free: 'Basic', plus: 'More themes and fonts', pro: 'All customization' },
   { name: 'First into new codes', free: 'Free try', plus: 'Free try', pro: '2 minutes before public' },
-  { name: 'See who is in each code', free: 'Free try', plus: 'Free try', pro: 'Names and ranks of everyone' },
+  { name: 'See who is in a code before you join', free: 'Free try', plus: 'Free try', pro: 'Names and ranks' },
   { name: 'Join full codes', free: 'None', plus: 'None', pro: '2 extra slots past 10' },
   { name: 'Upcoming code preview', free: 'None', plus: 'None', pro: '15 minutes before rotation' },
   { name: 'Queue priority', free: 'Standard', plus: 'Priority', pro: 'Priority' },
   { name: 'Friend leaderboard', free: 'None', plus: 'Included', pro: 'Included' },
-  { name: 'Practice and mirror matches (coming soon)', free: '1 per week', plus: '5 per week', pro: '15 per week' },
-  { name: 'Bot difficulty (coming soon)', free: 'Up to Average', plus: 'Up to Good', pro: 'Up to Best' },
-  { name: 'Mirror bots (coming soon)', free: 'Your own', plus: 'Your own', pro: 'Yours + public mirrors' },
+  { name: 'Practice and mirror matches', free: '1 per week', plus: '5 per week', pro: '15 per week' },
+  { name: 'Bot difficulty', free: 'Up to Average', plus: 'Up to Good', pro: 'Up to Best' },
+  { name: 'Auto Ref in private rooms', free: 'None', plus: '3 per week, US West', pro: '2 per day, any region' },
+  { name: 'Mirror bots', free: 'Your own', plus: 'Your own', pro: 'Yours + public mirrors' },
   { name: 'Public mirror match', free: 'Free try', plus: 'Free try', pro: 'Included' },
-  { name: 'Training categories (coming soon)', free: 'None', plus: 'Advanced + cut offs', pro: 'All categories' },
   { name: 'Match history', free: '5 matches', plus: 'Unlimited', pro: 'Unlimited' },
 ];
 const COLS = [
@@ -174,7 +174,6 @@ useSeo({
           </div>
           <p class="meta sub__fine">
             Free and Plus get one free try in total, used on a lobby peek, an early pass or a public mirror match.
-            Features marked coming soon can still change before they launch.
           </p>
         </section>
 
