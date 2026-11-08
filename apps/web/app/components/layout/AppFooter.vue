@@ -4,7 +4,7 @@ const INVITE = "https://discord.gg/gorillatagcomp";
 <template>
 <footer class="sitefoot"><div class="wrap sitefoot__grid"><div><NuxtLink class="brand" to="/"><img class="brand-mark" src="/img/planet.png" alt="" width="26" height="26" /> Ranked World
         </NuxtLink><p class="meta sitefoot__blurb">
-          Ranked lobbies and scrims for Gorilla Tag, with practice bots coming soon. Run by players, out of a Discord
+          Ranked lobbies, scrims and practice bots for Gorilla Tag. Run by players, out of a Discord
           server.
         </p><div class="socials"><a :href="INVITE" aria-label="Discord"><AppIcon name="discord" /></a></div></div><div><h4>Play</h4><ul><li><NuxtLink to="/leaderboard">Players</NuxtLink></li><li><NuxtLink to="/play">Ranked codes</NuxtLink></li><li><NuxtLink to="/subscribe">Ranked World+</NuxtLink></li></ul></div><div><h4>Help</h4><ul><li><NuxtLink to="/ranked">How ranking works</NuxtLink></li><li><NuxtLink to="/me">Your profile</NuxtLink></li><li><a :href="INVITE">Support</a></li><li><a :href="INVITE">Report a player</a></li><li><a :href="INVITE">Appeal a ban</a></li></ul></div><div><h4>Legal</h4><ul><li><NuxtLink to="/legal/terms">Terms of use</NuxtLink></li><li><NuxtLink to="/legal/privacy">Privacy policy</NuxtLink></li><li><NuxtLink to="/legal/refunds">Refunds and billing</NuxtLink></li><li><a :href="INVITE">Rules</a></li></ul></div></div><div class="wrap legal-line"><span>&copy; 2026 Ranked World</span><span>This product is not affiliated with Another Axiom Inc. or its videogames Gorilla Tag and Orion Drift and is not endorsed or otherwise sponsored by Another Axiom. Portions of the materials contained herein are property of Another Axiom. &copy;2021 Another Axiom Inc.</span></div></footer>
 </template>

@@ -121,7 +121,7 @@ useHead({ title: 'Matches | Ranked World' });
       <template v-else>
         <div v-if="!me.user" class="empty">
           <h2>Sign in to view your history</h2>
-          <p>Every match you play recorded to show your stats and a 3D replay.</p>
+          <p>Every match you play is saved to show your stats. Plus and Pro also get 3D replays.</p>
           <a class="btn btn--brand" href="/sign-in"><AppIcon name="discord" />Sign in with Discord</a>
         </div>
         <div v-else-if="error" role="alert" class="alert">

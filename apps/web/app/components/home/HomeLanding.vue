@@ -26,7 +26,7 @@ const FEATURES = [
   {
     title: 'Replays',
     to: '/history',
-    body: 'All matches are recorded, letting you play back and watch the match in 3D.',
+    body: 'Scrims, Auto Ref matches and ranked rounds are recorded. Plus and Pro can watch them back in 3D.',
   },
   {
     title: 'Launcher',
