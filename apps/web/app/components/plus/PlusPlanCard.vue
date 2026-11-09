@@ -22,6 +22,8 @@ const look = computed(() => LOOK[props.tier.key] || LOOK.plus);
 const owned = computed(() => props.currentPlan === props.tier.key);
 const chosen = computed(() => props.tier.intervals.find((i) => i.key === props.interval) || props.tier.intervals[0]);
 const money = (cents) => `$${(cents / 100).toFixed(2)}`;
+const EVERY = { monthly: 'month', quarterly: '3 months', biannual: '6 months', yearly: 'year' };
+const every = computed(() => EVERY[chosen.value?.key] || 'month');
 const deal = computed(() => {
   const r = props.referral;
   if (!r || !r.eligible || (r.interval && props.interval !== r.interval)) return null;
@@ -37,19 +39,21 @@ const deal = computed(() => {
 const highlights = computed(() =>
   props.tier.key === 'plus'
     ? [
-        '10 recent scrim and practice replays, up to 15 minutes',
+        '10 recent scrim and Auto Ref replays, up to 15 minutes',
         'All available movement stats',
         'More card styles and priority queue',
-        '5 practice or mirror matches a week (coming soon)',
+        '5 practice or mirror matches a week',
+        'Auto Ref for your private rooms, 3 matches a week on US West',
       ]
     : [
-        '100 scrim and practice replays, up to 60 minutes',
+        '100 scrim and Auto Ref replays, up to 60 minutes',
         'Every card customization',
         'New codes 2 minutes before everyone',
-        'See who is in every code',
+        'See who is in a code before you join',
         '2 extra slots in full codes',
         'No ads',
-        '15 practice or mirror matches a week (coming soon)',
+        '15 practice or mirror matches a week',
+        'Auto Ref for your private rooms, 2 matches a day, any region',
         'All Plus benefits',
       ],
 );
@@ -74,7 +78,7 @@ const highlights = computed(() =>
       <strong>{{ chosen.perMonth }}</strong
       ><span>/ month</span>
     </p>
-    <p v-if="deal" class="meta">{{ deal.code }} applied, {{ deal.percent }}% off. Renews at {{ deal.was }} / month.</p>
+    <p v-if="deal" class="meta">{{ deal.code }} applied, {{ deal.percent }}% off. Renews at {{ deal.was }} every {{ every }}.</p>
     <p v-else class="meta">{{ chosen.price }} billed {{ chosen.label.toLowerCase() }}</p>
     <button v-if="desktop" class="btn btn--brand" @click="openWebsite(subscribePath)">
       View on website<AppIcon name="external" />

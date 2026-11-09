@@ -35,6 +35,8 @@ const chosen = computed(() => {
   return list.find((i) => i.key === props.interval) || list[0] || null;
 });
 const per = computed(() => (chosen.value ? chosen.value.label.toLowerCase() : ''));
+const EVERY = { monthly: 'month', quarterly: '3 months', biannual: '6 months', yearly: 'year' };
+const every = computed(() => EVERY[chosen.value?.key] || 'month');
 function token(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
@@ -291,7 +293,7 @@ onBeforeUnmount(closed);
             </div>
             <div class="summary__price">
               <b>{{ chosen.price }}</b
-              ><span class="meta">/ {{ per }}</span>
+              ><span class="meta">/ {{ every }}</span>
             </div>
           </div>
           <p v-if="taxQuote?.referral" class="meta">
@@ -312,8 +314,8 @@ onBeforeUnmount(closed);
                       placeholder="Optional"
                   /></label>
                   <p v-if="referral" class="meta">
-                    15% off your first payment on any plan. Renewals are at the regular price. The partner behind this
-                    code earns a commission on your first year of payments.
+                    A valid code takes money off your first payment. Renewals are at the regular price. The partner
+                    behind this code earns a commission on your first year of payments.
                   </p>
                   <div ref="addressMount" class="stripe-box" />
                   <div ref="paymentMount" class="stripe-box" />
@@ -350,13 +352,14 @@ onBeforeUnmount(closed);
                       <NuxtLink to="/legal/terms" target="_blank" rel="noopener">Terms</NuxtLink> and
                       <NuxtLink to="/legal/refunds" target="_blank" rel="noopener">Refund policy</NuxtLink>. I am an
                       adult or have permission from my parent or guardian to make this purchase. Cancel in Settings
-                      before renewal. My statutory rights remain unchanged.</span
+                      before renewal. I want my membership to start right away and understand that payments are non-refundable
+                      except as described in the Refund policy, and that I lose any right to withdraw once it starts.</span
                     ></label
                   >
                   <p class="fineprint">
                     <AppIcon name="info" /><span>
                       Today you pay {{ taxQuote ? money(taxQuote.total) : chosen.price }}. Future renewals charge
-                      {{ chosen.price }} every {{ per }} plus applicable tax. Your subscription starts today, until you
+                      {{ chosen.price }} every {{ every }} plus applicable tax. Your subscription starts today, until you
                       cancel from your settings.
                     </span>
                   </p></template
