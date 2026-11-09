@@ -40,6 +40,13 @@ const MODES = [
     title: 'Mirror Bot',
     blurb: 'Play against an AI in a 1v1 that is trained on your routes and movement.',
   },
+  {
+    key: 'autoref',
+    name: 'Auto Ref',
+    icon: 'shield',
+    title: 'Auto Ref for private matches',
+    blurb: 'Send the ranked ref into your private Gorilla Tag room. It runs teams, rounds and the score for you.',
+  },
 ];
 const practiceBusy = ref(false);
 const practiceFailure = ref('');
@@ -59,7 +66,16 @@ await Promise.all([mineReq, codeReq, pracReq, mirrorReq]);
 const { data: mine, refresh: refreshMine, error: playerError } = mineReq;
 const { data: codeData, refresh: refreshCodes, error: codeError } = codeReq;
 const { data: prac, refresh: refreshPrac, error: practiceError } = pracReq;
-const { data: mirror, refresh: refreshMirror } = mirrorReq;
+const { data: mirror, refresh: refreshMirror, error: mirrorError } = mirrorReq;
+const pracShown = ref(prac.value);
+const mirrorShown = ref(mirror.value);
+watch(prac, (v) => {
+  if (!practiceError.value) pracShown.value = v;
+});
+watch(mirror, (v) => {
+  if (!mirrorError.value) mirrorShown.value = v;
+});
+const plain = (t) => String(t || '').replace(/\*\*|`/g, '');
 const soon = computed(() => (feats.value?.locked || {})[activeMode.value] || null);
 const locked = (key) => Boolean((feats.value?.locked || {})[key]);
 const selectedMode = computed(() => {
@@ -73,17 +89,22 @@ function settle() {
   clearTimeout(practiceTimeout);
 }
 
+function failed(e) {
+  if (!e) return;
+  settle();
+  practiceFailure.value = plain(e);
+  toast(practiceFailure.value);
+}
+watch(() => pracShown.value?.error, failed);
+watch(() => mirrorShown.value?.error, failed);
 watch(
-  () => prac.value?.error,
-  (e) => {
-    if (!e) return;
-    settle();
-    practiceFailure.value = e;
-    toast(e);
+  () => pracShown.value?.session,
+  (session) => {
+    if (session) settle();
   },
 );
 watch(
-  () => prac.value?.session,
+  () => mirrorShown.value?.session,
   (session) => {
     if (session) settle();
   },
@@ -104,7 +125,7 @@ async function startSession(url, body, again, failText) {
     await again().catch(() => null);
   } catch (e) {
     settle();
-    practiceFailure.value = e?.data?.statusMessage || failText;
+    practiceFailure.value = plain(e?.data?.statusMessage) || failText;
     toast(practiceFailure.value);
   }
 }
@@ -114,7 +135,7 @@ async function stopSession(url, again) {
     await apiFetch(url, { method: 'POST', body: { action: 'stop' } });
     setTimeout(() => again().catch(() => null), 2500);
   } catch (e) {
-    toast(e?.data?.statusMessage || 'Could not close it.');
+    toast(plain(e?.data?.statusMessage) || 'Could not close it.');
   }
 }
 
@@ -140,7 +161,7 @@ async function buildMirror() {
     await apiFetch('/api/me/mirror', { method: 'POST', body: { action: 'build' } });
     setTimeout(() => refreshMirror().catch(() => null), 2500);
   } catch (e) {
-    practiceFailure.value = e?.data?.statusMessage || 'Could not start your mirror build.';
+    practiceFailure.value = plain(e?.data?.statusMessage) || 'Could not start your mirror build.';
     toast(practiceFailure.value);
   }
 }
@@ -448,6 +469,7 @@ useSeo(() => ({ title: selectedMode.value.title, description: selectedMode.value
         <section>
           <ReplayConsentGate :required="activeMode !== 'ranked'">
             <PartyPanel v-if="activeMode === 'scrims'" :invite="desktop ? '' : INVITE" />
+            <AutoRefPanel v-else-if="activeMode === 'autoref'" />
             <div v-else-if="activeMode === 'ranked' && codeError" class="alert" role="alert">
               <p>Could not load the ranked codes.</p>
               <button class="btn btn--small" @click="refreshCodes">Try again</button>
@@ -470,7 +492,7 @@ useSeo(() => ({ title: selectedMode.value.title, description: selectedMode.value
               <h3>Agree to the new terms first.</h3>
               <p>Our terms and privacy policy changed. Agree to them to see and join ranked codes.</p>
             </div>
-            <div v-else-if="activeMode === 'practice' && practiceError" class="alert" role="alert">
+            <div v-else-if="activeMode === 'practice' && practiceError && !pracShown" class="alert" role="alert">
               <p>Could not load your practice sessions.</p>
               <button class="btn btn--small" @click="refreshPrac">Try again</button>
             </div>
@@ -490,8 +512,8 @@ useSeo(() => ({ title: selectedMode.value.title, description: selectedMode.value
               :lobby="Boolean(codeData?.lobbyPreview)"
               :tries="codeData?.tries || null"
               @refresh="refreshCodes"
-              :practice="prac"
-              :mirror="mirror"
+              :practice="pracShown"
+              :mirror="mirrorShown"
               :bracket="bracket"
               :plan="plan"
               :invite="desktop ? '' : INVITE"
