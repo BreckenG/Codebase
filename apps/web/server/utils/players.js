@@ -5,6 +5,7 @@ import membershipConfig from"../../../../packages/shared/membership.cjs";
 import{clampCard}from"../../app/utils/profile-card.js";
 import{DIVISIONS,CATEGORY_RANGES,tierForElo}from"@ranked-world/ranks";
 import{Player,MatchLedger,CodeSession,RankedBan,Social,WebUser,connectDb}from"./db";
+import{currentUser}from"./auth";
 const PAGE_SIZES=[20,50,100];
 const MAX_PAGE=500;
 const MAX_Q=64;
@@ -32,9 +33,20 @@ return Player.findOne({discordId:key}).lean();
 }
 export const LEADERBOARD_METRICS=[{key:"elo",label:"MMR",field:"elo"},{key:"peak",label:"Peak MMR",field:"peakElo"},{key:"rounds",label:"Rounds",field:"roundsPlayed"},{key:"wins",label:"Wins",field:"wins"},{key:"winrate",label:"Win rate",field:null},{key:"tags",label:"Tags",field:"tags"},{key:"runtime",label:"Runtime",field:"survivalSeconds"},{key:"streak",label:"Win streak",field:"winStreak"}];
 export const LEADERBOARD_SORTS=[{key:"relevance",label:"Relevance"},{key:"desc",label:"Highest to lowest"},{key:"asc",label:"Lowest to highest"},{key:"friends",label:"Friends",requires:"plus"}];
+const BAN_TTL_MS=30000;
+const STATS_TTL_MS=60000;
+let banCache={at:0,p:null};
+let statsCache={at:0,p:null};
+function activeBans(){
+if(banCache.p&&banCache.at>Date.now()-BAN_TTL_MS)return banCache.p;
+const p=RankedBan.find({active:true,$or:[{expiresAt:null},{expiresAt:{$gt:new Date()}}]},'discordId photonId').lean().then(bans=>({discordIds:bans.map(b=>b.discordId).filter(Boolean),photonIds:bans.map(b=>b.photonId).filter(Boolean)}));
+banCache={at:Date.now(),p};
+p.catch(()=>{if(banCache.p===p)banCache={at:0,p:null};});
+return p;
+}
 async function leaderboardFilter(){
-const bans=await RankedBan.find({active:true,$or:[{expiresAt:null},{expiresAt:{$gt:new Date()}}]},'discordId photonId').lean();
-return{linked:true,serverBanned:{$ne:true},discordId:{$regex:SNOWFLAKE,$nin:bans.map(b=>b.discordId).filter(Boolean)},photonId:{$nin:bans.map(b=>b.photonId).filter(Boolean)}};
+const bans=await activeBans();
+return{linked:true,serverBanned:{$ne:true},discordId:{$regex:SNOWFLAKE,$nin:[...bans.discordIds]},photonId:{$nin:[...bans.photonIds]}};
 }
 export async function leaderboard({track="ranked",page=1,per=20,q="",category="",metric="elo",sort="relevance",viewerId=null,viewerIsPlus=false}={}){
 await connectDb();
@@ -57,6 +69,7 @@ const canFriends=wantFriends&&Boolean(viewerId)&&viewerIsPlus;
 const chosen=wantFriends&&!canFriends?"relevance":known;
 const match=await leaderboardFilter();
 if(term){const re=new RegExp(escapeRe(term),"i");match.$or=[{name:re},{username:re},{names:re}];}
+match[`${field}.roundsPlayed`]={$gt:0};
 if(category)match[`${field}.category`]=String(category).toUpperCase();
 if(canFriends){
 const social=await Social.findOne({discordId:viewerId},{friends:1}).lean();
@@ -96,11 +109,16 @@ const doc=await findPlayer(id);
 if(!doc?.photonId||!doc.linked&&viewer?.id!==doc.discordId)return null;
 const or=[{photonId:doc.photonId}];
 if(doc.discordId)or.push({discordId:doc.discordId});
-const[history,ban,standing]=await Promise.all([MatchLedger.find({photonId:doc.photonId}).sort({createdAt:-1}).limit(20).lean(),RankedBan.findOne({active:true,$or:or}).lean(),CodeSession.findOne({active:true,players:{$elemMatch:{photonId:doc.photonId,leftAt:null}}}).sort({openedAt:-1}).lean()]);
-const player=shapePlayer(doc);
 const visible=await leaderboardFilter();
+const[history,ban,standing,above,entitlement]=await Promise.all([
+MatchLedger.find({photonId:doc.photonId}).sort({createdAt:-1}).limit(20).lean(),
+RankedBan.findOne({active:true,$or:or}).lean(),
+CodeSession.findOne({active:true,players:{$elemMatch:{photonId:doc.photonId,leftAt:null}}}).sort({openedAt:-1}).lean(),
+Player.countDocuments({...visible,"ranked.elo":{$gt:doc.ranked?.elo||0}}),
+entitlementFor(doc.discordId),
+]);
+const player=shapePlayer(doc);
 const hidden=doc.serverBanned||visible.discordId.$nin.includes(doc.discordId)||visible.photonId.$nin.includes(doc.photonId);
-const above=await Player.countDocuments({...visible,"ranked.elo":{$gt:doc.ranked.elo}});
 const matches=[];
 for(const m of history){
 matches.push({code:m.code,track:m.track,category:m.category,delta:m.delta,afterElo:m.afterElo,placement:m.placement,lobbySize:m.track==="scrim"&&m.ratingSystem==="openskill"?2:m.lobbySize,tags:m.tags,won:Boolean(m.isWinner),at:m.createdAt});
@@ -113,13 +131,8 @@ if(mine||viewer&&viewer.bracket&&(viewer.bracket==="*"||viewer.bracket===standin
 inCode.code=standing.code;
 }
 }
-let discord=null;
-if(doc.discordId){
-const wu=await WebUser.findOne({discordId:doc.discordId},"username avatar").lean();
-if(wu)discord={name:wu.username||"",avatar:wu.avatar||""};
-}
-const position=doc.linked&&!hidden?above+1:null;
-const entitlement=await entitlementFor(doc.discordId);
+const discord=doc.discordId?{name:doc.username||"",avatar:doc.avatar||""}:null;
+const position=doc.linked&&!hidden&&doc.ranked?.roundsPlayed?above+1:null;
 const playerCard={profile:cardProfile(doc,position),card:clampCard(doc.profileCard,entitlement.cardLevel)};
 return publicProfile({...player,discord,position,playerCard,banned:Boolean(ban),inCode,matches},viewer?.id===doc.discordId);
 }
@@ -167,9 +180,24 @@ return{discordId:d.discordId,name:d.name||"Player",avatar:avatars.get(d.discordI
 rows.sort((x,y)=>Number(y.online)-Number(x.online)||y.elo-x.elo);
 return rows;
 }
-export async function stats(){
+async function freshStats(){
 await connectDb();
 const dayAgo=new Date(Date.now()-86400000);
 const[players,live,rounds]=await Promise.all([Player.countDocuments({linked:true}),CodeSession.countDocuments({active:true}),MatchLedger.distinct('roundId',{createdAt:{$gte:dayAgo}}).then(list=>list.length)]);
 return{players,live,rounds,divisions:DIVISIONS.length};
+}
+export function stats(){
+if(statsCache.p&&statsCache.at>Date.now()-STATS_TTL_MS)return statsCache.p.then(value=>({...value}));
+const p=freshStats();
+statsCache={at:Date.now(),p};
+p.catch(()=>{if(statsCache.p===p)statsCache={at:0,p:null};});
+return p.then(value=>({...value}));
+}
+export async function viewerFor(event){
+const user=currentUser(event);
+if(!user)return null;
+const doc=await findPlayer(user.id);
+if(!doc||!doc.linked||!doc.modMode&&doc.modHold?.at||await rankBanned(doc))return{id:user.id,bracket:null};
+if(doc.modMode)return{id:user.id,bracket:"*"};
+return{id:user.id,bracket:tierForElo(doc.ranked?.elo||0).category};
 }

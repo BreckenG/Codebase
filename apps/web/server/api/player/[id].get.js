@@ -1,5 +1,5 @@
 import{playerProfile}from"../../utils/players";
-import{viewerFor}from"../../utils/viewer";
+import{viewerFor}from"../../utils/players";
 export default defineEventHandler(async event=>{
 const viewer=await viewerFor(event);
 const player=await playerProfile(getRouterParam(event,"id"),viewer);
