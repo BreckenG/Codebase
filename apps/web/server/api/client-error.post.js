@@ -1,3 +1,5 @@
+import { desktopClientIp } from '../utils/desktop-client.js';
+import { requestLimit } from '../utils/request-limits.js';
 let windowStart = 0;
 let count = 0;
 export default defineEventHandler(async (event) => {
@@ -6,6 +8,7 @@ export default defineEventHandler(async (event) => {
     windowStart = now;
     count = 0;
   }
+  if (requestLimit('client-error:' + desktopClientIp(event), 10, now)) return { ok: false };
   if (++count > 60) return { ok: false };
   let data = {};
   try {
