@@ -17,7 +17,7 @@ function cancelPrompt() { if (busy.value || progress.value) return; prompt.value
 async function requestLaunch(code: string | null = null) {
 if (!available || busy.value || pendingJoin.value || prompt.value) return;
 busy.value = true; failure.value = ''; requestedCode.value = code;
-try { await refresh(); await checkUpdate(); if (update.value.available) { updateRequired.value = true; promptError.value = ''; prompt.value = 'update'; return; } if (code && !status.value?.helperInstalled) { promptError.value = ''; prompt.value = 'helper'; return; } await invoke('launch_game', { code }); await refresh(); }
+try { await refresh(); await checkUpdate().catch(() => {}); if (update.value.available) { updateRequired.value = true; promptError.value = ''; prompt.value = 'update'; return; } if (code && !status.value?.helperInstalled) { promptError.value = ''; prompt.value = 'helper'; return; } await invoke('launch_game', { code }); await refresh(); }
 catch (error) { failure.value = String(error); }
 finally { busy.value = false; }
 }
