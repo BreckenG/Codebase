@@ -18,11 +18,11 @@ importers:
         specifier: ^2.8.17
         version: 2.8.17
 
-  apps/desktop:
+  Launcher:
     dependencies:
       '@ranked-world/ranks':
         specifier: workspace:*
-        version: link:../../packages/ranks
+        version: link:../Ranks
       '@tauri-apps/api':
         specifier: ^2
         version: 2.11.1
@@ -46,17 +46,22 @@ importers:
         specifier: ^5.9.0
         version: 5.9.3
 
-  apps/web:
+  Ranks: {}
+
+  Site:
     dependencies:
       '@ranked-world/ranks':
         specifier: workspace:*
-        version: link:../../packages/ranks
+        version: link:../Ranks
       '@stripe/stripe-js':
         specifier: ^8.0.0
         version: 8.11.0
       '@tauri-apps/api':
         specifier: ^2
         version: 2.11.1
+      maxmind:
+        specifier: 5.0.7
+        version: 5.0.7
       mongoose:
         specifier: ^8.0.0
         version: 8.24.3(supports-color@10.2.2)
@@ -66,6 +71,9 @@ importers:
       stripe:
         specifier: ^22.5.0
         version: 22.5.0
+      three:
+        specifier: 0.170.0
+        version: 0.170.0
     devDependencies:
       dotenv:
         specifier: ^17.4.2
@@ -79,8 +87,6 @@ importers:
       vue-router:
         specifier: ^4.5.1
         version: 4.6.4(vue@3.5.41(typescript@5.9.3))
-
-  packages/ranks: {}
 
 packages:
 
@@ -2238,6 +2244,10 @@ packages:
   magicast@0.5.4:
     resolution: {integrity: sha512-llBEhWm1SacoRwgHUoQJYtwp4PBLF4faQi5TCpIGyGs9n4y5+juI0tDgyKIfpqxckRHaHzouUEph3THklWh03w==}
 
+  maxmind@5.0.7:
+    resolution: {integrity: sha512-+w637dwfv01MKjkrp4sKDBTEKHLPvWLYb647QTjiz3wG/teSemqudIKNShaS6eqZ7ffxC9oZlQQgIqY0rGojog==}
+    engines: {node: '>=12', npm: '>=6'}
+
   mdn-data@2.0.28:
     resolution: {integrity: sha512-aylIc7Z9y4yzHYAJNuESG3hfhC+0Ibp/MAMiaOZgNv4pmEdFyfZhhhny4MNiAfWdBQ1RQ2mfDWmM1x8SvGyp8g==}
 
@@ -2297,6 +2307,10 @@ packages:
 
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
+
+  mmdb-lib@3.0.3:
+    resolution: {integrity: sha512-xQPoBXcNjjHiOvOraFBKtA++uNWF6aCVHL9dRKFXEov8eI3QJwtgiw3qApsonFT5SpoqsEVISUTg3HIDs2DiXw==}
+    engines: {node: '>=10', npm: '>=6'}
 
   mocked-exports@0.1.1:
     resolution: {integrity: sha512-aF7yRQr/Q0O2/4pIXm6PZ5G+jAd7QS4Yu8m+WEeEHGnbo+7mE36CbLSDQiXYV8bVL3NfmdeqPJct0tUlnjVSnA==}
@@ -3049,8 +3063,15 @@ packages:
   text-decoder@1.2.7:
     resolution: {integrity: sha512-vlLytXkeP4xvEq2otHeJfSQIRyWxo/oZGEbXrtEEF9Hnmrdly59sUbzZ/QgyWuLYHctCHxFF4tRQZNQ9k60ExQ==}
 
+  three@0.170.0:
+    resolution: {integrity: sha512-FQK+LEpYc0fBD+J8g6oSEyyNzjp+Q7Ks1C568WWaoMRLW+TkNNWmenWeGgJjV105Gd+p/2ql1ZcjYvNiPZBhuQ==}
+
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
+
+  tiny-lru@13.0.0:
+    resolution: {integrity: sha512-xDHxKKS1FdF0Tv2P+QT7IeSEg74K/8cEDzbv3Tv6UyHHUgBOjOiQiBp818MGj66dhurQus/IBcoAbwIKtSGc6Q==}
+    engines: {node: '>=14'}
 
   tinyclip@0.1.15:
     resolution: {integrity: sha512-uo33abH+Ays0xYaDysoBt494Hb3hsEczMpcC0MwFl773pazORx4fmvKhclhR1wonUbB6vvpRsvVMwnhfqeMc+A==}
@@ -5844,6 +5865,11 @@ snapshots:
       '@babel/types': 7.29.8
       source-map-js: 1.2.1
 
+  maxmind@5.0.7:
+    dependencies:
+      mmdb-lib: 3.0.3
+      tiny-lru: 13.0.0
+
   mdn-data@2.0.28: {}
 
   mdn-data@2.27.1: {}
@@ -5893,6 +5919,8 @@ snapshots:
       pathe: 2.0.3
       pkg-types: 1.3.1
       ufo: 1.6.4
+
+  mmdb-lib@3.0.3: {}
 
   mocked-exports@0.1.1: {}
 
@@ -7019,7 +7047,11 @@ snapshots:
     transitivePeerDependencies:
       - react-native-b4a
 
+  three@0.170.0: {}
+
   tiny-invariant@1.3.3: {}
+
+  tiny-lru@13.0.0: {}
 
   tinyclip@0.1.15: {}
 

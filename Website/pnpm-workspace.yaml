@@ -1,7 +1,7 @@
 packages:
-  - 'apps/web'
-  - 'apps/desktop'
-  - 'packages/ranks'
+  - 'Site'
+  - 'Launcher'
+  - 'Ranks'
 allowBuilds:
   esbuild: true
 
