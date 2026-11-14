@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url';
-import website from '../web/nuxt.config';
+import website from '../Site/nuxt.config';
 export default defineNuxtConfig({
   ...website,
   hooks: {
@@ -8,7 +8,7 @@ export default defineNuxtConfig({
       if (home) home.file = fileURLToPath(new URL('./pages/index.vue', import.meta.url));
     },
   },
-  srcDir: fileURLToPath(new URL('../web/app', import.meta.url)),
+  srcDir: fileURLToPath(new URL('../Site/app', import.meta.url)),
   dir: { public: fileURLToPath(new URL('./public', import.meta.url)) },
   serverDir: fileURLToPath(new URL('./server', import.meta.url)),
   buildDir: fileURLToPath(new URL('./.nuxt', import.meta.url)),
@@ -20,10 +20,10 @@ export default defineNuxtConfig({
   nitro: {
     publicAssets: [
       ...(website.nitro?.publicAssets || []),
-      { baseURL: '/licenses', dir: fileURLToPath(new URL('../web/app/public/licenses', import.meta.url)) },
-      { baseURL: '/models', dir: fileURLToPath(new URL('../web/app/public/models', import.meta.url)) },
-      { baseURL: '/cosmetics', dir: fileURLToPath(new URL('../web/app/public/cosmetics', import.meta.url)) },
-      { baseURL: '/video', dir: fileURLToPath(new URL('../web/app/public/video', import.meta.url)) },
+      { baseURL: '/licenses', dir: fileURLToPath(new URL('../Site/app/public/licenses', import.meta.url)) },
+      { baseURL: '/models', dir: fileURLToPath(new URL('../Site/app/public/models', import.meta.url)) },
+      { baseURL: '/cosmetics', dir: fileURLToPath(new URL('../Site/app/public/cosmetics', import.meta.url)) },
+      { baseURL: '/video', dir: fileURLToPath(new URL('../Site/app/public/video', import.meta.url)) },
     ],
     preset: 'static',
     output: { publicDir: fileURLToPath(new URL('./dist', import.meta.url)) },

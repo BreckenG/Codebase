@@ -1,5 +1,5 @@
 <script setup>
-import launcher from '../../../../desktop/package.json';
+import launcher from '../../../../Launcher/package.json';
 
 const { enabled: desktop } = useDesktop();
 const DOES = [

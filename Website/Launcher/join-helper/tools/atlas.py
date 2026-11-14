@@ -2,7 +2,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FONTS = os.path.join(HERE, '..', '..', '..', 'web', 'app', 'public', 'fonts')
+FONTS = os.path.join(HERE, '..', '..', '..', 'Site', 'app', 'public', 'fonts')
 OUT = os.path.join(HERE, '..', 'Resources')
 FACES = [('title', 'bricolage-latin.woff2', 800, 46), ('body', 'onest-latin.woff2', 600, 26)]
 W, H, PAD = 1024, 256, 2
