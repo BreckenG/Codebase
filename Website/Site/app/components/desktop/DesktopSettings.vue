@@ -102,7 +102,7 @@ const gameLine = computed(() => {
           connection the game has already started.
         </p>
       </section>
-      <p class="meta">Ranked World {{ status?.version || '0.1.0' }}</p>
+      <p v-if="status?.version" class="meta">Ranked World {{ status.version }}</p>
     </div>
   </main>
 </template>
