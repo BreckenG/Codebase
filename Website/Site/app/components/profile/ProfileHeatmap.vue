@@ -217,6 +217,7 @@ onMounted(async () => {
   }
   if (data.value.locked || empty.value) return;
   await nextTick();
+  if (!(stage.value instanceof Element)) return;
   watcher = new IntersectionObserver(
     (entries) => {
       if (entries.some((e) => e.isIntersecting)) {

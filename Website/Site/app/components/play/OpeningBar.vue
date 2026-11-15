@@ -1,8 +1,9 @@
 <script setup>
 const props = defineProps({ since: { type: String, default: null } });
-const now = ref(Date.now());
+const now = ref(0);
 let timer = null;
 onMounted(() => {
+  now.value = Date.now();
   timer = setInterval(() => (now.value = Date.now()), 500);
 });
 onBeforeUnmount(() => clearInterval(timer));
