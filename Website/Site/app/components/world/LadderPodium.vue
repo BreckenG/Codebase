@@ -18,6 +18,7 @@ onMounted(async () => {
   if (!canvas.value) return;
   const { THREE } = w;
   world = w.stage(canvas.value);
+  if (!world) return;
   const { scene, camera } = world;
   const key = new THREE.DirectionalLight(0xfff0dc, 1.1);
   key.position.set(2.2, 4, 4);

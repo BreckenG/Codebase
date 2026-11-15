@@ -7,6 +7,7 @@ onMounted(async () => {
   if (!canvas.value) return;
   const { THREE } = w;
   world = w.stage(canvas.value);
+  if (!world) return;
   const { scene, camera } = world;
   const glow = new THREE.Color(...w.BRAND);
   const geos = await w.model('gorillas');

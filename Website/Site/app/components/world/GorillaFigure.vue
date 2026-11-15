@@ -15,6 +15,7 @@ onMounted(async () => {
   if (!canvas.value) return;
   const { THREE } = w;
   world = w.stage(canvas.value);
+  if (!world) return;
   const { scene, camera } = world;
   const glow = props.glow || (props.color ? w.BRAND : w.TIERS[props.tier]?.glow) || w.BRAND;
   const key = new THREE.DirectionalLight(0xfff0dc, 1.2);
