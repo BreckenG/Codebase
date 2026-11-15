@@ -1,4 +1,5 @@
 <script setup>
+import { NuxtLink } from '#components';
 const props = defineProps({ place: { type: String, default: 'page' }, shape: { type: String, default: 'wide' } });
 const { me } = useMe();
 const config = useRuntimeConfig().public;
@@ -8,7 +9,7 @@ const HOUSE = [
     key: 'pro',
     tone: 'pro',
     title: 'Get into new codes first',
-    perks: ['New codes 2 minutes early', 'See who is in every code', '2 extra slots in full codes'],
+    perks: ['New codes 2 minutes early', 'See who is in a code before you join', '2 extra slots in full codes'],
     label: 'Go Pro',
     to: '/subscribe',
     art: '/img/hero/forest-treehouse.webp',
@@ -60,11 +61,12 @@ const ad = computed(() => (pool.value.length ? pool.value[(SLOT[props.place] ?? 
   <aside
     v-if="me.loaded && plan !== 'pro' && ad"
     class="adslot"
-    :class="['adslot--' + ad.tone, 'adslot--' + shape]"
+    :class="['adslot--' + ad.tone, 'adslot--' + shape, { 'adslot--marked': ad.mark }]"
+    :style="ad.mark ? { '--mark': 'url(' + ad.mark + ')' } : undefined"
     aria-label="Advertisement"
   >
     <component
-      :is="ad.to ? resolveComponent('NuxtLink') : 'a'"
+      :is="ad.to ? NuxtLink : 'a'"
       class="adslot__link"
       v-bind="ad.to ? { to: ad.to } : { href: ad.href, target: '_blank', rel: 'noopener sponsored' }"
     >
@@ -235,15 +237,26 @@ const ad = computed(() => (pool.value.length ? pool.value[(SLOT[props.place] ?? 
   inset: 0 0 0 55%;
 }
 .adslot--strip .adslot__mark {
-  right: 150px;
-  width: 92px;
+  display: none;
 }
 .adslot--strip .adslot__copy {
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 6px 20px;
+  gap: 6px 16px;
   max-width: none;
-  padding: 14px 56px 14px 20px;
+  padding: 14px 48px 14px 20px;
+}
+.adslot--strip.adslot--marked .adslot__copy {
+  grid-template-columns: auto minmax(0, 1fr) 64px auto;
+}
+.adslot--strip.adslot--marked .adslot__copy::after {
+  content: '';
+  grid-column: 3;
+  grid-row: 1;
+  width: 64px;
+  height: 36px;
+  background: var(--mark) center / contain no-repeat;
+  image-rendering: pixelated;
 }
 .adslot--strip .adslot__copy strong {
   grid-column: 1;
@@ -252,14 +265,20 @@ const ad = computed(() => (pool.value.length ? pool.value[(SLOT[props.place] ?? 
 }
 .adslot--strip ul {
   grid-column: 2;
-  flex-wrap: nowrap;
+  justify-self: stretch;
+  min-width: 0;
+  height: 22px;
   overflow: hidden;
   white-space: nowrap;
 }
 .adslot--strip .adslot__cta {
   grid-column: 3;
+  grid-row: 1;
   min-height: 38px;
   margin: 0;
+}
+.adslot--strip.adslot--marked .adslot__cta {
+  grid-column: 4;
 }
 .adslot--strip .adslot__tag {
   top: auto;
@@ -327,14 +346,22 @@ const ad = computed(() => (pool.value.length ? pool.value[(SLOT[props.place] ?? 
   flex-direction: column;
   align-items: stretch;
 }
+.adslot--tall .adslot__cta .icon {
+  display: none;
+}
 @media (max-width: 900px) {
   .adslot--strip ul {
     display: none;
   }
-  .adslot--strip .adslot__copy {
+  .adslot--strip .adslot__copy,
+  .adslot--strip.adslot--marked .adslot__copy {
     grid-template-columns: minmax(0, 1fr) auto;
   }
-  .adslot--strip .adslot__cta {
+  .adslot--strip.adslot--marked .adslot__copy::after {
+    display: none;
+  }
+  .adslot--strip .adslot__cta,
+  .adslot--strip.adslot--marked .adslot__cta {
     grid-column: 2;
   }
   .adslot--strip .adslot__copy strong {
