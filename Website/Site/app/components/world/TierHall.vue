@@ -32,6 +32,7 @@ onMounted(async () => {
   if (!canvas.value) return;
   const { THREE } = w;
   world = w.stage(canvas.value);
+  if (!world) return;
   const { scene, camera } = world;
   const key = new THREE.DirectionalLight(0xfff0dc, 1.1);
   const rim = new THREE.SpotLight(0xffffff, 70, 0, 0.32, 0.8, 2);
@@ -63,6 +64,7 @@ onMounted(async () => {
   const wantLook = new THREE.Vector3();
   let snapped = false;
   world.loop((now, dt) => {
+    if (!hall.value) return;
     const box = hall.value.getBoundingClientRect();
     const f = w.clamp(-box.top / Math.max(1, box.height - innerHeight)) * 5;
     const i = Math.min(4, Math.floor(f));

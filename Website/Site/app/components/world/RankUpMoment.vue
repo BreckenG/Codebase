@@ -35,6 +35,7 @@ onMounted(async () => {
   const oldKey = before.split(' ')[0].toLowerCase();
   const newKey = props.tier.tier.toLowerCase();
   world = w.stage(canvas.value, { fov: 28 });
+  if (!world) return;
   const { scene, camera, glow } = world;
   const FOOT = -0.535;
   const lowGlow = new THREE.Color(...w.TIERS[oldKey].glow);

@@ -60,7 +60,13 @@ export function radial(inner, outer) {
 }
 
 export function stage(canvas, { fov = 30, bloom = 0.35 } = {}) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  if (!(canvas instanceof Element)) return null;
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  } catch {
+    return null;
+  }
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.95;
@@ -97,13 +103,16 @@ export function stage(canvas, { fov = 30, bloom = 0.35 } = {}) {
   fit();
   let raf = 0;
   let visible = true;
+  let gone = false;
   const seen = new IntersectionObserver(([e]) => {
     visible = e.isIntersecting;
   });
   seen.observe(canvas);
   const loop = (tick) => {
+    if (gone) return;
     let last = performance.now() / 1000;
     const frame = () => {
+      if (gone) return;
       raf = requestAnimationFrame(frame);
       const now = performance.now() / 1000;
       const dt = Math.min(0.05, now - last);
@@ -115,6 +124,8 @@ export function stage(canvas, { fov = 30, bloom = 0.35 } = {}) {
     raf = requestAnimationFrame(frame);
   };
   const dispose = () => {
+    if (gone) return;
+    gone = true;
     cancelAnimationFrame(raf);
     watch.disconnect();
     seen.disconnect();
@@ -341,7 +352,12 @@ async function portraitStage() {
   const canvas = document.createElement('canvas');
   canvas.width = 320;
   canvas.height = 400;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+  } catch {
+    return null;
+  }
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.95;
   renderer.setSize(320, 400, false);
@@ -385,8 +401,13 @@ let queue = Promise.resolve();
 export function portrait(pose, rgb, glow, ids = []) {
   const key = `${pose}:${rgb.join(',')}:${ids.join('')}`;
   if (shots.has(key)) return shots.get(key);
-  studioShot ||= portraitStage();
-  queue = queue.then(async () => (await studioShot)(pose, rgb, glow, ids)).catch(() => '');
+  studioShot ||= portraitStage().catch(() => null);
+  queue = queue
+    .then(async () => {
+      const shoot = await studioShot;
+      return shoot ? shoot(pose, rgb, glow, ids) : '';
+    })
+    .catch(() => '');
   shots.set(key, queue);
   return queue;
 }
