@@ -153,6 +153,7 @@ const podium = computed(() => {
   return open && rows.value.length > 5 ? rows.value.slice(0, 5) : [];
 });
 const rest = computed(() => rows.value.slice(podium.value.length));
+const realRank = computed(() => !search.value && sort.value !== 'asc');
 const pages = computed(() => data.value?.pages || 1);
 const friendsLocked = computed(() => Boolean(data.value?.friendsLocked));
 const activeFilters = computed(() => [category.value, search.value, metric.value !== 'elo'].filter(Boolean).length);
@@ -358,7 +359,7 @@ useSeo({
           class="lb__row"
           :class="[tierClass(p[track].tier.name), { you: isYou(p) }]"
         >
-          <span class="lb__rank">{{ p.rank }}</span>
+          <span class="lb__rank">{{ realRank ? p.rank : '' }}</span>
           <span class="lb__who">
             <PlayerAvatar
               :name="p.name"
