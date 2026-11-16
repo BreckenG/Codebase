@@ -75,7 +75,7 @@ async function send(action, arg) {
       await refresh();
       if (!data.value?.pending) break;
     }
-    if (data.value?.error) failure.value = data.value.error;
+    if (data.value?.error) failure.value = String(data.value.error).replace(/\*\*|`/g, '');
     else if (data.value?.pending) failure.value = 'The bot has not picked that up yet, it may be offline.';
   } catch (e) {
     failure.value = e.message;
@@ -220,7 +220,7 @@ onBeforeUnmount(() => {
       <h3 class="live__code">{{ match.code || 'spawning' }}</h3>
       <p class="meta">Match in progress, {{ label(match.ruleset) }} {{ match.size }}</p>
       <div class="party__actions">
-        <RoomJoinButton v-if="match.code" :code="match.code" />
+        <RoomJoinButton v-if="match.code && match.state !== 'spawning'" :code="match.code" />
         <button v-if="match.canStop" class="btn btn--ghost" :disabled="busy !== ''" @click="send('stop')">
           Stop scrim
         </button>
@@ -365,9 +365,14 @@ onBeforeUnmount(() => {
       <p v-if="queued" class="meta">{{ queueText }}</p>
 
       <div class="party__actions">
-        <button v-if="queued" class="btn btn--outline btn--large" :disabled="busy !== ''" @click="send('cancel')">
-          <span class="dot" />{{ found }} of {{ need }} found, {{ waited }}, cancel
-        </button>
+        <template v-if="queued">
+          <span class="chip chip--live" role="status"
+            ><span class="dot" />{{ found }} of {{ need }} found, {{ waited }}</span
+          >
+          <button class="btn btn--ghost btn--small" :disabled="busy !== ''" @click="send('cancel')">
+            Cancel search
+          </button>
+        </template>
         <ActionButton
           v-else-if="!youReady"
           icon="check"
