@@ -2,7 +2,7 @@
 import { rankBadge } from '~/utils/badges';
 import { DIVISIONS } from '@ranked-world/ranks';
 
-const props = defineProps({ player: { type: Object, required: true } });
+const props = defineProps({ player: { type: Object, required: true }, own: { type: Boolean, default: true } });
 const track = computed(() => props.player.ranked);
 const progress = computed(() =>
   track.value.tier.isTop ? 100 : Math.max(0, Math.min(100, track.value.tier.percent || 0)),
@@ -57,7 +57,13 @@ watch(
         <span :style="{ width: `${progress}%` }" />
       </div>
       <p class="meta">
-        {{ track.tier.isTop ? 'You are in the top division.' : `${track.tier.eloToNext} MMR to your next division` }}
+        {{
+          track.tier.isTop
+            ? own
+              ? 'You are in the top division.'
+              : 'In the top division.'
+            : `${track.tier.eloToNext} MMR to ${own ? 'your' : 'the'} next division`
+        }}
       </p>
       <dl class="rank__facts">
         <div class="stat">

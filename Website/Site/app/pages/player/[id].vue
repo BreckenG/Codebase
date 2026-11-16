@@ -18,7 +18,7 @@ const tracks = computed(() => {
   return [
     { title: 'Ranked', key: 'ranked', t: player.value.ranked },
     { title: 'Scrims', key: 'scrim', t: player.value.scrim },
-  ];
+  ].filter((card) => card.key !== 'scrim' || card.t?.rounds);
 });
 const display = computed(() => player.value?.discord?.name || player.value?.name);
 
@@ -87,7 +87,7 @@ useSeo(() => ({
           </div>
         </header>
 
-        <ProgressIdentity :player="player" />
+        <ProgressIdentity :player="player" :own="ownsProfile" />
 
         <ProfileCardStudio v-if="ownsProfile" :position="player.position" />
         <section v-else-if="player.playerCard" class="section">
