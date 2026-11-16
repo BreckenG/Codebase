@@ -42,7 +42,7 @@ onMounted(refresh);
       </header>
       <div v-if="!me.user" class="empty">
         <h2>Sign in to see your notifications</h2>
-        <p>Party invites, scrim results and account news land here.</p>
+        <p>Party invites, ready scrim matches and account news land here.</p>
         <button v-if="desktop" class="btn btn--brand" :disabled="loginPending" @click="signIn">Sign in</button>
         <NuxtLink v-else class="btn btn--brand" to="/sign-in"><AppIcon name="discord" />Sign in</NuxtLink>
       </div>
@@ -53,7 +53,7 @@ onMounted(refresh);
       <div v-else-if="!state.loaded" class="skeleton" role="status" aria-label="Loading notifications" />
       <div v-else-if="!state.items.length" class="empty">
         <h2>No notifications yet</h2>
-        <p>Party invites, scrim results and account news land here.</p>
+        <p>Party invites, ready scrim matches and account news land here.</p>
       </div>
       <div v-else class="nt__list">
         <article
