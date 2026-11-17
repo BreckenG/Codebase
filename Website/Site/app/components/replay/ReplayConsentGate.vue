@@ -35,6 +35,22 @@ watch(
 async function accept() {
   if (checked.value) await saveConsent(true);
 }
+const asking = ref(false);
+let askTimer;
+async function withdraw() {
+  if (!asking.value) {
+    asking.value = true;
+    clearTimeout(askTimer);
+    askTimer = setTimeout(() => {
+      asking.value = false;
+    }, 5000);
+    return;
+  }
+  clearTimeout(askTimer);
+  asking.value = false;
+  await saveConsent(false);
+}
+onBeforeUnmount(() => clearTimeout(askTimer));
 </script>
 
 <template>
@@ -57,9 +73,10 @@ async function accept() {
       <button v-if="consent.error" class="btn" :disabled="consent.busy" @click="loadConsent">Try again</button>
       <template v-else-if="settings && consent.accepted">
         <p class="meta">Permission granted{{ consent.acceptedAt ? ` on ${exact(consent.acceptedAt)}` : '' }}.</p>
-        <button class="btn" :disabled="consent.busy" @click="saveConsent(false)">
-          {{ consent.busy ? 'Saving...' : 'Withdraw permission' }}
+        <button class="btn" :class="{ 'btn--danger': asking }" :disabled="consent.busy" @click="withdraw">
+          {{ consent.busy ? 'Saving...' : asking ? 'Tap again to withdraw' : 'Withdraw permission' }}
         </button>
+        <p v-if="asking" class="meta">This stops new recordings and turns off Scrims, Practice and Mirror Bot for you.</p>
       </template>
       <template v-else>
         <label class="consent-check">

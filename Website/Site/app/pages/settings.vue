@@ -26,10 +26,8 @@ const linked = computed(() => mine.value?.player || null);
 const confirmVoice = ref(false);
 const withdrawing = ref(false);
 async function withdrawVoice() {
-  if (!confirmVoice.value) {
-    confirmVoice.value = true;
-    return;
-  }
+  if (!confirmVoice.value) return arm(confirmVoice);
+  confirmVoice.value = false;
   withdrawing.value = true;
   try {
     await apiPost('/api/me/voice-consent', { accepted: false });
