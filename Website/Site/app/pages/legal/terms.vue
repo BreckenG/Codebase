@@ -66,8 +66,10 @@ useSeo({
           </p>
           <p>
             Subscriptions renew until cancelled. Cancel in <NuxtLink to="/settings#membership">Settings</NuxtLink>, or
-            in Discord if you subscribed there. See the <NuxtLink to="/legal/refunds">Refund policy</NuxtLink>. A ban
-            does not remove refund rights the law gives you.
+            in Discord if you subscribed there. Payments are non-refundable except as described in the
+            <NuxtLink to="/legal/refunds">Refund policy</NuxtLink>, including after a ban for breaking the rules, but a
+            ban does not remove rights the law gives you. A ban or suspension can include losing access to paid features
+            for as long as it lasts. A permanent ban turns off renewal of your plan, and you are not charged again.
           </p>
         </section>
         <section>
