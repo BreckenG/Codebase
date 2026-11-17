@@ -54,11 +54,15 @@ function routeOf(file) {
   return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
 }
 
-function gitDate(file) {
+function gitLog(args) {
   try {
-    const out = execFileSync("git", ["log", "-1", "--format=%cI", "--", file], { cwd: here, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+    const out = execFileSync("git", ["log", "-1", "--format=%cI", ...args], { cwd: here, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
     return /^\d{4}-\d\d-\d\d/.test(out) ? out : "";
   } catch { return ""; }
+}
+
+function gitDate(file) {
+  return gitLog(["--follow", "--diff-filter=M", "--", file]) || gitLog(["--", file]);
 }
 
 export function collectRoutes() {

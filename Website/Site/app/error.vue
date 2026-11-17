@@ -50,7 +50,7 @@ useHead(() => ({ title: `${title.value} | Ranked World` }));
   </div>
 </template>
 
-<style src="~/assets/css/site.css"></style>
+<style>@import "~/assets/css/site.css";</style>
 <style scoped>
 .er {
   display: grid;

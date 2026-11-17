@@ -16,7 +16,7 @@ const jsonld = computed(() => match.value !== "/" ? null : JSON.stringify([
 ]));
 useHead(() => ({
 link: origin ? [{ rel: "canonical", href: canonical.value }] : [],
-meta: [...(origin ? [{ property: "og:url", content: canonical.value }] : []), ...(match.value ? [] : [{ name: "robots", content: "noindex, nofollow" }])],
+meta: [...(origin ? [{ property: "og:url", content: canonical.value }, { property: "og:image", content: origin + "/img/og-card.png" }] : []), ...(match.value ? [] : [{ name: "robots", content: "noindex, nofollow" }])],
 script: jsonld.value ? [{ type: "application/ld+json", innerHTML: jsonld.value }] : []
 }));
 }
