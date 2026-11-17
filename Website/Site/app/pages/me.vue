@@ -6,7 +6,7 @@ onMounted(async () => {
   const state = await load(true);
   if (state.user) return navigateTo(`/player/${state.user.id}`, { replace: true });
   if (route.query.from === 'login') failed.value = true;
-  else window.location.href = '/auth/login';
+  else navigateTo('/sign-in', { replace: true });
 });
 useHead({ title: 'Your profile | Ranked World' });
 </script>

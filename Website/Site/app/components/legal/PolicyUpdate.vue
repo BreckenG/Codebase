@@ -30,13 +30,13 @@ watch(
   open,
   (value) => {
     if (import.meta.client) {
-      document.documentElement.classList.toggle('modal-open', value);
+      document.body.classList.toggle('modal-open', value);
       if (value) nextTick(() => box.value?.focus());
     }
   },
   { immediate: true },
 );
-onBeforeUnmount(() => document.documentElement.classList.remove('modal-open'));
+onBeforeUnmount(() => document.body.classList.remove('modal-open'));
 </script>
 
 <template>

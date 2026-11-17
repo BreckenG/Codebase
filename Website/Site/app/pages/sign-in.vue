@@ -17,7 +17,8 @@ const returnTo = computed(() => loginReturnPath(route.query.returnTo) || '');
       <div class="si__copy">
         <h1 class="reveal-up">Sign in</h1>
         <p class="lead reveal-up" style="--i: 1">
-          Discord shares your user ID, display name, and avatar. We do not request your email, contacts, messages, or
+          Discord shares your user ID, display name, avatar, email, connected accounts, and servers. We keep your email,
+          connected accounts, and servers only in scrambled form, for account security. We never see your messages or
           password. Connecting Gorilla Tag is a separate step.
         </p>
         <p class="meta reveal-up" style="--i: 2">
