@@ -17,58 +17,86 @@ useSeo({
       </div>
       <div class="legal__body">
         <section>
-          <h2>Recurring payments</h2>
+          <h2>All payments are final</h2>
           <p>
-            When checkout is available, you choose a plan and billing interval. The charge repeats at that interval
-            until cancelled. Checkout shows the recurring amount and any applicable tax before you authorize payment.
-            Prices are in USD.
+            Payments for Ranked World Plus and Pro are non-refundable, except in the cases listed under When we refund.
+            This includes, without limitation:
+          </p>
+          <ul>
+            <li>time left in a billing period after you cancel</li>
+            <li>a renewal you forgot to cancel</li>
+            <li>switching plans or billing intervals</li>
+            <li>not using the membership or any of its features</li>
+            <li>features marked coming soon, or features that change, pause or are removed</li>
+            <li>a rank ban, suspension or account action for breaking the rules</li>
+            <li>not liking how bots, matchmaking, codes or other features work</li>
+            <li>changes to Gorilla Tag by Another Axiom that affect the service</li>
+          </ul>
+        </section>
+        <section>
+          <h2>When we refund</h2>
+          <p>We only refund a charge when one of these happened:</p>
+          <ul>
+            <li>you were charged twice for the same period</li>
+            <li>you were charged after your cancellation had already taken effect</li>
+            <li>you were charged the wrong amount because of our mistake</li>
+            <li>
+              paid features were unavailable because of a fault on our side for more than 7 days in a row. We can extend
+              your membership by the lost time instead of refunding.
+            </li>
+          </ul>
+          <p>
+            Ask within 14 days of the charge by emailing <a :href="'mailto:' + CONTACT_EMAIL">{{ CONTACT_EMAIL }}</a> with
+            your account, the charge date, the amount and the invoice reference if you have it. Do not send a full card
+            number or password. Any other refund is at our sole discretion and does not create a right to future refunds.
+            Approved refunds go back through the original payment method. Your bank controls when it appears.
           </p>
         </section>
         <section>
           <h2>Cancel your subscription</h2>
           <p>
-            Use <NuxtLink to="/settings#membership">Settings, Membership, Cancel subscription</NuxtLink>. Confirm the
-            cancellation to stop future renewals. Access normally continues until the end of the period already paid
-            for. Cancellation alone does not automatically refund unused time.
+            Use <NuxtLink to="/settings#membership">Settings, Membership, Cancel subscription</NuxtLink>. Cancelling stops
+            future renewals. You keep access until the end of the period you already paid for, and that period is not
+            refunded. Cancel before the renewal date to avoid the next charge.
           </p>
           <p>
             If you cannot sign in or cancellation fails, email
             <a :href="'mailto:' + CONTACT_EMAIL">{{ CONTACT_EMAIL }}</a
-            >. Disconnecting Gorilla Tag or signing out does not cancel billing.
+            > before the renewal date. Disconnecting Gorilla Tag or signing out does not cancel billing.
           </p>
         </section>
         <section>
-          <h2>Request a refund</h2>
+          <h2>Purchases through Discord</h2>
           <p>
-            Contact us about duplicate or incorrect charges, charges after an effective cancellation, or paid services
-            that were not supplied as agreed. Give your account identifier, charge date, amount, and invoice reference
-            if available. Do not send a full card number or password.
-          </p>
-          <p>
-            We review requests against the payment record, the service supplied, and applicable law. Refunds that are
-            due return through the original payment provider where possible. Your bank controls when the refund appears.
-            Contacting us does not prevent you from using a lawful bank dispute or consumer complaint process.
+            Memberships bought in Discord are billed by Discord. Refunds for those follow Discord's own terms and are
+            requested from Discord, not from us.
           </p>
         </section>
         <section>
-          <h2>Cooling-off and consumer rights</h2>
+          <h2>Disputes and chargebacks</h2>
           <p>
-            Mandatory rights take priority over this policy. Depending on your location and the type of service, an
-            online purchase can include a cancellation or withdrawal period. EU and UK consumers can have a 14-day
-            withdrawal right, subject to the relevant rules. This checkout does not ask you to waive that right.
+            Contact us before opening a dispute with your bank or card provider. While a dispute or chargeback is open,
+            paid features on the account can be paused. If a chargeback is filed for a charge that was valid under this
+            policy, the account can lose access to paid plans.
+          </p>
+        </section>
+        <section>
+          <h2>Right to withdraw</h2>
+          <p>
+            Your membership starts as soon as you pay. At checkout you ask for it to start right away and confirm that you
+            lose any right to withdraw from the purchase once it has started. This is how the 14-day withdrawal period for
+            digital services works in the EU and UK.
           </p>
           <p>
-            To withdraw, send a clear statement that you wish to withdraw from the subscription, with enough information
-            to identify it. A special form is not required. Use of a service, a ban, or a match result does not
-            automatically remove mandatory remedies.
+            Nothing in this policy takes away rights that the law in your country gives you and that cannot be waived.
           </p>
         </section>
         <section>
           <h2>Plan and price changes</h2>
           <p>
-            Plan changes can affect price, timing, and credits. A change must show its financial effect before you
-            agree. Applicable notice and cancellation rights continue to apply to renewal price changes. If a payment
-            fails, check Settings and the payment provider's notice for the account's actual status.
+            A plan change shows its price and timing before you agree to it. Price changes for renewals are announced
+            before they apply, and you can cancel before the new price is charged. If a payment fails, check Settings and
+            the payment provider's notice for the account's actual status.
           </p>
         </section>
         <section>
